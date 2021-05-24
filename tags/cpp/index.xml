@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>cpp on Benson Li&#39;s Blog</title>
+    <link>https://bbli.github.io/tags/cpp/</link>
+    <description>Recent content in cpp on Benson Li&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
+    <lastBuildDate>Thu, 20 May 2021 19:36:00 -0700</lastBuildDate><atom:link href="https://bbli.github.io/tags/cpp/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Clarifying CRTP with the C&#43;&#43; object model</title>
+      <link>https://bbli.github.io/posts/crtp_with_object_model/</link>
+      <pubDate>Thu, 20 May 2021 19:36:00 -0700</pubDate>
+      
+      <guid>https://bbli.github.io/posts/crtp_with_object_model/</guid>
+      <description>How CRTP works CRTP is not &amp;ldquo;template programming magic&amp;rdquo; We already have static polymorphism We already have static implementation inheritance&amp;hellip;Except Appendix-Dynamic Dispatch  On my first encounter, the Curiously Recurring Template Pattern seemed like magic to me. Apparently, by writing static_cast&amp;lt;T*&amp;gt;(this)-&amp;gt;func(), we now have &amp;ldquo;static polymorphism/inheritance&amp;rdquo;. It wasn&amp;rsquo;t until a few months and some c++ learning resources later, that I was finally able to understand CRTP. In this blogpost, I will talk about CRTP from more of a code generation point of view, and hopefully by then end convince you that &amp;ldquo;static polymorphism/inheritance&amp;rdquo; is a misleading description of this pattern.</description>
+    </item>
+    
+  </channel>
+</rss>
