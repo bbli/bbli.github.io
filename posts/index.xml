@@ -256,7 +256,7 @@ dog<span style="color:#f92672">-&gt;</span>eat();
 <p>There are no variadic templates, enable_if, or other hocus pocus happening here&#160;<a href="#fnref:3" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
 </li>
 <li id="fn:4" role="doc-endnote">
-<p>I will admit that CRTP provides better lookup access to the functionality that a class has, compared to free functions. But unless there is &ldquo;scaffolding&rdquo; code, this can also be done by creating public member functions, if one desires such coupling&#160;<a href="#fnref:4" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+<p>I will admit that CRTP provides better lookup access to the functionality that a class has, compared to free functions. But unless there is &ldquo;scaffolding&rdquo; code, this can also be done by creating public member functions or just supplying the free functions in the same header as the class&#160;<a href="#fnref:4" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
 </li>
 </ol>
 </section>
