@@ -1,0 +1,267 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Posts on Benson Li&#39;s Blog</title>
+        <link>https://bbli.github.io/posts/</link>
+        <description>Recent content in Posts on Benson Li&#39;s Blog</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en-us</language>
+        <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
+        <lastBuildDate>Thu, 20 May 2021 19:36:00 -0700</lastBuildDate>
+        <atom:link href="https://bbli.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+        
+        <item>
+            <title>Clarifying CRTP with the C&#43;&#43; object model</title>
+            <link>https://bbli.github.io/posts/crtp_with_object_model/</link>
+            <pubDate>Thu, 20 May 2021 19:36:00 -0700</pubDate>
+            
+            <guid>https://bbli.github.io/posts/crtp_with_object_model/</guid>
+            <description>How CRTP works CRTP is not &amp;ldquo;template programming magic&amp;rdquo; We already have static polymorphism We already have static implementation inheritance&amp;hellip;Except Appendix-Dynamic Dispatch  On my first encounter, the Curiously Recurring Template Pattern seemed like magic to me. Apparently, by writing static_cast&amp;lt;T*&amp;gt;(this)-&amp;gt;func(), we now have &amp;ldquo;static polymorphism/inheritance&amp;rdquo;. It wasn&amp;rsquo;t until a few months and some c++ learning resources later, that I was finally able to understand CRTP. In this blogpost, I will talk about CRTP from more of a code generation point of view, and hopefully by then end convince you that &amp;ldquo;static polymorphism/inheritance&amp;rdquo; is a misleading description of this pattern.</description>
+            <content type="html"><![CDATA[<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+<ul>
+<li><a href="#how-crtp-works">How CRTP works</a></li>
+<li><a href="#crtp-is-not-template-programming-magic">CRTP is not &ldquo;template programming magic&rdquo;</a></li>
+<li><a href="#we-already-have-static-polymorphism">We already have static polymorphism</a></li>
+<li><a href="#we-already-have-static-implementation-inheritance-dot-dot-dot-except">We already have static implementation inheritance&hellip;Except</a></li>
+<li><a href="#appendix-dynamic-dispatch">Appendix-Dynamic Dispatch</a></li>
+</ul>
+<!-- raw HTML omitted -->
+<p>On my first encounter, the Curiously Recurring Template Pattern seemed like magic to me. Apparently, by writing <code>static_cast&lt;T*&gt;(this)-&gt;func()</code>,  we now have &ldquo;static polymorphism/inheritance&rdquo;. It wasn&rsquo;t until a few months and some c++ <a href="https://www.youtube.com/watch?v=SShSV%5FiV1Ko">learning resources</a> later, that I was finally able to understand CRTP. In this blogpost, I will talk about CRTP from more of a code generation point of view, and hopefully by then end convince you that &ldquo;static polymorphism/inheritance&rdquo; is a misleading description of this pattern.</p>
+<h1 id="how-crtp-works">How CRTP works</h1>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">template</span> <span style="color:#f92672">&lt;</span><span style="color:#66d9ef">typename</span> T<span style="color:#f92672">&gt;</span>
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">BaseT</span>{
+<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">void</span> func(){
+        <span style="color:#75715e">// Note: the use of pointers instead of references is for pedagogy reasons
+</span><span style="color:#75715e"></span>        T<span style="color:#f92672">*</span> derived <span style="color:#f92672">=</span> <span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span>T<span style="color:#f92672">*&gt;</span>(<span style="color:#66d9ef">this</span>);
+        <span style="color:#75715e">// pre function call code
+</span><span style="color:#75715e"></span>        derived<span style="color:#f92672">-&gt;</span>do_func1();
+        derived<span style="color:#f92672">-&gt;</span>do_func2();
+        <span style="color:#75715e">// post function call code
+</span><span style="color:#75715e"></span>    }
+<span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">void</span> do_func1();
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">do_func2</span>();
+};
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Derived</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> BaseT<span style="color:#f92672">&lt;</span>Derived<span style="color:#f92672">&gt;</span>{
+<span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">void</span> do_func1(){};
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">do_func2</span>(){};
+};
+</code></pre></div><p>Here is the general form of the pattern, with some modifications that will come to light by the end of this article. Let us now walk through what <code>foo</code> translates to for this <code>Derived</code> class. When the compiler processes<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup> this function, whose <code>func1</code>  does it insert, <code>BaseT&lt;Derived&gt;</code> or <code>Derived</code>?</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// rough translation
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">func</span>(BaseT<span style="color:#f92672">&lt;</span>Derived<span style="color:#f92672">&gt;*</span> <span style="color:#66d9ef">this</span>){
+    <span style="color:#75715e">// From now on, generate code as if we have a pointer to Derived(whichc we do)
+</span><span style="color:#75715e"></span>    Derived<span style="color:#f92672">*</span> derived <span style="color:#f92672">=</span> <span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span>Derived<span style="color:#f92672">*&gt;</span>(<span style="color:#66d9ef">this</span>);
+    <span style="color:#75715e">// pre function call code
+</span><span style="color:#75715e"></span>    Derived<span style="color:#f92672">::</span>do_func1(derived);
+    Derived<span style="color:#f92672">::</span>do_func2(derived);
+    <span style="color:#75715e">// post function call code
+</span><span style="color:#75715e"></span>}
+</code></pre></div><p>The way the C++ object model works is that when there are no virtual functions, the compiler inserts the function corresponding with the <strong>whatever the compile time type CURRENTLY is of the object who calls that method</strong> <sup id="fnref:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">2</a></sup></p>
+<p>Now, that was a bit of a mouthful. Let us walk through another example of using <code>static_cast</code> to help the compiler with name resolution.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Parent1</span>{
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">f</span>(){cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;1&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;}
+};
+<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Parent2</span>{
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">f</span>(){cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;2&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;}
+};
+<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Child</span><span style="color:#f92672">:</span><span style="color:#66d9ef">public</span> Parent1,<span style="color:#66d9ef">public</span> Parent2{
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">g</span>(){
+        Parent2<span style="color:#f92672">*</span> casted <span style="color:#f92672">=</span> <span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span>Parent2<span style="color:#f92672">*&gt;</span>(<span style="color:#66d9ef">this</span>);
+        casted<span style="color:#f92672">-&gt;</span>f();
+        <span style="color:#75715e">// Parent2::f(); // can also be done with explicit scoping
+</span><span style="color:#75715e"></span>    }
+};
+</code></pre></div><p>Without the static_cast, the compiler will throw an error, saying <code>f</code> is found in multiple base classes. But by using it, the compiler will no longer look in <code>Child</code> or <code>Parent1</code> during name resolution. One can also use explicit scoping to achieve this, but the difference is that static_cast will walk the class hierarchy until it finds a <code>f</code> . Furthermore explicit scoping requires retyping <code>Parent1</code> on every subsequent member function call.</p>
+<p>I find this explanation in terms of &ldquo;manipulating the name resolution path&rdquo; to be much clearer than saying &ldquo;the base class can now access the derived class&rdquo; or &ldquo;we inject the derived class into the base&rdquo; as I have found in other blogs. For all intensive purposes, the compiler thinks it has a Derived object now. And in fact, it is the other way around, that the derived class has access to the base. Which isn&rsquo;t that suprising, as that&rsquo;s basically the definition of how classes work.</p>
+<p>So to repeat, after the <code>static_cast</code>, there is no Base anymore. With the fundamental understanding of CRTP down, let us now dispel some myths/confusion around its usage.</p>
+<h1 id="crtp-is-not-template-programming-magic">CRTP is not &ldquo;template programming magic&rdquo;</h1>
+<p>Consider the following example</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Widget</span>{
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">update</span>(){cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;hi&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;};
+};
+<span style="color:#66d9ef">template</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">typename</span> T<span style="color:#f92672">&gt;</span>
+<span style="color:#66d9ef">void</span> generic_function(<span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> x){
+    <span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span>T<span style="color:#f92672">*&gt;</span>(<span style="color:#66d9ef">this</span>)<span style="color:#f92672">-&gt;</span>update();
+}
+<span style="color:#75715e">// vs
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">template</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">typename</span> T<span style="color:#f92672">&gt;</span>
+<span style="color:#66d9ef">void</span> generic_function2(T<span style="color:#f92672">*</span> x){
+    x<span style="color:#f92672">-&gt;</span>update();
+}
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">void</span>){
+    Widget<span style="color:#f92672">*</span> x <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Widget;
+    generic_function<span style="color:#f92672">&lt;</span>Widget<span style="color:#f92672">&gt;</span>((<span style="color:#66d9ef">void</span><span style="color:#f92672">*</span>)x);
+    generic_function2(x);
+}
+</code></pre></div><p>They both will print &ldquo;hi&rdquo;. The difference is just that we gave the first one a bad input argument, and so we had to &ldquo;compensate&rdquo; via the static_cast. So if you understand static_cast and basic generic programming<sup id="fnref:3"><a href="#fn:3" class="footnote-ref" role="doc-noteref">3</a></sup>
+there is no reason you shouldn&rsquo;t understand CRTP.</p>
+<h1 id="we-already-have-static-polymorphism">We already have static polymorphism</h1>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Object1</span>{
+<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">void</span> interface(){
+        <span style="color:#75715e">// pre function call code
+</span><span style="color:#75715e"></span>        impl();
+        <span style="color:#75715e">// post function call code
+</span><span style="color:#75715e"></span>    }
+<span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+   <span style="color:#66d9ef">void</span> impl(){cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;a&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;}
+};
+
+<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Object2</span>{
+<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">void</span> interface(){
+        <span style="color:#75715e">// Notice we call whatever functions we want here, unlike CRTP
+</span><span style="color:#75715e"></span>        impl_a();
+        impl_b();
+    }
+<span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">void</span> impl_a(){cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;b1&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;}
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">impl_b</span>(){cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;b2&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;}
+};
+<span style="color:#66d9ef">template</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">typename</span> T<span style="color:#f92672">&gt;</span>
+<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">BaseT</span>{
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">interface</span>(){
+        <span style="color:#75715e">// pre function call code
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span>T<span style="color:#f92672">*&gt;</span>(<span style="color:#66d9ef">this</span>)<span style="color:#f92672">-&gt;</span>impl();
+        <span style="color:#75715e">// post function call code
+</span><span style="color:#75715e"></span>    }
+};
+<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Derived</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> BaseT<span style="color:#f92672">&lt;</span>Derived<span style="color:#f92672">&gt;</span>{
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">impl</span>(){cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;c&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;}
+};
+
+<span style="color:#66d9ef">template</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">typename</span> T<span style="color:#f92672">&gt;</span>
+<span style="color:#66d9ef">void</span> call_a_function(T<span style="color:#f92672">&amp;</span> x){
+    x.interface();
+}
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">void</span>){
+    Object1 a;
+    Object2 b;
+    Derived c;
+    call_a_function(a);<span style="color:#75715e">// They all work!
+</span><span style="color:#75715e"></span>    call_a_function(b);
+    call_a_function(c);
+}
+</code></pre></div><p>As we can see, CRTP is not nesscary here(and actually is not even a &ldquo;true&rdquo; interface in some sense, as it has already predetermined the implementation). What is really giving us polymorphism is generic programming. Furthermore, inheriting from a CRTP doesn&rsquo;t actually guarantee the Derived class will satisfy the interface. Consider this example</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">template</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">typename</span> T<span style="color:#f92672">&gt;</span>
+<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">BaseT</span>{
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">f</span>(){
+        <span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span>T<span style="color:#f92672">*&gt;</span>(<span style="color:#66d9ef">this</span>)<span style="color:#f92672">-&gt;</span>not_implemented();
+    }
+};
+
+<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Derived</span><span style="color:#f92672">:</span><span style="color:#66d9ef">public</span> BaseT<span style="color:#f92672">&lt;</span>Derived<span style="color:#f92672">&gt;</span>{
+};
+
+<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">B</span>{
+    <span style="color:#66d9ef">virtual</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">f</span>() <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+};
+<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">D</span><span style="color:#f92672">:</span><span style="color:#66d9ef">public</span> B{
+};
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">void</span>){
+    Derived a;
+    D b;
+}
+</code></pre></div><p>Comment out the <code>D b;</code> initialization in main, and the code compiles. With it, we get an error. Why? Because abstract base classes force their inheritors to implement the interface, even if the function never gets called. There are no such guarantees, however, with CRTP.(If we do call Derived&rsquo;s <code>f</code> function, we will get an error&hellip;but we basically get the same error had <code>f</code> been a templated free function)<sup id="fnref:4"><a href="#fn:4" class="footnote-ref" role="doc-noteref">4</a></sup></p>
+<h1 id="we-already-have-static-implementation-inheritance-dot-dot-dot-except">We already have static implementation inheritance&hellip;Except</h1>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">EngineMixin</span>{
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">do_work</span>();
+};
+<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">SpecificEngine</span><span style="color:#f92672">:</span><span style="color:#66d9ef">public</span> EngineMixin{
+};
+
+<span style="color:#66d9ef">template</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">typename</span> T<span style="color:#f92672">&gt;</span>
+<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">BaseT</span>{
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">do_work</span>();
+};
+<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Derived</span><span style="color:#f92672">:</span><span style="color:#66d9ef">public</span> BaseT<span style="color:#f92672">&lt;</span>Derived<span style="color:#f92672">&gt;</span>{
+};
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">void</span>){
+    SpecificEngine e;
+    Derived d;
+    e.work(); <span style="color:#75715e">//They both static dispatch to the same thing!
+</span><span style="color:#75715e"></span>    d.work();
+}
+</code></pre></div><p>Let us now consider the other aspect of inheritance, inheritance of functionality. In the above example, <code>SpecificEngine</code> and <code>Derived</code> will both resolve the function call at compile time, as there are no <a href="#appendix-dynamic-dispatch">virtual functions + pointers here</a>. I would like to emphasis this, as I feel some people may think that just because there is a &ldquo;static_cast&rdquo; in CRTP, it is somehow related to the function call being static too. As I have explained above, <code>static_cast</code> <strong>controls what name we dispatch to, and not the type of the dispatch</strong></p>
+<p>So given all of this, when exactly should we use CRTP? Let us reconsider the initial example</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">BaseT</span>{
+<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">void</span> func(){
+        <span style="color:#75715e">// pre function call code
+</span><span style="color:#75715e"></span>        derived<span style="color:#f92672">-&gt;</span>do_func1();
+        derived<span style="color:#f92672">-&gt;</span>do_func2();
+        <span style="color:#75715e">// post function call code
+</span><span style="color:#75715e"></span>    }
+<span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">virtual</span> <span style="color:#66d9ef">void</span> do_func1();
+    <span style="color:#66d9ef">virtual</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">do_func2</span>();
+};
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Derived</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> BaseT<span style="color:#f92672">&lt;</span>Derived<span style="color:#f92672">&gt;</span>{
+<span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">void</span> do_func1(){};
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">do_func2</span>(){};
+};
+</code></pre></div><p>Now, if you look closely, I haven&rsquo;t actually reproduced the initial example! Instead, by removing the static_cast and adding <code>virtual</code> to <code>do_func1/do_func2</code>, I have actually introduced another pattern, known as the &ldquo;NVI idiom&rdquo; or Facade Design Pattern. The purpose of this pattern is the Base class provides most of the code scaffolding/wiring/or public interface, and the Derived class simply needs to &ldquo;fill in the blanks&rdquo;. So if you have been wondering why I have been writing &ldquo;pre function call&rdquo; comments throughout this post, it is because <strong>I want to encourage you to think of CRTP as a &ldquo;static NVI idiom&rdquo;</strong>, and not &ldquo;static inheritance&rdquo;. If all the Base class does is forward to the implementation, one has to wonder &ldquo;What was the point?&rdquo;</p>
+<p>As long as you keep this in mind, CRTP should be hard to abuse and then subsequently &ldquo;shoot yourself in the foot&rdquo; with it.</p>
+<hr>
+<h1 id="appendix-dynamic-dispatch">Appendix-Dynamic Dispatch</h1>
+<p>(Note: This section may or may not be helpful in understanding how CRTP works. )</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Animal</span>{
+    <span style="color:#66d9ef">virtual</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">walk</span>();
+    <span style="color:#66d9ef">virtual</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">eat</span>()  ;
+    <span style="color:#66d9ef">int</span> data;
+};
+<span style="color:#75715e">// is roughly
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Animal</span>{
+    <span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> _vtable;
+    <span style="color:#66d9ef">int</span> data;
+};
+<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">update</span>(Animal<span style="color:#f92672">*</span>){};
+</code></pre></div><p>When you declare a virtual function inside the `Animal` class in C++, the compile will add a pointer inside every created object that points to the same location: the start of `Animal` vtable. In this region of memory, every 8 byte interval(the size of a pointer) will correspond with the address of a virtual function for this object. When virtual functions get called, the following translation happens</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// Note: the use of raw pointers is for pedagogy reasons
+</span><span style="color:#75715e"></span>Animal<span style="color:#f92672">*</span> animal <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Animal;
+animal<span style="color:#f92672">-&gt;</span>eat();
+<span style="color:#75715e">// is roughly
+</span><span style="color:#75715e"></span>(<span style="color:#f92672">*</span>(<span style="color:#f92672">*</span>animal._vtable<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>byte))(animal); <span style="color:#75715e">// 1byte offset to get to 2nd virtual function
+</span></code></pre></div><p>Note the <code>w</code> is a pointer. Had we declare it as variable, static dispatch would have to happen, even if the <strong>function was declared virtual</strong>. I won&rsquo;t go completely into detail as to why here, but let&rsquo;s just say that given <code>animal</code> is declared on the stack, there is no way to &ldquo;lie&rdquo; and say it is anything but an <code>Animal</code></p>
+<p>Finally, the way that this indirection allows for polymorphism is that the dynamic dispatch translation is the same <strong>regardless of what the Animal pointer actually points to</strong></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Dog</span><span style="color:#f92672">:</span><span style="color:#66d9ef">public</span> Animal{
+    <span style="color:#66d9ef">virtual</span> <span style="color:#a6e22e">eat</span>(){
+        <span style="color:#75715e">//something different
+</span><span style="color:#75715e"></span>    }
+}
+
+Animal<span style="color:#f92672">*</span> dog <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Dog;
+dog<span style="color:#f92672">-&gt;</span>eat();
+<span style="color:#75715e">// is roughly
+</span><span style="color:#75715e"></span>(<span style="color:#f92672">*</span>(<span style="color:#f92672">*</span>dog._vtable<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>byte))(dog);
+
+<span style="color:#75715e">// so basically the same as
+</span><span style="color:#75715e">// (*(*animal._vtable+1byte))(animal);
+</span></code></pre></div><p>The difference is that the vtable now holds different information. Namely <code>*dog._vtable+1byte</code> now stores the location of <code>Dog::eat()</code> rather than <code>Animal::eat()</code></p>
+<section class="footnotes" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn:1" role="doc-endnote">
+<p>Or more precisely decides it is nesscary to construct this function&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:2" role="doc-endnote">
+<p>Let&rsquo;s ignore walking the class hierarchy for now&#160;<a href="#fnref:2" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:3" role="doc-endnote">
+<p>There are no variadic templates, enable_if, or other hocus pocus happening here&#160;<a href="#fnref:3" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:4" role="doc-endnote">
+<p>I will admit that CRTP provides better lookup access to the functionality that a class has, compared to free functions. But unless there is &ldquo;scaffolding&rdquo; code, this can also be done by creating public member functions, if one desires such coupling&#160;<a href="#fnref:4" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+</ol>
+</section>
+]]></content>
+        </item>
+        
+    </channel>
+</rss>
