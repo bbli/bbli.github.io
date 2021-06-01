@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>go on Benson Li&#39;s Blog</title>
+    <link>https://bbli.github.io/tags/go/</link>
+    <description>Recent content in go on Benson Li&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
+    <lastBuildDate>Mon, 31 May 2021 00:00:00 -0700</lastBuildDate><atom:link href="https://bbli.github.io/tags/go/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Properties of Go Channels</title>
+      <link>https://bbli.github.io/posts/go_channel_properties/</link>
+      <pubDate>Mon, 31 May 2021 00:00:00 -0700</pubDate>
+      
+      <guid>https://bbli.github.io/posts/go_channel_properties/</guid>
+      <description>Consequences of Blocking Synchronization  Cannot &amp;ldquo;just&amp;rdquo; signal Making Channels Non-Blocking + Select   Consequences of Consumption:  Cannot be easily used as a broadcast mechanism How about the inverse case?   Example of when we would want to Consume + Block: Streams Channels Often Come with a Level of Indirection  Tee Channel Consequence of Indirection   Final Remarks  This blog post is a summary of an investigation I did regarding channel vs mutex usage, as most resources I found would just present examples side by side without talking about the properties of mutexes/channels that made one implementation better than other(Or in other words, the why).</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -25,7 +25,7 @@
 
 
 
-<link rel="stylesheet" href="/main.8d5df78ff4e1795faf5eb8eba7b2443ef2ece3b7f8be6ca9a26442b473d71839.css">
+<link rel="stylesheet" href="/main.c41a6dc999cf337b6980b3ee2c2d5808bf764878dc89d1b6d037d7545bbc0d26.css">
 
 
 
@@ -97,6 +97,11 @@
                     </svg>
                 </span>
             
+                <span class="theme-toggle not-selectable"><svg class="theme-toggler" width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+   <path d="M22 41C32.4934 41 41 32.4934 41 22C41 11.5066 32.4934 3 22
+   3C11.5066 3 3 11.5066 3 22C3 32.4934 11.5066 41 22 41ZM7 22C7
+   13.7157 13.7157 7 22 7V37C13.7157 37 7 30.2843 7 22Z"/>
+ </svg></span>
         </span>
     </span>
 </header>
@@ -269,7 +274,7 @@ there is no reason you shouldn&rsquo;t understand CRTP.</p>
 </span><span style="color:#75715e"></span>    call_a_function(b);
     call_a_function(c);
 }
-</code></pre></div><p>As we can see, CRTP is not nesscary here(and actually is not even a &ldquo;true&rdquo; interface in some sense, as it has already predetermined the implementation). What is really giving us polymorphism is generic programming. Furthermore, inheriting from a CRTP doesn&rsquo;t actually guarantee the Derived class will satisfy the interface. Consider this example</p>
+</code></pre></div><p>As we can see, CRTP is not necessary here(and actually is not even a &ldquo;true&rdquo; interface in some sense, as it has already predetermined the implementation). What is really giving us polymorphism is generic programming. Furthermore, inheriting from a CRTP doesn&rsquo;t actually guarantee the Derived class will satisfy the interface. Consider this example</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">template</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">typename</span> T<span style="color:#f92672">&gt;</span>
 <span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">BaseT</span>{
     <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">f</span>(){
@@ -371,7 +376,7 @@ dog<span style="color:#f92672">-&gt;</span>eat();
 <hr>
 <ol>
 <li id="fn:1" role="doc-endnote">
-<p>Or more precisely decides it is nesscary to construct this function&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+<p>Or more precisely decides it is necessary to construct this function&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
 </li>
 <li id="fn:2" role="doc-endnote">
 <p>Let&rsquo;s ignore walking the class hierarchy for now&#160;<a href="#fnref:2" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
@@ -525,6 +530,26 @@ dog<span style="color:#f92672">-&gt;</span>eat();
       </div>
 
     
+    <div class="pagination">
+        <div class="pagination__title">
+            <span class="pagination__title-h"></span>
+            <hr />
+        </div>
+
+        <div class="pagination__buttons">
+            
+            <span class="button previous">
+                <a href="https://bbli.github.io/posts/go_channel_properties/">
+                    <span class="button__icon">←</span>
+                    <span class="button__text">Properties of Go Channels</span>
+                </a>
+            </span>
+            
+
+            
+        </div>
+    </div>
+
 
     
 
