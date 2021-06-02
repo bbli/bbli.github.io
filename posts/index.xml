@@ -47,14 +47,20 @@
 <h2 id="cannot-just-signal">Cannot &ldquo;just&rdquo; signal</h2>
 <p>If you would like one goroutine to signal to another via a Channel, it will necessary block until a receiver is ready. There may be times, however, where you want to do more work afterwards. In such a case, a <code>Semaphore</code> may be more appropriate, even if they are workarounds for this, as we shall talk about now.</p>
 <h2 id="making-channels-non-blocking-plus-select">Making Channels Non-Blocking + Select</h2>
-<p>One way to achieve non blocking channels is to create your channels with a &ldquo;buffer size&rdquo;(i.e <code>make(chan string,2)</code>). I am not a fan of this, as it breaks my ability to reason locally about code. This is because with a buffered channel, I cannot reason about whether the code in front of me will block or not, as that is dependent on the state of  the buffer, which can only be known at runtime. As jerf puts it in this <a href="https://news.ycombinator.com/item?id=16149856">Hacker News post</a>, buffered channels are best used in response to your traffic, and not as a design decision.</p>
+<p>One way to achieve non blocking channels is to create your channels with a &ldquo;buffer size&rdquo;(i.e <code>make(chan string,2)</code>). I am not a fan of this, as it breaks my ability to reason locally about code. This is because with a buffered channel, I cannot reason about whether the code in front of me will block or not, as that is dependent on the state of  the buffer, which can only be known at runtime. As jerf puts it in this <a href="https://news.ycombinator.com/item?id=16149856">Hacker News post</a>, buffered channels should mostly be used as a response to your traffic, and not as a design decision.</p>
 <p>Another way would be to combine channels with the <code>select</code> statement. This runs the risk of not sending the message if we break out somewhere else in the for loop. Nevertheless, the <code>select</code> statement is still very powerful as <strong>by polling for the first response, it allows us to vary the degree to which we are blocking</strong>, from one channel to multiple channels to timeout and all the way to &ldquo;never&rdquo;, as shown below.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">for</span> {
     <span style="color:#66d9ef">select</span>{<span style="color:#66d9ef">case</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">our_channel</span>: <span style="color:#66d9ef">break</span>; <span style="color:#66d9ef">default</span>:}
 
     <span style="color:#75715e">// do stuff until there is a receiver for our_channel
 </span><span style="color:#75715e"></span>}
-</code></pre></div><h1 id="consequences-of-consumption">Consequences of Consumption:</h1>
+</code></pre></div><p>Lastly, use another level of indirection, aka</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// Instead of
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">ch</span><span style="color:#f92672">&lt;-</span><span style="color:#e6db74">&#34;finished&#34;</span>
+<span style="color:#75715e">// do this
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">go</span> <span style="color:#a6e22e">fun</span>(){<span style="color:#a6e22e">ch</span><span style="color:#f92672">&lt;-</span><span style="color:#e6db74">&#34;finished&#34;</span>}()
+</code></pre></div><p>Downside is that if no one receives, we will have a memory leak</p>
+<h1 id="consequences-of-consumption">Consequences of Consumption:</h1>
 <h2 id="cannot-be-easily-used-as-a-broadcast-mechanism">Cannot be easily used as a broadcast mechanism</h2>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// notifier goroutine
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>(){
@@ -129,7 +135,7 @@
 <li>location of result/abstracting away consumption behavior</li>
 <li>synchronization of threads</li>
 </ul>
-<p>The reason we want blocking here is because otherwise, the sequence cannot be lazily generated. Additionally, channels allow us to not have raw pointers and semaphores floating around in our codebase, which is a huge gain in writing correct code. Another thing that I would like to note is that because the mutex is not inside a class, its guarantee is only &ldquo;opt in&rdquo;. Namely, the mutex code runs the danger of someone not blocking on <code>sq_p</code> and just reading from <code>sq_out</code> directly. With a channel, this cannot happen. Furthermore, one can specify only read/write &ldquo;facade&rdquo; of the channel, whereas with a mutex, one technically has both read and write access to the underlying resource</p>
+<p>The reason we want blocking here is because otherwise, the sequence cannot be lazily generated. Additionally, channels allow us to not have raw pointers and semaphores floating around in our codebase, which is a huge gain in writing correct code. Another thing that I would like to note is that because the mutex is not inside a class, its guarantee is only &ldquo;opt in&rdquo;. Namely, the mutex code runs the danger of someone not blocking on <code>sq_p</code> and just reading from <code>sq_out</code> directly. With a channel, this cannot happen. Furthermore, one can specify only read/write &ldquo;facade&rdquo;(by making the return type of the channel <code>&lt;-ch</code> or <code>ch&lt;-</code>) of the channel, whereas with a mutex, one technically has both read and write access to the underlying resource</p>
 <h1 id="channels-often-come-with-a-level-of-indirection">Channels Often Come with a Level of Indirection</h1>
 <h2 id="tee-channel">Tee Channel</h2>
 <p>(Note: This example was more or less taken from &ldquo;Concurrency in Go&rdquo; by  Katherine Cox-Buday, except for simplicity I removed the code to handle the goroutine leak)</p>
@@ -246,8 +252,7 @@
 <h1 id="final-remarks">Final Remarks</h1>
 <p>So now that we know about some of the properties of channels, they can hopefully help us make more informed decisions on when to use them. For example, channels are not that great of a choice for broadcasting, as their consumption nature requires us to essentially implement a pub-sub mechanism, and their blocking nature further hinders us from concurrently notifying all listeners/may hang if a listener doesn&rsquo;t respond.</p>
 <p>Queues, on the other hand, are consuming and so channels will probably be a better idea for anything that is stream-like. Furthermore, channels are first class citizens when it comes to for loop termination and select statement(and in <code>select's</code> case, the only citizen).</p>
-<p>Finally, through their ability to preserve control flow, channels allow us to better express complex synchronization requirements. But with all that said, unless your situation is very stream-like,I would highly suggest using a mutex initially. That is because mutexes allow you to do any type of operation on the state, whereas you would need to create a new channel to put in the <code>select</code> statement of the &ldquo;centralized&rdquo; goroutine. By going with a channel as your preferred choice, you are doing &ldquo;premature abstraction&rdquo;, when 80% of the time, a simple lock will do. <sup id="fnref:4"><a href="#fn:4" class="footnote-ref" role="doc-noteref">4</a></sup>.</p>
-<p>Well that&rsquo;s all, folks!</p>
+<p>Finally, through their ability to preserve control flow, channels allow us to better express complex synchronization requirements. But with all that said, unless your situation is very stream-like, I personally would suggest using a mutex initially. That is because mutexes allow you to do any type of operation on the state, whereas you would need to create a new channel to put in the <code>select</code> statement of the &ldquo;centralized&rdquo; goroutine. (So instead of one blocking mutex, you wil have 2-4 blocking channels). Also, I just find channels sometimes lacking in their ability to  &ldquo;express intent&rdquo; that a mutex or condition variable gives. When reading the type signature <code>chan int</code>, how can I tell if it is being used as a future, mutex, or just data transport? In these situations, it is the channel that is &ldquo;low level&rdquo;, not the mutex!</p>
 <section class="footnotes" role="doc-endnotes">
 <hr>
 <ol>
@@ -259,9 +264,6 @@
 </li>
 <li id="fn:3" role="doc-endnote">
 <p>As otherwise, values will be precomputed, which may or may not be desirable&#160;<a href="#fnref:3" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
-</li>
-<li id="fn:4" role="doc-endnote">
-<p>At least that was the case for me in my Distributed Systems Class. I used channels just as futures, and a simple locking scheme for everything else. And tbh, I had way more bugs regarding nil maps/slices than I did with concurrency&#160;<a href="#fnref:4" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
 </li>
 </ol>
 </section>
