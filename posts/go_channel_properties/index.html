@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="ie=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="author" content="[Benson Li]">
-<meta name="description" content="Consequences of Blocking Synchronization  Cannot &amp;ldquo;just&amp;rdquo; signal Making Channels Non-Blocking &#43; Select   Consequences of Consumption:  Cannot be easily used as a broadcast mechanism How about the inverse case?   Example of when we would want to Consume &#43; Block: Streams Channels Often Come with a Level of Indirection  Tee Channel Consequence of Indirection   Final Remarks  This blog post is a summary of an investigation I did regarding channel vs mutex usage, as most resources I found would just present examples side by side without talking about the properties of mutexes/channels that made one implementation better than other(Or in other words, the why)." />
+<meta name="description" content="1Consequences of Blocking Synchronization:  1.1Making Channels Non-Blocking &#43; Select   2Consequences of Consumption:  2.1Cannot be easily used as a broadcast mechanism 2.2How about the inverse case?   3Example of when we would want to Consume &#43; Block: Streams: 4Channels Often Come with a Level of Indirection:  4.1Tee Channel 4.2Consequence of Indirection   5Final Remarks  This blog post is a summary of an investigation I did regarding channel vs mutex usage, as most resources I found would just present examples side by side without talking about the properties of mutexes/channels that made one implementation better than other(Or in other words, the why)." />
 <meta name="keywords" content="homepage, blog, go, software-design" />
 <meta name="robots" content="noodp" />
 <meta name="theme-color" content="" />
@@ -33,15 +33,15 @@
 
 
 <meta itemprop="name" content="Properties of Go Channels">
-<meta itemprop="description" content="Consequences of Blocking Synchronization  Cannot &ldquo;just&rdquo; signal Making Channels Non-Blocking &#43; Select   Consequences of Consumption:  Cannot be easily used as a broadcast mechanism How about the inverse case?   Example of when we would want to Consume &#43; Block: Streams Channels Often Come with a Level of Indirection  Tee Channel Consequence of Indirection   Final Remarks  This blog post is a summary of an investigation I did regarding channel vs mutex usage, as most resources I found would just present examples side by side without talking about the properties of mutexes/channels that made one implementation better than other(Or in other words, the why)."><meta itemprop="datePublished" content="2021-05-31T00:00:00-07:00" />
+<meta itemprop="description" content="1Consequences of Blocking Synchronization:  1.1Making Channels Non-Blocking &#43; Select   2Consequences of Consumption:  2.1Cannot be easily used as a broadcast mechanism 2.2How about the inverse case?   3Example of when we would want to Consume &#43; Block: Streams: 4Channels Often Come with a Level of Indirection:  4.1Tee Channel 4.2Consequence of Indirection   5Final Remarks  This blog post is a summary of an investigation I did regarding channel vs mutex usage, as most resources I found would just present examples side by side without talking about the properties of mutexes/channels that made one implementation better than other(Or in other words, the why)."><meta itemprop="datePublished" content="2021-05-31T00:00:00-07:00" />
 <meta itemprop="dateModified" content="2021-05-31T00:00:00-07:00" />
-<meta itemprop="wordCount" content="2031"><meta itemprop="image" content="https://bbli.github.io"/>
+<meta itemprop="wordCount" content="2040"><meta itemprop="image" content="https://bbli.github.io"/>
 <meta itemprop="keywords" content="go,software-design," />
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://bbli.github.io"/>
 
 <meta name="twitter:title" content="Properties of Go Channels"/>
-<meta name="twitter:description" content="Consequences of Blocking Synchronization  Cannot &ldquo;just&rdquo; signal Making Channels Non-Blocking &#43; Select   Consequences of Consumption:  Cannot be easily used as a broadcast mechanism How about the inverse case?   Example of when we would want to Consume &#43; Block: Streams Channels Often Come with a Level of Indirection  Tee Channel Consequence of Indirection   Final Remarks  This blog post is a summary of an investigation I did regarding channel vs mutex usage, as most resources I found would just present examples side by side without talking about the properties of mutexes/channels that made one implementation better than other(Or in other words, the why)."/>
+<meta name="twitter:description" content="1Consequences of Blocking Synchronization:  1.1Making Channels Non-Blocking &#43; Select   2Consequences of Consumption:  2.1Cannot be easily used as a broadcast mechanism 2.2How about the inverse case?   3Example of when we would want to Consume &#43; Block: Streams: 4Channels Often Come with a Level of Indirection:  4.1Tee Channel 4.2Consequence of Indirection   5Final Remarks  This blog post is a summary of an investigation I did regarding channel vs mutex usage, as most resources I found would just present examples side by side without talking about the properties of mutexes/channels that made one implementation better than other(Or in other words, the why)."/>
 
 
 
@@ -147,36 +147,35 @@
       <div class="post-content">
         <!-- raw HTML omitted -->
 <!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
 <ul>
-<li><a href="#consequences-of-blocking-synchronization">Consequences of Blocking Synchronization</a>
+<li><!-- raw HTML omitted -->1<!-- raw HTML omitted --> <a href="#consequences-of-blocking-synchronization">Consequences of Blocking Synchronization:</a>
 <ul>
-<li><a href="#cannot-just-signal">Cannot &ldquo;just&rdquo; signal</a></li>
-<li><a href="#making-channels-non-blocking-plus-select">Making Channels Non-Blocking + Select</a></li>
+<li><!-- raw HTML omitted -->1.1<!-- raw HTML omitted --> <a href="#making-channels-non-blocking-plus-select">Making Channels Non-Blocking + Select</a></li>
 </ul>
 </li>
-<li><a href="#consequences-of-consumption">Consequences of Consumption:</a>
+<li><!-- raw HTML omitted -->2<!-- raw HTML omitted --> <a href="#consequences-of-consumption">Consequences of Consumption:</a>
 <ul>
-<li><a href="#cannot-be-easily-used-as-a-broadcast-mechanism">Cannot be easily used as a broadcast mechanism</a></li>
-<li><a href="#how-about-the-inverse-case">How about the inverse case?</a></li>
+<li><!-- raw HTML omitted -->2.1<!-- raw HTML omitted --> <a href="#cannot-be-easily-used-as-a-broadcast-mechanism">Cannot be easily used as a broadcast mechanism</a></li>
+<li><!-- raw HTML omitted -->2.2<!-- raw HTML omitted --> <a href="#how-about-the-inverse-case">How about the inverse case?</a></li>
 </ul>
 </li>
-<li><a href="#example-of-when-we-would-want-to-consume-plus-block-streams">Example of when we would want to Consume + Block: Streams</a></li>
-<li><a href="#channels-often-come-with-a-level-of-indirection">Channels Often Come with a Level of Indirection</a>
+<li><!-- raw HTML omitted -->3<!-- raw HTML omitted --> <a href="#example-of-when-we-would-want-to-consume-plus-block-streams">Example of when we would want to Consume + Block: Streams:</a></li>
+<li><!-- raw HTML omitted -->4<!-- raw HTML omitted --> <a href="#channels-often-come-with-a-level-of-indirection">Channels Often Come with a Level of Indirection:</a>
 <ul>
-<li><a href="#tee-channel">Tee Channel</a></li>
-<li><a href="#consequence-of-indirection">Consequence of Indirection</a></li>
+<li><!-- raw HTML omitted -->4.1<!-- raw HTML omitted --> <a href="#tee-channel">Tee Channel</a></li>
+<li><!-- raw HTML omitted -->4.2<!-- raw HTML omitted --> <a href="#consequence-of-indirection">Consequence of Indirection</a></li>
 </ul>
 </li>
-<li><a href="#final-remarks">Final Remarks</a></li>
+<li><!-- raw HTML omitted -->5<!-- raw HTML omitted --> <a href="#final-remarks">Final Remarks</a></li>
 </ul>
 <!-- raw HTML omitted -->
 <p>This blog post is a summary of an investigation I did regarding channel vs mutex usage, as most resources I found would just present examples side by side without talking about the properties of mutexes/channels that made one implementation better than other(Or in other words, the why).</p>
-<h1 id="consequences-of-blocking-synchronization">Consequences of Blocking Synchronization</h1>
-<p>Channels implement what <a href="https://greenteapress.com/wp/semaphores/">The Little Book of Semaphores</a> calls &ldquo;the leader follower pattern&rdquo;. If the receiver is not ready, the sender will block and vice versa. This can cause <a href="https://stackoverflow.com/questions/54157836/a-simple-example-about-go-channel-with-deadlock-and-why/54157914">troubles with beginners</a> in Go, as &ldquo;deadlocks&rdquo;<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup> can happen in a single threaded context.</p>
-<h2 id="cannot-just-signal">Cannot &ldquo;just&rdquo; signal</h2>
-<p>If you would like one goroutine to signal to another via a Channel, it will necessary block until a receiver is ready. There may be times, however, where you want to do more work afterwards. In such a case, a <code>Semaphore</code> may be more appropriate, even if they are workarounds for this, as we shall talk about now.</p>
-<h2 id="making-channels-non-blocking-plus-select">Making Channels Non-Blocking + Select</h2>
-<p>One way to achieve non blocking channels is to create your channels with a &ldquo;buffer size&rdquo;(i.e <code>make(chan string,2)</code>). I am not a fan of this, as it breaks my ability to reason locally about code. This is because with a buffered channel, I cannot reason about whether the code in front of me will block or not, as that is dependent on the state of  the buffer, which can only be known at runtime. As jerf puts it in this <a href="https://news.ycombinator.com/item?id=16149856">Hacker News post</a>, buffered channels should mostly be used as a response to your traffic, and not as a design decision.</p>
+<h1 id="consequences-of-blocking-synchronization"><!-- raw HTML omitted -->1<!-- raw HTML omitted --> Consequences of Blocking Synchronization:</h1>
+<p>Channels implement what <a href="https://greenteapress.com/wp/semaphores/">The Little Book of Semaphores</a> calls &ldquo;the leader follower pattern&rdquo;. If the receiver is not ready, the sender will block and vice versa. This can cause <a href="https://stackoverflow.com/questions/54157836/a-simple-example-about-go-channel-with-deadlock-and-why/54157914">troubles with beginners</a> in Go, as &ldquo;deadlocks&rdquo;<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup> can happen in a single threaded context. Furthermore, if you would like one goroutine to signal to another via a Channel, it will necessary block until a receiver is ready. There may be times, however, where you want to do more work afterwards. However, there are methods to work around this, as we shall discuss now.</p>
+<h2 id="making-channels-non-blocking-plus-select"><!-- raw HTML omitted -->1.1<!-- raw HTML omitted --> Making Channels Non-Blocking + Select</h2>
+<p>One way to achieve non blocking channels is to create your channels with a &ldquo;buffer size&rdquo;(i.e <code>make(chan string,2)</code>). I am not a fan of this, as it breaks my ability to reason locally about code. This is because with a buffered channel, I cannot reason about whether the code in front of me will block or not, as that is dependent on the state of  the buffer, which can only be known at runtime. As jerf puts it in this <a href="https://news.ycombinator.com/item?id=16149856">Hacker News post</a>, buffered channels should mostly be used as a response to your traffic, and not as an initial design decision.</p>
 <p>Another way would be to combine channels with the <code>select</code> statement. This runs the risk of not sending the message if we break out somewhere else in the for loop. Nevertheless, the <code>select</code> statement is still very powerful as <strong>by polling for the first response, it allows us to vary the degree to which we are blocking</strong>, from one channel to multiple channels to timeout and all the way to &ldquo;never&rdquo;, as shown below.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">for</span> {
     <span style="color:#66d9ef">select</span>{<span style="color:#66d9ef">case</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">our_channel</span>: <span style="color:#66d9ef">break</span>; <span style="color:#66d9ef">default</span>:}
@@ -188,49 +187,49 @@
 </span><span style="color:#75715e"></span><span style="color:#a6e22e">ch</span><span style="color:#f92672">&lt;-</span><span style="color:#e6db74">&#34;finished&#34;</span>
 <span style="color:#75715e">// do this
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">go</span> <span style="color:#a6e22e">fun</span>(){<span style="color:#a6e22e">ch</span><span style="color:#f92672">&lt;-</span><span style="color:#e6db74">&#34;finished&#34;</span>}()
-</code></pre></div><p>Downside is that if no one receives, we will have a memory leak</p>
-<h1 id="consequences-of-consumption">Consequences of Consumption:</h1>
-<h2 id="cannot-be-easily-used-as-a-broadcast-mechanism">Cannot be easily used as a broadcast mechanism</h2>
+</code></pre></div><p>Downside is that if no one receives, we will have a memory leak/the unbounded lifetime perhaps can cause some bugs down the road</p>
+<h1 id="consequences-of-consumption"><!-- raw HTML omitted -->2<!-- raw HTML omitted --> Consequences of Consumption:</h1>
+<h2 id="cannot-be-easily-used-as-a-broadcast-mechanism"><!-- raw HTML omitted -->2.1<!-- raw HTML omitted --> Cannot be easily used as a broadcast mechanism</h2>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// notifier goroutine
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>(){
-	<span style="color:#a6e22e">do_some_work</span>()
-	<span style="color:#a6e22e">work_done</span><span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">struct</span>{}
-}
+    <span style="color:#a6e22e">do_some_work</span>()
+    <span style="color:#a6e22e">work_done</span><span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">struct</span>{}
+}()
 
 <span style="color:#75715e">// waiting goroutine 1
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>(){
-	<span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">work_done</span>
-	<span style="color:#a6e22e">do_other_stuff_1</span>()
-}
+    <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">work_done</span>
+    <span style="color:#a6e22e">do_other_stuff_1</span>()
+}()
 <span style="color:#75715e">// waiting goroutine 2- one of these will receive the signal
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>(){
-	<span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">work_done</span>
-	<span style="color:#a6e22e">do_other_stuff_2</span>()
-}
+    <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">work_done</span>
+    <span style="color:#a6e22e">do_other_stuff_2</span>()
+}()
 </code></pre></div><p>As the above code shows, although we can copy a channel so that multiple readers can listen to it, the sender will only send once and its value will be consumed by only one waiting goroutine. Now, one way to broadcast would be for the sender to hold a send channel for each of its notifiees. This has the disadvantage that the system is either &ldquo;closed&rdquo; to future participants, or we would need additional synchronization on a list data structure.</p>
 <p>Thus, unless you know who want to notify up front, a condition variable will probably give you better flexibility.</p>
-<h2 id="how-about-the-inverse-case">How about the inverse case?</h2>
+<h2 id="how-about-the-inverse-case"><!-- raw HTML omitted -->2.2<!-- raw HTML omitted --> How about the inverse case?</h2>
 <p>Instead, suppose now that we are the notifiee, and do not know ahead of time who may notify us. In such a case, channels do work here, because <strong>we only need to be notified/consumed once</strong>. For example,</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">event</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">struct</span>{},<span style="color:#ae81ff">0</span>)
 <span style="color:#75715e">// notifier goroutine
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>(){
     <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">event</span>
-	<span style="color:#a6e22e">do_something</span>
-}
+    <span style="color:#a6e22e">do_something</span>
+}()
 
 <span style="color:#75715e">// anybody in the future
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>(){
-	<span style="color:#a6e22e">do_random_stuff_for_x_seconds</span>()
-	<span style="color:#a6e22e">event</span><span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">struct</span>{}
-}
+    <span style="color:#a6e22e">do_random_stuff_for_x_seconds</span>()
+    <span style="color:#a6e22e">event</span><span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">struct</span>{}
+}()
 
 <span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>(){
-	<span style="color:#a6e22e">do_random_stuff_for_y_seconds</span>()
-	<span style="color:#a6e22e">event</span><span style="color:#f92672">&lt;-</span><span style="color:#66d9ef">struct</span>{}
-}
+    <span style="color:#a6e22e">do_random_stuff_for_y_seconds</span>()
+    <span style="color:#a6e22e">event</span><span style="color:#f92672">&lt;-</span><span style="color:#66d9ef">struct</span>{}
+}()
 <span style="color:#a6e22e">etc</span><span style="color:#f92672">...</span>
 </code></pre></div><p>(Though one may want to add an additional <code>select</code> statement along with a timeout so the goroutines don&rsquo;t leak)</p>
-<h1 id="example-of-when-we-would-want-to-consume-plus-block-streams">Example of when we would want to Consume + Block: Streams</h1>
+<h1 id="example-of-when-we-would-want-to-consume-plus-block-streams"><!-- raw HTML omitted -->3<!-- raw HTML omitted --> Example of when we would want to Consume + Block: Streams:</h1>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">sq</span>(<span style="color:#a6e22e">in</span> <span style="color:#f92672">&lt;-</span><span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">int</span>) <span style="color:#f92672">&lt;-</span><span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">int</span> {
     <span style="color:#a6e22e">out</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">int</span>)
     <span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>() {
@@ -265,97 +264,93 @@
 <li>synchronization of threads</li>
 </ul>
 <p>The reason we want blocking here is because otherwise, the sequence cannot be lazily generated. Additionally, channels allow us to not have raw pointers and semaphores floating around in our codebase, which is a huge gain in writing correct code. Another thing that I would like to note is that because the mutex is not inside a class, its guarantee is only &ldquo;opt in&rdquo;. Namely, the mutex code runs the danger of someone not blocking on <code>sq_p</code> and just reading from <code>sq_out</code> directly. With a channel, this cannot happen. Furthermore, one can specify only read/write &ldquo;facade&rdquo;(by making the return type of the channel <code>&lt;-ch</code> or <code>ch&lt;-</code>) of the channel, whereas with a mutex, one technically has both read and write access to the underlying resource</p>
-<h1 id="channels-often-come-with-a-level-of-indirection">Channels Often Come with a Level of Indirection</h1>
-<h2 id="tee-channel">Tee Channel</h2>
+<h1 id="channels-often-come-with-a-level-of-indirection"><!-- raw HTML omitted -->4<!-- raw HTML omitted --> Channels Often Come with a Level of Indirection:</h1>
+<h2 id="tee-channel"><!-- raw HTML omitted -->4.1<!-- raw HTML omitted --> Tee Channel</h2>
 <p>(Note: This example was more or less taken from &ldquo;Concurrency in Go&rdquo; by  Katherine Cox-Buday, except for simplicity I removed the code to handle the goroutine leak)</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">tee</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">in</span> <span style="color:#f92672">&lt;-</span><span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">interface</span>{},) (<span style="color:#f92672">&lt;-</span><span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">interface</span>{}, <span style="color:#f92672">&lt;-</span><span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">interface</span>{}) {
-<span style="color:#a6e22e">out1</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">interface</span>{})
-<span style="color:#a6e22e">out2</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">interface</span>{})
-<span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>() {
-<span style="color:#66d9ef">defer</span> close(<span style="color:#a6e22e">out1</span>)
-<span style="color:#66d9ef">defer</span> close(<span style="color:#a6e22e">out2</span>)
-<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">val</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">in</span> {
-    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">out1</span>, <span style="color:#a6e22e">out2</span> = <span style="color:#a6e22e">out1</span>, <span style="color:#a6e22e">out2</span>
-    <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#ae81ff">2</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
-        <span style="color:#66d9ef">select</span> {
-        <span style="color:#66d9ef">case</span> <span style="color:#a6e22e">out1</span><span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">val</span>:
-            <span style="color:#a6e22e">out1</span> = <span style="color:#66d9ef">nil</span>
-        <span style="color:#66d9ef">case</span> <span style="color:#a6e22e">out2</span><span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">val</span>:
-            <span style="color:#a6e22e">out2</span> = <span style="color:#66d9ef">nil</span>
+    <span style="color:#a6e22e">out1</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">interface</span>{})
+    <span style="color:#a6e22e">out2</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">interface</span>{})
+    <span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>() {
+        <span style="color:#66d9ef">defer</span> close(<span style="color:#a6e22e">out1</span>)
+        <span style="color:#66d9ef">defer</span> close(<span style="color:#a6e22e">out2</span>)
+        <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">val</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">in</span> {
+            <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">out1</span>, <span style="color:#a6e22e">out2</span> = <span style="color:#a6e22e">out1</span>, <span style="color:#a6e22e">out2</span>
+            <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#ae81ff">2</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+                <span style="color:#66d9ef">select</span> {
+                <span style="color:#66d9ef">case</span> <span style="color:#a6e22e">out1</span><span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">val</span>:
+                    <span style="color:#a6e22e">out1</span> = <span style="color:#66d9ef">nil</span>
+                <span style="color:#66d9ef">case</span> <span style="color:#a6e22e">out2</span><span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">val</span>:
+                    <span style="color:#a6e22e">out2</span> = <span style="color:#66d9ef">nil</span>
+                }
+            }
         }
-    }
+    }()
+    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">out1</span>, <span style="color:#a6e22e">out2</span>
 }
-}()
-<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">out1</span>, <span style="color:#a6e22e">out2</span>
-}
-<span style="color:#75715e">// Usage
-</span><span style="color:#75715e"></span><span style="color:#a6e22e">value</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">out1</span>
 </code></pre></div><p>vs Mutex Implementation</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// NOTE: For this implementation, we will use closures to avoid dealing with raw memory
 </span><span style="color:#75715e"></span><span style="color:#a6e22e">tee</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">in</span> <span style="color:#f92672">&lt;-</span><span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">int</span>) (<span style="color:#66d9ef">func</span>() (<span style="color:#66d9ef">int</span>,<span style="color:#66d9ef">bool</span>), <span style="color:#66d9ef">func</span>() (<span style="color:#66d9ef">int</span>,<span style="color:#66d9ef">bool</span>)) {
-<span style="color:#a6e22e">mu</span> = <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">Sync</span>.<span style="color:#a6e22e">Mutex</span>{}
-<span style="color:#a6e22e">c1</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">NewCond</span>(<span style="color:#a6e22e">mu</span>)
-<span style="color:#a6e22e">c2</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">NewCond</span>(<span style="color:#a6e22e">mu</span>)
-<span style="color:#a6e22e">handle1_status</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">false</span>
-<span style="color:#a6e22e">handle2_status</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">false</span>
-<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">val</span> <span style="color:#66d9ef">int</span>
-<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">done</span> <span style="color:#66d9ef">bool</span>
+    <span style="color:#a6e22e">mu</span> = <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">Sync</span>.<span style="color:#a6e22e">Mutex</span>{}
+    <span style="color:#a6e22e">c1</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">NewCond</span>(<span style="color:#a6e22e">mu</span>)
+    <span style="color:#a6e22e">c2</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">NewCond</span>(<span style="color:#a6e22e">mu</span>)
+    <span style="color:#a6e22e">handle1_status</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">false</span>
+    <span style="color:#a6e22e">handle2_status</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">false</span>
+    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">val</span> <span style="color:#66d9ef">int</span>
+    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">done</span> <span style="color:#66d9ef">bool</span>
 
-<span style="color:#a6e22e">handle1</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">func</span>(){
-<span style="color:#a6e22e">mu</span>.<span style="color:#a6e22e">Lock</span>()
-<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">mu</span>.<span style="color:#a6e22e">UnLock</span>()
-<span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">done</span>){<span style="color:#66d9ef">return</span> (<span style="color:#ae81ff">0</span>,<span style="color:#a6e22e">done</span>)}
-<span style="color:#a6e22e">while</span> (<span style="color:#a6e22e">handle1_status</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">true</span>){<span style="color:#a6e22e">c1</span>.<span style="color:#a6e22e">Wait</span>()}
-<span style="color:#a6e22e">handle1_status</span> = <span style="color:#66d9ef">true</span>
+    <span style="color:#a6e22e">handle1</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">func</span>(){
+        <span style="color:#a6e22e">mu</span>.<span style="color:#a6e22e">Lock</span>()
+        <span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">mu</span>.<span style="color:#a6e22e">UnLock</span>()
+        <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">done</span>){<span style="color:#66d9ef">return</span> (<span style="color:#ae81ff">0</span>,<span style="color:#a6e22e">done</span>)}
+        <span style="color:#a6e22e">while</span> (<span style="color:#a6e22e">handle1_status</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">true</span>){<span style="color:#a6e22e">c1</span>.<span style="color:#a6e22e">Wait</span>()}
+        <span style="color:#a6e22e">handle1_status</span> = <span style="color:#66d9ef">true</span>
 
-<span style="color:#75715e">// Case 1: we are first to grab
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">handle2_status</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">false</span>){
-    <span style="color:#a6e22e">val</span>,<span style="color:#a6e22e">done</span> <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">in</span>
-    <span style="color:#a6e22e">local_val</span> = <span style="color:#a6e22e">val</span>
-    <span style="color:#a6e22e">local_done</span> = <span style="color:#a6e22e">done</span>
-    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">local_val</span>,<span style="color:#a6e22e">local_done</span>
-}
-<span style="color:#75715e">// Case 2: other handle has already grabbed. If so, reset
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">else</span> {
-    <span style="color:#a6e22e">local_val</span> = <span style="color:#a6e22e">val</span><span style="color:#75715e">// in case value changes during return
-</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">local_done</span> = <span style="color:#a6e22e">done</span>
-    <span style="color:#a6e22e">handle1_status</span> = <span style="color:#66d9ef">false</span>
-    <span style="color:#a6e22e">handle2_status</span> = <span style="color:#66d9ef">false</span>
-    <span style="color:#a6e22e">c2</span>.<span style="color:#a6e22e">signal</span>()
-    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">local_val</span>,<span style="color:#a6e22e">local_done</span>
-}
-}
-<span style="color:#a6e22e">handle2</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">func</span>(){
-<span style="color:#a6e22e">mu</span>.<span style="color:#a6e22e">Lock</span>()
-<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">mu</span>.<span style="color:#a6e22e">UnLock</span>()
-<span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">done</span>){<span style="color:#66d9ef">return</span> (<span style="color:#ae81ff">0</span>,<span style="color:#a6e22e">done</span>)}
-<span style="color:#a6e22e">while</span> (<span style="color:#a6e22e">handle2_status</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">true</span>){<span style="color:#a6e22e">c2</span>.<span style="color:#a6e22e">Wait</span>()}
-<span style="color:#a6e22e">handle2_status</span> = <span style="color:#66d9ef">true</span>
+        <span style="color:#75715e">// Case 1: we are first to grab
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">handle2_status</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">false</span>){
+            <span style="color:#a6e22e">val</span>,<span style="color:#a6e22e">done</span> <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">in</span>
+            <span style="color:#a6e22e">local_val</span> = <span style="color:#a6e22e">val</span>
+            <span style="color:#a6e22e">local_done</span> = <span style="color:#a6e22e">done</span>
+            <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">local_val</span>,<span style="color:#a6e22e">local_done</span>
+        }
+        <span style="color:#75715e">// Case 2: other handle has already grabbed. If so, reset
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">else</span> {
+            <span style="color:#a6e22e">local_val</span> = <span style="color:#a6e22e">val</span><span style="color:#75715e">// in case value changes during return
+</span><span style="color:#75715e"></span>            <span style="color:#a6e22e">local_done</span> = <span style="color:#a6e22e">done</span>
+            <span style="color:#a6e22e">handle1_status</span> = <span style="color:#66d9ef">false</span>
+            <span style="color:#a6e22e">handle2_status</span> = <span style="color:#66d9ef">false</span>
+            <span style="color:#a6e22e">c2</span>.<span style="color:#a6e22e">signal</span>()
+            <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">local_val</span>,<span style="color:#a6e22e">local_done</span>
+        }
+    }
+    <span style="color:#a6e22e">handle2</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">func</span>(){
+        <span style="color:#a6e22e">mu</span>.<span style="color:#a6e22e">Lock</span>()
+        <span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">mu</span>.<span style="color:#a6e22e">UnLock</span>()
+        <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">done</span>){<span style="color:#66d9ef">return</span> (<span style="color:#ae81ff">0</span>,<span style="color:#a6e22e">done</span>)}
+        <span style="color:#a6e22e">while</span> (<span style="color:#a6e22e">handle2_status</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">true</span>){<span style="color:#a6e22e">c2</span>.<span style="color:#a6e22e">Wait</span>()}
+        <span style="color:#a6e22e">handle2_status</span> = <span style="color:#66d9ef">true</span>
 
-<span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">handle1_status</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">false</span>){
-    <span style="color:#a6e22e">val</span> <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">in</span>
-    <span style="color:#a6e22e">local_val</span> = <span style="color:#a6e22e">val</span>
-    <span style="color:#a6e22e">local_done</span> = <span style="color:#a6e22e">done</span>
-    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">local_val</span>,<span style="color:#a6e22e">local_done</span>
+        <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">handle1_status</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">false</span>){
+            <span style="color:#a6e22e">val</span> <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">in</span>
+            <span style="color:#a6e22e">local_val</span> = <span style="color:#a6e22e">val</span>
+            <span style="color:#a6e22e">local_done</span> = <span style="color:#a6e22e">done</span>
+            <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">local_val</span>,<span style="color:#a6e22e">local_done</span>
+        }
+        <span style="color:#66d9ef">else</span> {
+            <span style="color:#a6e22e">local_val</span> = <span style="color:#a6e22e">val</span>
+            <span style="color:#a6e22e">local_done</span> = <span style="color:#a6e22e">done</span>
+            <span style="color:#a6e22e">handle1_status</span> = <span style="color:#66d9ef">false</span>
+            <span style="color:#a6e22e">handle2_status</span> = <span style="color:#66d9ef">false</span>
+            <span style="color:#a6e22e">c1</span>.<span style="color:#a6e22e">signal</span>()
+            <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">local_val</span>,<span style="color:#a6e22e">local_done</span>
+        }
+    }
+    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">handle1</span>, <span style="color:#a6e22e">handle2</span>
 }
-<span style="color:#66d9ef">else</span> {
-    <span style="color:#a6e22e">local_val</span> = <span style="color:#a6e22e">val</span>
-    <span style="color:#a6e22e">local_done</span> = <span style="color:#a6e22e">done</span>
-    <span style="color:#a6e22e">handle1_status</span> = <span style="color:#66d9ef">false</span>
-    <span style="color:#a6e22e">handle2_status</span> = <span style="color:#66d9ef">false</span>
-    <span style="color:#a6e22e">c1</span>.<span style="color:#a6e22e">signal</span>()
-    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">local_val</span>,<span style="color:#a6e22e">local_done</span>
-}
-}
-<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">handle1</span>, <span style="color:#a6e22e">handle2</span>
-}
-<span style="color:#75715e">// Usage
-</span><span style="color:#75715e"></span><span style="color:#a6e22e">handle1</span>()
 </code></pre></div><p>First, the most striking difference is in the responsibilities of the calling function(<code>value &lt;-out1</code> vs <code>handle1()</code>). The channel implementation is <strong>centralized</strong>, so both <code>out1</code> and <code>out2</code> get routed/delegated to the same goroutine. Once there, the goroutine decides on the next state. In contrast, <code>handle1</code> and <code>handle2</code> each decide by themselves what the next state will be, by &ldquo;peering&rdquo; into the other&rsquo;s state and making a decision based on that. As such, there is a lot of repeat code that differs only in naming of &ldquo;something1&rdquo; vs &ldquo;something2&rdquo;<sup id="fnref:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">2</a></sup></p>
-<p>Furthermore, the addition of another agent allows both control flow and state to be preserved between function calls(in other words, properties of a coroutine). The mutex implementation can only communicate to other threads by changing state while holding the lock. But on each subsequent function call, the &ldquo;code&rdquo; it calls will be the same. In contrast, the &ldquo;code&rdquo; that gets called during a channel send is dependent on the section of code it last left off at. To sum it up, this means there will be less <code>if</code> dispatches based on state, as the state has been &ldquo;encoded&rdquo; into the control flow.</p>
-<p>Another aspect of that the level of indirection buys us is the ability to <strong>selectively listen to a channel</strong> (by temporarily setting the reference to <code>nil</code>). Whereas with a mutex, everyone has an equal chance to grab the lock, and thus the while-condition variable pattern in the mutex implementation: as sometimes it may not be the right time to grab, but the handler has no way of knowing that until it comes in, grab the lock, and inspect state.</p>
+<p>Furthermore, the addition of another agent allows both control flow and state to be preserved between function calls(in other words, properties of a coroutine). The mutex implementation can only communicate to other threads by changing state while holding the lock. But on <strong>each subsequent function call, the &ldquo;code&rdquo; it calls will be the same</strong>. In contrast, the &ldquo;code&rdquo; that gets called during a channel send is dependent on the section of code it last left off at. To sum it up, this means there will be less <code>if</code> dispatches based on state, as the state has been &ldquo;encoded&rdquo; into the control flow.</p>
+<p>Another aspect of that the level of indirection buys us is the ability to selectively listen to a channel (by temporarily setting the reference to <code>nil</code>). Whereas with a mutex, everyone has an equal chance to grab the lock, and thus the while-condition variable pattern in the mutex implementation: as sometimes it may not be the right time to grab, but the <strong>handler has no way of knowing that until it comes in, grab the lock, and inspect state</strong>.</p>
 <p>Finally, the local variables in the mutex implementation mostly stems from the lack of encapsulation: When you send a value along a channel, you are making a copy of the value too.</p>
-<h2 id="consequence-of-indirection">Consequence of Indirection</h2>
+<h2 id="consequence-of-indirection"><!-- raw HTML omitted -->4.2<!-- raw HTML omitted --> Consequence of Indirection</h2>
 <p>Consider the following example, where we implement a synchronized object that produces multiples of 3.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// Inside x&#39;s &#34;Constructor&#34;
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>(){
@@ -377,11 +372,11 @@
 <span style="color:#a6e22e">x</span>.<span style="color:#a6e22e">state</span> <span style="color:#f92672">+=</span> <span style="color:#ae81ff">3</span>
 <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">old_state</span>
 }
-</code></pre></div><p>Functionally, they are more or less the same, though the channel implementation is a bit wordier from needing a send and receive channel<sup id="fnref:3"><a href="#fn:3" class="footnote-ref" role="doc-noteref">3</a></sup>. The main issue with the channel implementation, however, is that it is essentially a resource leak, as the goroutine will live indefinitely. This can be remedied, though it is somewhat tedious, as destructors in Go have to be explicitly called, compared to Rust/C++ where the compiler will generate the call for you.</p>
-<h1 id="final-remarks">Final Remarks</h1>
+</code></pre></div><p>Functionally, they are more or less the same, though the channel implementation is a bit wordier from needing a send and receive channel<sup id="fnref:3"><a href="#fn:3" class="footnote-ref" role="doc-noteref">3</a></sup>. The main issue with the channel implementation, however, is that it is essentially a memory leak, as the goroutine will live indefinitely. This can be remedied, though it is somewhat tedious, as destructors/&ldquo;done channels&rdquo; in Go have to be explicitly called(just like <code>free</code> in C), compared to C++/Rust where the compiler will generate the call for you. <sup id="fnref:4"><a href="#fn:4" class="footnote-ref" role="doc-noteref">4</a></sup>.</p>
+<h1 id="final-remarks"><!-- raw HTML omitted -->5<!-- raw HTML omitted --> Final Remarks</h1>
 <p>So now that we know about some of the properties of channels, they can hopefully help us make more informed decisions on when to use them. For example, channels are not that great of a choice for broadcasting, as their consumption nature requires us to essentially implement a pub-sub mechanism, and their blocking nature further hinders us from concurrently notifying all listeners/may hang if a listener doesn&rsquo;t respond.</p>
 <p>Queues, on the other hand, are consuming and so channels will probably be a better idea for anything that is stream-like. Furthermore, channels are first class citizens when it comes to for loop termination and select statement(and in <code>select's</code> case, the only citizen).</p>
-<p>Finally, through their ability to preserve control flow, channels allow us to better express complex synchronization requirements. But with all that said, unless your situation is very stream-like, I personally would suggest using a mutex initially. That is because mutexes allow you to do any type of operation on the state, whereas you would need to create a new channel to put in the <code>select</code> statement of the &ldquo;centralized&rdquo; goroutine. (So instead of one blocking mutex, you wil have 2-4 blocking channels). Also, I just find channels sometimes lacking in their ability to  &ldquo;express intent&rdquo; that a mutex or condition variable gives. When reading the type signature <code>chan int</code>, how can I tell if it is being used as a future, mutex, or just data transport? In these situations, <strong>it is the channel that is &ldquo;low level&rdquo;, not the mutex</strong>!</p>
+<p>Finally, through their ability to preserve control flow, channels allow us to better express complex synchronization requirements. But with all that said, unless your situation is very stream-like, I personally would suggest using a mutex initially. That is because mutexes allow you to do any type of operation on the state, whereas you would need to create a new channel to put in the <code>select</code> statement of the &ldquo;centralized&rdquo; goroutine. So instead of one blocking mutex, you wil have 2-4 blocking channels or will need to typecast from <code>interface{}</code>. Also, I just find channels sometimes lacking in their ability to  &ldquo;express intent&rdquo; that a mutex or condition variable gives. When reading the type signature <code>chan int</code>, how can I tell if it is being used as a future, mutex, or just data transport? In these situations, <strong>it is the channel that is &ldquo;low level&rdquo;, not the mutex</strong>!</p>
 <section class="footnotes" role="doc-endnotes">
 <hr>
 <ol>
@@ -393,6 +388,9 @@
 </li>
 <li id="fn:3" role="doc-endnote">
 <p>As otherwise, values will be precomputed, which may or may not be desirable&#160;<a href="#fnref:3" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:4" role="doc-endnote">
+<p>if you have defined a destructor/Drop trait&#160;<a href="#fnref:4" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
 </li>
 </ol>
 </section>
@@ -423,7 +421,7 @@
           <line x1="16" y1="17" x2="8" y2="17"></line>
           <polyline points="10 9 9 9 8 9"></polyline>
         </svg>
-        2031 Words
+        2040 Words
       </p>
 
       <p>

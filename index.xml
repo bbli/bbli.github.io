@@ -14,7 +14,7 @@
       <pubDate>Mon, 31 May 2021 00:00:00 -0700</pubDate>
       
       <guid>https://bbli.github.io/posts/go_channel_properties/</guid>
-      <description>Consequences of Blocking Synchronization  Cannot &amp;ldquo;just&amp;rdquo; signal Making Channels Non-Blocking + Select   Consequences of Consumption:  Cannot be easily used as a broadcast mechanism How about the inverse case?   Example of when we would want to Consume + Block: Streams Channels Often Come with a Level of Indirection  Tee Channel Consequence of Indirection   Final Remarks  This blog post is a summary of an investigation I did regarding channel vs mutex usage, as most resources I found would just present examples side by side without talking about the properties of mutexes/channels that made one implementation better than other(Or in other words, the why).</description>
+      <description>1Consequences of Blocking Synchronization:  1.1Making Channels Non-Blocking + Select   2Consequences of Consumption:  2.1Cannot be easily used as a broadcast mechanism 2.2How about the inverse case?   3Example of when we would want to Consume + Block: Streams: 4Channels Often Come with a Level of Indirection:  4.1Tee Channel 4.2Consequence of Indirection   5Final Remarks  This blog post is a summary of an investigation I did regarding channel vs mutex usage, as most resources I found would just present examples side by side without talking about the properties of mutexes/channels that made one implementation better than other(Or in other words, the why).</description>
     </item>
     
     <item>
