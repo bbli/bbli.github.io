@@ -1,150 +1,277 @@
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="ie=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="author" content="[Benson Li]">
-<meta name="description" content="1Consequences of Blocking Synchronization:  1.1Making Channels Non-Blocking &#43; Select   2Consequences of Consumption:  2.1Cannot be easily used as a broadcast mechanism 2.2How about the inverse case?   3Example of when we would want to Consume &#43; Block: Streams: 4Channels Often Come with a Level of Indirection:  4.1Tee Channel 4.2Consequence of Indirection   5Final Remarks  This blog post is a summary of an investigation I did regarding channel vs mutex usage, as most resources I found would just present examples side by side without talking about the properties of mutexes/channels that made one implementation better than other(Or in other words, the why)." />
-<meta name="keywords" content="homepage, blog, go, software-design" />
-<meta name="robots" content="noodp" />
-<meta name="theme-color" content="" />
-<link rel="canonical" href="https://bbli.github.io/posts/go_channel_properties/" />
-
-
-    <title>
-        
-            Properties of Go Channels :: Benson Li&#39;s Blog 
-        
-    </title>
-
-
-
-<link href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css" rel="stylesheet"
-    type="text/css">
-
-
-
-<link rel="stylesheet" href="/main.36cfd194524cdd1a655614bf49125c8baedb7205a3cdb6d2e8cedf34b9c2fcc9.css">
-
-
-
-
-
-
-<meta itemprop="name" content="Properties of Go Channels">
-<meta itemprop="description" content="1Consequences of Blocking Synchronization:  1.1Making Channels Non-Blocking &#43; Select   2Consequences of Consumption:  2.1Cannot be easily used as a broadcast mechanism 2.2How about the inverse case?   3Example of when we would want to Consume &#43; Block: Streams: 4Channels Often Come with a Level of Indirection:  4.1Tee Channel 4.2Consequence of Indirection   5Final Remarks  This blog post is a summary of an investigation I did regarding channel vs mutex usage, as most resources I found would just present examples side by side without talking about the properties of mutexes/channels that made one implementation better than other(Or in other words, the why)."><meta itemprop="datePublished" content="2021-05-31T00:00:00-07:00" />
-<meta itemprop="dateModified" content="2021-05-31T00:00:00-07:00" />
-<meta itemprop="wordCount" content="2114"><meta itemprop="image" content="https://bbli.github.io"/>
-<meta itemprop="keywords" content="go,software-design," />
-<meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="https://bbli.github.io"/>
-
-<meta name="twitter:title" content="Properties of Go Channels"/>
-<meta name="twitter:description" content="1Consequences of Blocking Synchronization:  1.1Making Channels Non-Blocking &#43; Select   2Consequences of Consumption:  2.1Cannot be easily used as a broadcast mechanism 2.2How about the inverse case?   3Example of when we would want to Consume &#43; Block: Streams: 4Channels Often Come with a Level of Indirection:  4.1Tee Channel 4.2Consequence of Indirection   5Final Remarks  This blog post is a summary of an investigation I did regarding channel vs mutex usage, as most resources I found would just present examples side by side without talking about the properties of mutexes/channels that made one implementation better than other(Or in other words, the why)."/>
-
-
-
-
-
-
-
-
-    <meta property="article:published_time" content="2021-05-31 00:00:00 -0700 PDT" />
-
-
-
-
-
-
-
-
-    </head>
-
+<html lang="en" itemscope itemtype="http://schema.org/WebPage">
+  <head>
     
-        <body>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+  <title>Properties of Go Channels - Benson Li&#39;s Blog</title>
+  <meta name="description" content="1Consequences of Blocking Synchronization:  1.1Making Channels Non-Blocking &#43; Select   2Consequences of Consumption:  2.1Cannot be easily used as a broadcast mechanism 2.2How about the inverse case?   3Example of when we would want to Consume &#43; Block: Streams: 4Channels Often Come with a Level of Indirection:  4.1Tee Channel 4.2Consequence of Indirection   5Final Remarks  This blog post is a summary of an investigation I did regarding channel vs mutex usage, as most resources I found would just present examples side by side without talking about the properties of mutexes/channels that made one implementation better than other(Or in other words, the why).">
+  <meta name="author" content="Benson Li"/><script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "WebSite",
+    "name": "Benson Li\u0027s Blog",
     
-    
-        <div class="container">
-            <header class="header">
-    <span class="header__inner">
-        <a href="/" style="text-decoration: none;">
-    <div class="logo">
-        
-            <span class="logo__mark">&gt;</span>
-            <span class="logo__text">Home</span>
-            <span class="logo__cursor" style=
-                  "
-                   
-                   ">
-            </span>
-        
+    "url": "https:\/\/bbli.github.io"
+}
+</script><script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "Organization",
+  "name": "",
+  "url": "https:\/\/bbli.github.io"
+  
+  
+  
+  
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [{
+        "@type": "ListItem",
+        "position": 1,
+        "item": {
+          "@id": "https:\/\/bbli.github.io",
+          "name": "home"
+        }
+    },{
+        "@type": "ListItem",
+        "position": 3,
+        "item": {
+          "@id": "https:\/\/bbli.github.io\/posts\/go_channel_properties\/",
+          "name": "Properties of go channels"
+        }
+    }]
+}
+</script><script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "Article",
+  "author": {
+    "name" : "Benson Li"
+  },
+  "headline": "Properties of Go Channels",
+  "description" : "1Consequences of Blocking Synchronization:  1.1Making Channels Non-Blocking \u002b Select   2Consequences of Consumption:  2.1Cannot be easily used as a broadcast mechanism 2.2How about the inverse case?   3Example of when we would want to Consume \u002b Block: Streams: 4Channels Often Come with a Level of Indirection:  4.1Tee Channel 4.2Consequence of Indirection   5Final Remarks  This blog post is a summary of an investigation I did regarding channel vs mutex usage, as most resources I found would just present examples side by side without talking about the properties of mutexes\/channels that made one implementation better than other(Or in other words, the why).",
+  "inLanguage" : "en",
+  "wordCount":  2280 ,
+  "datePublished" : "2021-05-31T00:00:00",
+  "dateModified" : "2021-05-31T00:00:00",
+  "image" : "https:\/\/bbli.github.io\/img\/avatar-icon.png",
+  "keywords" : [ "go, software-design" ],
+  "mainEntityOfPage" : "https:\/\/bbli.github.io\/posts\/go_channel_properties\/",
+  "publisher" : {
+    "@type": "Organization",
+    "name" : "https:\/\/bbli.github.io",
+    "logo" : {
+        "@type" : "ImageObject",
+        "url" : "https:\/\/bbli.github.io\/img\/avatar-icon.png",
+        "height" :  60 ,
+        "width" :  60
+    }
+  }
+}
+</script>
+
+<meta property="og:title" content="Properties of Go Channels" />
+<meta property="og:description" content="1Consequences of Blocking Synchronization:  1.1Making Channels Non-Blocking &#43; Select   2Consequences of Consumption:  2.1Cannot be easily used as a broadcast mechanism 2.2How about the inverse case?   3Example of when we would want to Consume &#43; Block: Streams: 4Channels Often Come with a Level of Indirection:  4.1Tee Channel 4.2Consequence of Indirection   5Final Remarks  This blog post is a summary of an investigation I did regarding channel vs mutex usage, as most resources I found would just present examples side by side without talking about the properties of mutexes/channels that made one implementation better than other(Or in other words, the why).">
+<meta property="og:image" content="https://bbli.github.io/img/avatar-icon.png" />
+<meta property="og:url" content="https://bbli.github.io/posts/go_channel_properties/" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Benson Li&#39;s Blog" />
+
+  <meta name="twitter:title" content="Properties of Go Channels" />
+  <meta name="twitter:description" content="1Consequences of Blocking Synchronization:  1.1Making Channels Non-Blocking &#43; Select   2Consequences of Consumption:  2.1Cannot be easily used as a broadcast mechanism 2.2How about the inverse case? …">
+  <meta name="twitter:image" content="https://bbli.github.io/img/avatar-icon.png" />
+  <meta name="twitter:card" content="summary" />
+  <link href='https://bbli.github.io/img/favicon.ico' rel='icon' type='image/x-icon'/>
+  <meta name="generator" content="Hugo 0.86.0" />
+  <link rel="alternate" href="https://bbli.github.io/index.xml" type="application/rss+xml" title="Benson Li&#39;s Blog"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"><link rel="stylesheet" href="https://bbli.github.io/css/main.css" /><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" /><link rel="stylesheet" href="https://bbli.github.io/css/syntax.css" /><link rel="stylesheet" href="https://bbli.github.io/css/codeblock.css" /><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe.min.css" integrity="sha384-h/L2W9KefUClHWaty3SLE5F/qvc4djlyR4qY3NUV5HGQBBW7stbcfff1+I/vmsHh" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/default-skin/default-skin.min.css" integrity="sha384-iD0dNku6PYSIQLyfTOpB06F2KCZJAKLOThS5HRe8b3ibhdEQ6eKsFf/EeFxdOt5R" crossorigin="anonymous">
+
+
+
+  </head>
+  <body>
+    <nav class="navbar navbar-default navbar-fixed-top navbar-custom">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#main-navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="https://bbli.github.io">Benson Li&#39;s Blog</a>
     </div>
-</a>
 
+    <div class="collapse navbar-collapse" id="main-navbar">
+      <ul class="nav navbar-nav navbar-right">
+        
+          
+            <li>
+              <a title="Blog" href="/">Blog</a>
+            </li>
+          
+        
+          
+            <li>
+              <a title="About" href="/about">About</a>
+            </li>
+          
+        
+          
+            <li>
+              <a title="Tags" href="/tags">Tags</a>
+            </li>
+          
+        
 
-        <span class="header__right">
-            
-                <nav class="menu">
-    <ul class="menu__inner"><li><a href="/posts">Posts</a></li><li><a href="/tags">Tags</a></li><li><a href="/about">About</a></li>
-    </ul>
+        
+
+        
+      </ul>
+    </div>
+
+    
+      <div class="avatar-container">
+        <div class="avatar-img-border">
+          <a title="Benson Li&#39;s Blog" href="https://bbli.github.io">
+            <img class="avatar-img" src="https://bbli.github.io/img/avatar-icon.png" alt="Benson Li&#39;s Blog" />
+          </a>
+        </div>
+      </div>
+    
+
+  </div>
 </nav>
 
-                <span class="menu-trigger">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                        <path d="M0 0h24v24H0z" fill="none"/>
-                        <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
-                    </svg>
-                </span>
-            
-                <span class="theme-toggle not-selectable"><svg class="theme-toggler" width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-   <path d="M22 41C32.4934 41 41 32.4934 41 22C41 11.5066 32.4934 3 22
-   3C11.5066 3 3 11.5066 3 22C3 32.4934 11.5066 41 22 41ZM7 22C7
-   13.7157 13.7157 7 22 7V37C13.7157 37 7 30.2843 7 22Z"/>
- </svg></span>
-        </span>
-    </span>
-</header>
 
 
-            <div class="content">
-                
-  <main class="post">
 
-    <div class="post-info">
-      <p style="font-size:1.05rem">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-clock">
-          <circle cx="12" cy="12" r="10"></circle>
-          <polyline points="12 6 12 12 16 14"></polyline>
-        </svg>
-        10 minutes
-
-        
-      
-    <p style="font-size:1.05rem">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg>
-
-        <span class="tag"><a href="https://bbli.github.io/tags/go/">go</a></span>
-        <span class="tag"><a href="https://bbli.github.io/tags/software-design/">software-design</a></span>
-        
-    </p>
+    
 
 
-      </p>
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
     </div>
-
-    <article>
-      <h1 class="post-title">
-        <a href="https://bbli.github.io/posts/go_channel_properties/">Properties of Go Channels</a>
-      </h1>
-
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
       
-
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
       
-
       
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
 
-      <div class="post-content">
+
+  
+  
+  
+
+
+
+
+
+
+  
+
+  <header class="header-section ">
+    
+    <div class="intro-header no-img">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+            <div class="posts-heading">
+              
+                <h1>Properties of Go Channels</h1>
+              
+              
+                <hr class="small">
+              
+              
+              
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+
+    
+<div class="container" role="main">
+  <div class="row">
+    <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+      <article role="main" class="blog-post">
+    <p class="post-meta">
+        <span class="post-meta">
+  
+  
+  <i class="fas fa-calendar"></i>&nbsp;Posted on May 31, 2021
+  
+  
+    &nbsp;|&nbsp;<i class="fas fa-clock"></i>&nbsp;11&nbsp;minutes
+  
+  
+    &nbsp;|&nbsp;<i class="fas fa-book"></i>&nbsp;2280&nbsp;words
+  
+  
+  
+</span>
+
+
+    </p>
+        
+          <div class="blog-tags">
+            
+              <a href="https://bbli.github.io/tags/go/">go</a>&nbsp;
+            
+              <a href="https://bbli.github.io/tags/software-design/">software-design</a>&nbsp;
+            
+          </div>
+        
+
         <!-- raw HTML omitted -->
 <!-- raw HTML omitted -->
 <!-- raw HTML omitted -->
@@ -177,87 +304,192 @@
 <h2 id="making-channels-non-blocking-plus-select"><!-- raw HTML omitted -->1.1<!-- raw HTML omitted --> Making Channels Non-Blocking + Select</h2>
 <p>One way to achieve non blocking channels is to create your channels with a &ldquo;buffer size&rdquo;(i.e <code>make(chan string,2)</code>). I am not a fan of this, as it breaks my ability to reason locally about code. This is because with a buffered channel, I cannot reason about whether the code in front of me will block or not, as that is dependent on the state of  the buffer, which can only be known at runtime. As jerf puts it in this <a href="https://news.ycombinator.com/item?id=16149856">Hacker News post</a>, buffered channels should mostly be used as a response to your traffic/backpressure, and not as an initial design decision.</p>
 <p>Another way would be to combine channels with the <code>select</code> statement. This runs the risk of not sending the message if we break out somewhere else in the for loop. Nevertheless, the <code>select</code> statement is still very powerful as <strong>by polling for the first response, it allows us to vary the degree to which we are blocking</strong>, from one channel to multiple channels to timeout and all the way to &ldquo;never&rdquo;, as shown below.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">for</span> {
-    <span style="color:#66d9ef">select</span>{<span style="color:#66d9ef">case</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">our_channel</span>: <span style="color:#66d9ef">break</span>; <span style="color:#66d9ef">default</span>:}
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="k">for</span> <span class="p">{</span>
+    <span class="k">select</span><span class="p">{</span><span class="k">case</span> <span class="o">&lt;-</span><span class="nx">our_channel</span><span class="p">:</span> <span class="k">break</span><span class="p">;</span> <span class="k">default</span><span class="p">:}</span>
 
-    <span style="color:#75715e">// do stuff until there is a receiver for our_channel
-</span><span style="color:#75715e"></span>}
-</code></pre></div><p>Lastly, use another level of indirection, aka</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// Instead of
-</span><span style="color:#75715e"></span><span style="color:#a6e22e">ch</span><span style="color:#f92672">&lt;-</span><span style="color:#e6db74">&#34;finished&#34;</span>
-<span style="color:#75715e">// do this
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">go</span> <span style="color:#a6e22e">fun</span>(){<span style="color:#a6e22e">ch</span><span style="color:#f92672">&lt;-</span><span style="color:#e6db74">&#34;finished&#34;</span>}()
-</code></pre></div><p>Downside is that if no one receives, we will have a memory leak/the unbounded lifetime perhaps can cause some bugs down the road</p>
+    <span class="c1">// do stuff until there is a receiver for our_channel
+</span><span class="c1"></span><span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>Lastly, use another level of indirection, aka</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// Instead of
+</span><span class="c1"></span><span class="nx">ch</span><span class="o">&lt;-</span><span class="s">&#34;finished&#34;</span>
+<span class="c1">// do this
+</span><span class="c1"></span><span class="k">go</span> <span class="nf">fun</span><span class="p">(){</span><span class="nx">ch</span><span class="o">&lt;-</span><span class="s">&#34;finished&#34;</span><span class="p">}()</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>Downside is that if no one receives, we will have a memory leak/the unbounded lifetime perhaps can cause some bugs down the road</p>
 <h1 id="consequences-of-consumption"><!-- raw HTML omitted -->2<!-- raw HTML omitted --> Consequences of Consumption:</h1>
 <h2 id="cannot-be-easily-used-as-a-broadcast-mechanism"><!-- raw HTML omitted -->2.1<!-- raw HTML omitted --> Cannot be easily used as a broadcast mechanism</h2>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// notifier goroutine
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>(){
-    <span style="color:#a6e22e">do_some_work</span>()
-    <span style="color:#a6e22e">work_done</span><span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">struct</span>{}
-}()
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// notifier goroutine
+</span><span class="c1"></span><span class="k">go</span> <span class="kd">func</span><span class="p">(){</span>
+    <span class="nf">do_some_work</span><span class="p">()</span>
+    <span class="nx">work_done</span><span class="o">&lt;-</span> <span class="kd">struct</span><span class="p">{}</span>
+<span class="p">}()</span>
 
-<span style="color:#75715e">// waiting goroutine 1
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>(){
-    <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">work_done</span>
-    <span style="color:#a6e22e">do_other_stuff_1</span>()
-}()
-<span style="color:#75715e">// waiting goroutine 2- one of these will receive the signal
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>(){
-    <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">work_done</span>
-    <span style="color:#a6e22e">do_other_stuff_2</span>()
-}()
-</code></pre></div><p>As the above code shows, although we can copy a channel so that multiple readers can listen to it, the sender will only send once and its value will be consumed by only one waiting goroutine. Now, one way to broadcast would be for the sender to hold a send channel for each of its notifiees. This has the disadvantage that the system is either &ldquo;closed&rdquo; to future participants, or we would need additional synchronization on a list data structure.</p>
+<span class="c1">// waiting goroutine 1
+</span><span class="c1"></span><span class="k">go</span> <span class="kd">func</span><span class="p">(){</span>
+    <span class="o">&lt;-</span><span class="nx">work_done</span>
+    <span class="nf">do_other_stuff_1</span><span class="p">()</span>
+<span class="p">}()</span>
+<span class="c1">// waiting goroutine 2- one of these will receive the signal
+</span><span class="c1"></span><span class="k">go</span> <span class="kd">func</span><span class="p">(){</span>
+    <span class="o">&lt;-</span><span class="nx">work_done</span>
+    <span class="nf">do_other_stuff_2</span><span class="p">()</span>
+<span class="p">}()</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>As the above code shows, although we can copy a channel so that multiple readers can listen to it, the sender will only send once and its value will be consumed by only one waiting goroutine. Now, one way to broadcast would be for the sender to hold a send channel for each of its notifiees. This has the disadvantage that the system is either &ldquo;closed&rdquo; to future participants, or we would need additional synchronization on a list data structure.</p>
 <p>Thus, unless you know who want to notify up front, a condition variable will probably give you better flexibility.</p>
 <h2 id="how-about-the-inverse-case"><!-- raw HTML omitted -->2.2<!-- raw HTML omitted --> How about the inverse case?</h2>
 <p>Instead, suppose now that we are the notifiee, and do not know ahead of time who may notify us. In such a case, channels do work here, because <strong>we only need to be notified/consumed once</strong>. For example,</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">event</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">struct</span>{},<span style="color:#ae81ff">0</span>)
-<span style="color:#75715e">// notifier goroutine
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>(){
-    <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">event</span>
-    <span style="color:#a6e22e">do_something</span>
-}()
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="nx">event</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kd">struct</span><span class="p">{},</span><span class="mi">0</span><span class="p">)</span>
+<span class="c1">// notifier goroutine
+</span><span class="c1"></span><span class="k">go</span> <span class="kd">func</span><span class="p">(){</span>
+    <span class="o">&lt;-</span><span class="nx">event</span>
+    <span class="nx">do_something</span>
+<span class="p">}()</span>
 
-<span style="color:#75715e">// anybody in the future
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>(){
-    <span style="color:#a6e22e">do_random_stuff_for_x_seconds</span>()
-    <span style="color:#a6e22e">event</span><span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">struct</span>{}
-}()
+<span class="c1">// anybody in the future
+</span><span class="c1"></span><span class="k">go</span> <span class="kd">func</span><span class="p">(){</span>
+    <span class="nf">do_random_stuff_for_x_seconds</span><span class="p">()</span>
+    <span class="nx">event</span><span class="o">&lt;-</span> <span class="kd">struct</span><span class="p">{}</span>
+<span class="p">}()</span>
 
-<span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>(){
-    <span style="color:#a6e22e">do_random_stuff_for_y_seconds</span>()
-    <span style="color:#a6e22e">event</span><span style="color:#f92672">&lt;-</span><span style="color:#66d9ef">struct</span>{}
-}()
-<span style="color:#a6e22e">etc</span><span style="color:#f92672">...</span>
-</code></pre></div><p>(Though one may want to add an additional <code>select</code> statement along with a timeout so the goroutines don&rsquo;t leak)</p>
+<span class="k">go</span> <span class="kd">func</span><span class="p">(){</span>
+    <span class="nf">do_random_stuff_for_y_seconds</span><span class="p">()</span>
+    <span class="nx">event</span><span class="o">&lt;-</span><span class="kd">struct</span><span class="p">{}</span>
+<span class="p">}()</span>
+<span class="nx">etc</span><span class="o">...</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>(Though one may want to add an additional <code>select</code> statement along with a timeout so the goroutines don&rsquo;t leak)</p>
 <h1 id="example-of-when-we-would-want-to-consume-plus-block-streams"><!-- raw HTML omitted -->3<!-- raw HTML omitted --> Example of when we would want to Consume + Block: Streams:</h1>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">sq</span>(<span style="color:#a6e22e">in</span> <span style="color:#f92672">&lt;-</span><span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">int</span>) <span style="color:#f92672">&lt;-</span><span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">int</span> {
-    <span style="color:#a6e22e">out</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">int</span>)
-    <span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>() {
-        <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">n</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">in</span> {
-            <span style="color:#a6e22e">out</span> <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">n</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">n</span>
-        }
-        close(<span style="color:#a6e22e">out</span>)
-    }()
-    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">out</span>
-}
-</code></pre></div><p>vs Mutex</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">sq</span>(<span style="color:#a6e22e">in_loc</span> <span style="color:#f92672">*</span><span style="color:#66d9ef">int</span>,<span style="color:#a6e22e">in_p</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Semaphore</span>, <span style="color:#a6e22e">in_w</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Semaphore</span>) (<span style="color:#f92672">*</span><span style="color:#a6e22e">Semaphore</span>,<span style="color:#f92672">*</span><span style="color:#66d9ef">int</span>){
-    <span style="color:#a6e22e">sq_out</span><span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#66d9ef">int</span>
-    <span style="color:#a6e22e">sq_p</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">Semaphore</span>{}
-    <span style="color:#a6e22e">sq_w</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">Semaphore</span>{}
-    <span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>(){
-        <span style="color:#66d9ef">for</span> {<span style="color:#75715e">// infinite loop so I don&#39;t want to create another variable+synchronization for communication
-</span><span style="color:#75715e"></span>            <span style="color:#a6e22e">in_p</span>.<span style="color:#a6e22e">wait</span>() <span style="color:#75715e">// wait for previous thread to produce the input
-</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">local</span> = <span style="color:#f92672">*</span><span style="color:#a6e22e">in_loc</span> <span style="color:#75715e">// read from memory the location the previous thread wrote to
-</span><span style="color:#75715e"></span>            <span style="color:#a6e22e">in_w</span>.<span style="color:#a6e22e">signal</span>() <span style="color:#75715e">// tell previous thread it can start working again
-</span><span style="color:#75715e"></span>            <span style="color:#f92672">*</span><span style="color:#a6e22e">transformed</span> = <span style="color:#a6e22e">local</span><span style="color:#f92672">*</span><span style="color:#a6e22e">local</span>
-            <span style="color:#a6e22e">sq_p</span>.<span style="color:#a6e22e">signal</span>()
-			<span style="color:#a6e22e">sq_w</span>.<span style="color:#a6e22e">wait</span>()
-        }
-    }
-    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">sq_out</span>,<span style="color:#a6e22e">sq_p</span>,<span style="color:#a6e22e">sq_w</span>
-}
-</code></pre></div><p>As we can see, channels encapsulate a lot of things! Namely:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">sq</span><span class="p">(</span><span class="nx">in</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="kt">int</span><span class="p">)</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="kt">int</span> <span class="p">{</span>
+    <span class="nx">out</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">int</span><span class="p">)</span>
+    <span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">for</span> <span class="nx">n</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">in</span> <span class="p">{</span>
+            <span class="nx">out</span> <span class="o">&lt;-</span> <span class="nx">n</span> <span class="o">*</span> <span class="nx">n</span>
+        <span class="p">}</span>
+        <span class="nb">close</span><span class="p">(</span><span class="nx">out</span><span class="p">)</span>
+    <span class="p">}()</span>
+    <span class="k">return</span> <span class="nx">out</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>vs Mutex</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">sq</span><span class="p">(</span><span class="nx">in_loc</span> <span class="o">*</span><span class="kt">int</span><span class="p">,</span><span class="nx">in_p</span> <span class="o">*</span><span class="nx">Semaphore</span><span class="p">,</span> <span class="nx">in_w</span> <span class="o">*</span><span class="nx">Semaphore</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">Semaphore</span><span class="p">,</span><span class="o">*</span><span class="kt">int</span><span class="p">){</span>
+    <span class="nx">sq_out</span><span class="o">:=</span> <span class="o">&amp;</span><span class="kt">int</span>
+    <span class="nx">sq_p</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">Semaphore</span><span class="p">{}</span>
+    <span class="nx">sq_w</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">Semaphore</span><span class="p">{}</span>
+    <span class="k">go</span> <span class="kd">func</span><span class="p">(){</span>
+        <span class="k">for</span> <span class="p">{</span><span class="c1">// infinite loop so I don&#39;t want to create another variable+synchronization for communication
+</span><span class="c1"></span>            <span class="nx">in_p</span><span class="p">.</span><span class="nf">wait</span><span class="p">()</span> <span class="c1">// wait for previous thread to produce the input
+</span><span class="c1"></span>            <span class="kd">var</span> <span class="nx">local</span> <span class="p">=</span> <span class="o">*</span><span class="nx">in_loc</span> <span class="c1">// read from memory the location the previous thread wrote to
+</span><span class="c1"></span>            <span class="nx">in_w</span><span class="p">.</span><span class="nf">signal</span><span class="p">()</span> <span class="c1">// tell previous thread it can start working again
+</span><span class="c1"></span>            <span class="o">*</span><span class="nx">transformed</span> <span class="p">=</span> <span class="nx">local</span><span class="o">*</span><span class="nx">local</span>
+            <span class="nx">sq_p</span><span class="p">.</span><span class="nf">signal</span><span class="p">()</span>
+			<span class="nx">sq_w</span><span class="p">.</span><span class="nf">wait</span><span class="p">()</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">sq_out</span><span class="p">,</span><span class="nx">sq_p</span><span class="p">,</span><span class="nx">sq_w</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>As we can see, channels encapsulate a lot of things! Namely:</p>
 <ul>
 <li>Termination of source(via <code>close(channel</code>) -&gt; which will propagate to downstream goroutines</li>
 <li>location of result/abstracting away consumption behavior</li>
@@ -267,112 +499,233 @@
 <h1 id="channels-often-come-with-a-level-of-indirection"><!-- raw HTML omitted -->4<!-- raw HTML omitted --> Channels Often Come with a Level of Indirection:</h1>
 <h2 id="tee-channel"><!-- raw HTML omitted -->4.1<!-- raw HTML omitted --> Tee Channel</h2>
 <p>(Note: This example was more or less taken from &ldquo;Concurrency in Go&rdquo; by  Katherine Cox-Buday, except for simplicity I removed the code to handle the goroutine leak)</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">tee</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">in</span> <span style="color:#f92672">&lt;-</span><span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">interface</span>{},) (<span style="color:#f92672">&lt;-</span><span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">interface</span>{}, <span style="color:#f92672">&lt;-</span><span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">interface</span>{}) {
-    <span style="color:#a6e22e">out1</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">interface</span>{})
-    <span style="color:#a6e22e">out2</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">interface</span>{})
-    <span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>() {
-        <span style="color:#66d9ef">defer</span> close(<span style="color:#a6e22e">out1</span>)
-        <span style="color:#66d9ef">defer</span> close(<span style="color:#a6e22e">out2</span>)
-        <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">val</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">in</span> {
-            <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">out1</span>, <span style="color:#a6e22e">out2</span> = <span style="color:#a6e22e">out1</span>, <span style="color:#a6e22e">out2</span>
-            <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#ae81ff">2</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
-                <span style="color:#66d9ef">select</span> {
-                <span style="color:#66d9ef">case</span> <span style="color:#a6e22e">out1</span><span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">val</span>:
-                    <span style="color:#a6e22e">out1</span> = <span style="color:#66d9ef">nil</span>
-                <span style="color:#66d9ef">case</span> <span style="color:#a6e22e">out2</span><span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">val</span>:
-                    <span style="color:#a6e22e">out2</span> = <span style="color:#66d9ef">nil</span>
-                }
-            }
-        }
-    }()
-    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">out1</span>, <span style="color:#a6e22e">out2</span>
-}
-</code></pre></div><p>vs Mutex Implementation</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// NOTE: For this implementation, we will use closures to avoid dealing with raw memory
-</span><span style="color:#75715e"></span><span style="color:#a6e22e">tee</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">in</span> <span style="color:#f92672">&lt;-</span><span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">int</span>) (<span style="color:#66d9ef">func</span>() (<span style="color:#66d9ef">int</span>,<span style="color:#66d9ef">bool</span>), <span style="color:#66d9ef">func</span>() (<span style="color:#66d9ef">int</span>,<span style="color:#66d9ef">bool</span>)) {
-    <span style="color:#a6e22e">mu</span> = <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">Sync</span>.<span style="color:#a6e22e">Mutex</span>{}
-    <span style="color:#a6e22e">c1</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">NewCond</span>(<span style="color:#a6e22e">mu</span>)
-    <span style="color:#a6e22e">c2</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">NewCond</span>(<span style="color:#a6e22e">mu</span>)
-    <span style="color:#a6e22e">handle1_status</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">false</span>
-    <span style="color:#a6e22e">handle2_status</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">false</span>
-    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">val</span> <span style="color:#66d9ef">int</span>
-    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">done</span> <span style="color:#66d9ef">bool</span>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="nx">tee</span> <span class="o">:=</span> <span class="kd">func</span><span class="p">(</span><span class="nx">in</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="kd">interface</span><span class="p">{},)</span> <span class="p">(</span><span class="o">&lt;-</span><span class="kd">chan</span> <span class="kd">interface</span><span class="p">{},</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="kd">interface</span><span class="p">{})</span> <span class="p">{</span>
+    <span class="nx">out1</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kd">interface</span><span class="p">{})</span>
+    <span class="nx">out2</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kd">interface</span><span class="p">{})</span>
+    <span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">defer</span> <span class="nb">close</span><span class="p">(</span><span class="nx">out1</span><span class="p">)</span>
+        <span class="k">defer</span> <span class="nb">close</span><span class="p">(</span><span class="nx">out2</span><span class="p">)</span>
+        <span class="k">for</span> <span class="nx">val</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">in</span> <span class="p">{</span>
+            <span class="kd">var</span> <span class="nx">out1</span><span class="p">,</span> <span class="nx">out2</span> <span class="p">=</span> <span class="nx">out1</span><span class="p">,</span> <span class="nx">out2</span>
+            <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="mi">2</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+                <span class="k">select</span> <span class="p">{</span>
+                <span class="k">case</span> <span class="nx">out1</span><span class="o">&lt;-</span> <span class="nx">val</span><span class="p">:</span>
+                    <span class="nx">out1</span> <span class="p">=</span> <span class="kc">nil</span>
+                <span class="k">case</span> <span class="nx">out2</span><span class="o">&lt;-</span> <span class="nx">val</span><span class="p">:</span>
+                    <span class="nx">out2</span> <span class="p">=</span> <span class="kc">nil</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}()</span>
+    <span class="k">return</span> <span class="nx">out1</span><span class="p">,</span> <span class="nx">out2</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>vs Mutex Implementation</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// NOTE: For this implementation, we will use closures to avoid dealing with raw memory
+</span><span class="c1"></span><span class="nx">tee</span> <span class="o">:=</span> <span class="kd">func</span><span class="p">(</span><span class="nx">in</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="kt">int</span><span class="p">)</span> <span class="p">(</span><span class="kd">func</span><span class="p">()</span> <span class="p">(</span><span class="kt">int</span><span class="p">,</span><span class="kt">bool</span><span class="p">),</span> <span class="kd">func</span><span class="p">()</span> <span class="p">(</span><span class="kt">int</span><span class="p">,</span><span class="kt">bool</span><span class="p">))</span> <span class="p">{</span>
+    <span class="nx">mu</span> <span class="p">=</span> <span class="o">&amp;</span><span class="nx">Sync</span><span class="p">.</span><span class="nx">Mutex</span><span class="p">{}</span>
+    <span class="nx">c1</span> <span class="o">:=</span> <span class="nf">NewCond</span><span class="p">(</span><span class="nx">mu</span><span class="p">)</span>
+    <span class="nx">c2</span> <span class="o">:=</span> <span class="nf">NewCond</span><span class="p">(</span><span class="nx">mu</span><span class="p">)</span>
+    <span class="nx">handle1_status</span> <span class="o">:=</span> <span class="kc">false</span>
+    <span class="nx">handle2_status</span> <span class="o">:=</span> <span class="kc">false</span>
+    <span class="kd">var</span> <span class="nx">val</span> <span class="kt">int</span>
+    <span class="kd">var</span> <span class="nx">done</span> <span class="kt">bool</span>
 
-    <span style="color:#a6e22e">handle1</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">func</span>(){
-        <span style="color:#a6e22e">mu</span>.<span style="color:#a6e22e">Lock</span>()
-        <span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">mu</span>.<span style="color:#a6e22e">UnLock</span>()
-        <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">done</span>){<span style="color:#66d9ef">return</span> (<span style="color:#ae81ff">0</span>,<span style="color:#a6e22e">done</span>)}
-        <span style="color:#a6e22e">while</span> (<span style="color:#a6e22e">handle1_status</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">true</span>){<span style="color:#a6e22e">c1</span>.<span style="color:#a6e22e">Wait</span>()}
-        <span style="color:#a6e22e">handle1_status</span> = <span style="color:#66d9ef">true</span>
+    <span class="nx">handle1</span> <span class="o">:=</span> <span class="kd">func</span><span class="p">(){</span>
+        <span class="nx">mu</span><span class="p">.</span><span class="nf">Lock</span><span class="p">()</span>
+        <span class="k">defer</span> <span class="nx">mu</span><span class="p">.</span><span class="nf">UnLock</span><span class="p">()</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">done</span><span class="p">){</span><span class="k">return</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nx">done</span><span class="p">)}</span>
+        <span class="nf">while</span> <span class="p">(</span><span class="nx">handle1_status</span> <span class="o">==</span> <span class="kc">true</span><span class="p">){</span><span class="nx">c1</span><span class="p">.</span><span class="nf">Wait</span><span class="p">()}</span>
+        <span class="nx">handle1_status</span> <span class="p">=</span> <span class="kc">true</span>
 
-        <span style="color:#75715e">// Case 1: we are first to grab
-</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">handle2_status</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">false</span>){
-            <span style="color:#a6e22e">val</span>,<span style="color:#a6e22e">done</span> <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">in</span>
-            <span style="color:#a6e22e">local_val</span> = <span style="color:#a6e22e">val</span>
-            <span style="color:#a6e22e">local_done</span> = <span style="color:#a6e22e">done</span>
-            <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">local_val</span>,<span style="color:#a6e22e">local_done</span>
-        }
-        <span style="color:#75715e">// Case 2: other handle has already grabbed. If so, reset
-</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">else</span> {
-            <span style="color:#a6e22e">local_val</span> = <span style="color:#a6e22e">val</span><span style="color:#75715e">// in case value changes during return
-</span><span style="color:#75715e"></span>            <span style="color:#a6e22e">local_done</span> = <span style="color:#a6e22e">done</span>
-            <span style="color:#a6e22e">handle1_status</span> = <span style="color:#66d9ef">false</span>
-            <span style="color:#a6e22e">handle2_status</span> = <span style="color:#66d9ef">false</span>
-            <span style="color:#a6e22e">c2</span>.<span style="color:#a6e22e">signal</span>()
-            <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">local_val</span>,<span style="color:#a6e22e">local_done</span>
-        }
-    }
-    <span style="color:#a6e22e">handle2</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">func</span>(){
-        <span style="color:#a6e22e">mu</span>.<span style="color:#a6e22e">Lock</span>()
-        <span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">mu</span>.<span style="color:#a6e22e">UnLock</span>()
-        <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">done</span>){<span style="color:#66d9ef">return</span> (<span style="color:#ae81ff">0</span>,<span style="color:#a6e22e">done</span>)}
-        <span style="color:#a6e22e">while</span> (<span style="color:#a6e22e">handle2_status</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">true</span>){<span style="color:#a6e22e">c2</span>.<span style="color:#a6e22e">Wait</span>()}
-        <span style="color:#a6e22e">handle2_status</span> = <span style="color:#66d9ef">true</span>
+        <span class="c1">// Case 1: we are first to grab
+</span><span class="c1"></span>        <span class="k">if</span> <span class="p">(</span><span class="nx">handle2_status</span> <span class="o">==</span> <span class="kc">false</span><span class="p">){</span>
+            <span class="nx">val</span><span class="p">,</span><span class="nx">done</span> <span class="o">&lt;-</span> <span class="nx">in</span>
+            <span class="nx">local_val</span> <span class="p">=</span> <span class="nx">val</span>
+            <span class="nx">local_done</span> <span class="p">=</span> <span class="nx">done</span>
+            <span class="k">return</span> <span class="nx">local_val</span><span class="p">,</span><span class="nx">local_done</span>
+        <span class="p">}</span>
+        <span class="c1">// Case 2: other handle has already grabbed. If so, reset
+</span><span class="c1"></span>        <span class="k">else</span> <span class="p">{</span>
+            <span class="nx">local_val</span> <span class="p">=</span> <span class="nx">val</span><span class="c1">// in case value changes during return
+</span><span class="c1"></span>            <span class="nx">local_done</span> <span class="p">=</span> <span class="nx">done</span>
+            <span class="nx">handle1_status</span> <span class="p">=</span> <span class="kc">false</span>
+            <span class="nx">handle2_status</span> <span class="p">=</span> <span class="kc">false</span>
+            <span class="nx">c2</span><span class="p">.</span><span class="nf">signal</span><span class="p">()</span>
+            <span class="k">return</span> <span class="nx">local_val</span><span class="p">,</span><span class="nx">local_done</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="nx">handle2</span> <span class="o">:=</span> <span class="kd">func</span><span class="p">(){</span>
+        <span class="nx">mu</span><span class="p">.</span><span class="nf">Lock</span><span class="p">()</span>
+        <span class="k">defer</span> <span class="nx">mu</span><span class="p">.</span><span class="nf">UnLock</span><span class="p">()</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">done</span><span class="p">){</span><span class="k">return</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nx">done</span><span class="p">)}</span>
+        <span class="nf">while</span> <span class="p">(</span><span class="nx">handle2_status</span> <span class="o">==</span> <span class="kc">true</span><span class="p">){</span><span class="nx">c2</span><span class="p">.</span><span class="nf">Wait</span><span class="p">()}</span>
+        <span class="nx">handle2_status</span> <span class="p">=</span> <span class="kc">true</span>
 
-        <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">handle1_status</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">false</span>){
-            <span style="color:#a6e22e">val</span> <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">in</span>
-            <span style="color:#a6e22e">local_val</span> = <span style="color:#a6e22e">val</span>
-            <span style="color:#a6e22e">local_done</span> = <span style="color:#a6e22e">done</span>
-            <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">local_val</span>,<span style="color:#a6e22e">local_done</span>
-        }
-        <span style="color:#66d9ef">else</span> {
-            <span style="color:#a6e22e">local_val</span> = <span style="color:#a6e22e">val</span>
-            <span style="color:#a6e22e">local_done</span> = <span style="color:#a6e22e">done</span>
-            <span style="color:#a6e22e">handle1_status</span> = <span style="color:#66d9ef">false</span>
-            <span style="color:#a6e22e">handle2_status</span> = <span style="color:#66d9ef">false</span>
-            <span style="color:#a6e22e">c1</span>.<span style="color:#a6e22e">signal</span>()
-            <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">local_val</span>,<span style="color:#a6e22e">local_done</span>
-        }
-    }
-    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">handle1</span>, <span style="color:#a6e22e">handle2</span>
-}
-</code></pre></div><p>First, the most striking difference is in the responsibilities of the calling function(<code>value &lt;-out1</code> vs <code>handle1()</code>). The channel implementation is <strong>centralized</strong>, so both <code>out1</code> and <code>out2</code> get routed/delegated to the same goroutine. Once there, the goroutine decides on the next state. In contrast, <code>handle1</code> and <code>handle2</code> each decide by themselves what the next state will be, by &ldquo;peering&rdquo; into the other&rsquo;s state and making a decision based on that. As such, there is a lot of repeat code that differs only in naming of &ldquo;something1&rdquo; vs &ldquo;something2&rdquo;<sup id="fnref:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">2</a></sup></p>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">handle1_status</span> <span class="o">==</span> <span class="kc">false</span><span class="p">){</span>
+            <span class="nx">val</span> <span class="o">&lt;-</span> <span class="nx">in</span>
+            <span class="nx">local_val</span> <span class="p">=</span> <span class="nx">val</span>
+            <span class="nx">local_done</span> <span class="p">=</span> <span class="nx">done</span>
+            <span class="k">return</span> <span class="nx">local_val</span><span class="p">,</span><span class="nx">local_done</span>
+        <span class="p">}</span>
+        <span class="k">else</span> <span class="p">{</span>
+            <span class="nx">local_val</span> <span class="p">=</span> <span class="nx">val</span>
+            <span class="nx">local_done</span> <span class="p">=</span> <span class="nx">done</span>
+            <span class="nx">handle1_status</span> <span class="p">=</span> <span class="kc">false</span>
+            <span class="nx">handle2_status</span> <span class="p">=</span> <span class="kc">false</span>
+            <span class="nx">c1</span><span class="p">.</span><span class="nf">signal</span><span class="p">()</span>
+            <span class="k">return</span> <span class="nx">local_val</span><span class="p">,</span><span class="nx">local_done</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">handle1</span><span class="p">,</span> <span class="nx">handle2</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>First, the most striking difference is in the responsibilities of the calling function(<code>value &lt;-out1</code> vs <code>handle1()</code>). The channel implementation is <strong>centralized</strong>, so both <code>out1</code> and <code>out2</code> get routed/delegated to the same goroutine. Once there, the goroutine decides on the next state. In contrast, <code>handle1</code> and <code>handle2</code> each decide by themselves what the next state will be, by &ldquo;peering&rdquo; into the other&rsquo;s state and making a decision based on that. As such, there is a lot of repeat code that differs only in naming of &ldquo;something1&rdquo; vs &ldquo;something2&rdquo;<sup id="fnref:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">2</a></sup></p>
 <p>Furthermore, the addition of another agent allows both control flow and state to be preserved between function calls(in other words, properties of a coroutine). The mutex implementation can only communicate to other threads by changing state while holding the lock. But on <strong>each subsequent function call, the &ldquo;code&rdquo; it calls will be the same</strong>. In contrast, the &ldquo;code&rdquo; that gets called during a channel send is dependent on the section of code it last left off at. To sum it up, this means there will be less <code>if</code> dispatches based on state, as the state has been &ldquo;encoded&rdquo; into the control flow.</p>
 <p>Another aspect of that the level of indirection buys us is the ability to selectively listen to a channel (by temporarily setting the reference to <code>nil</code>). Whereas with a mutex, everyone has an equal chance to grab the lock, and thus the while-condition variable pattern in the mutex implementation: as sometimes it may not be the right time to grab, but the <strong>handler has no way of knowing that until it comes in, grab the lock, and inspect state</strong>.</p>
 <p>Finally, the local variables in the mutex implementation mostly stems from the lack of encapsulation: When you send a value along a channel, you are making a copy of the value too.</p>
 <h2 id="consequence-of-indirection"><!-- raw HTML omitted -->4.2<!-- raw HTML omitted --> Consequence of Indirection</h2>
 <p>Consider the following example, where we implement a synchronized object that produces multiples of 3.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// Inside x&#39;s &#34;Constructor&#34;
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>(){
-<span style="color:#66d9ef">for</span>{
-<span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">x</span>.<span style="color:#a6e22e">request_channel</span>
-<span style="color:#a6e22e">x</span>.<span style="color:#a6e22e">state</span> <span style="color:#f92672">+=</span> <span style="color:#ae81ff">3</span>
-<span style="color:#a6e22e">x</span>.<span style="color:#a6e22e">receive_channel</span><span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">old_state</span>
-}
-}
-<span style="color:#a6e22e">fun</span> (<span style="color:#a6e22e">x</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">IDGenerator</span>) <span style="color:#a6e22e">next</span>() <span style="color:#66d9ef">int</span>{
-<span style="color:#a6e22e">x</span>.<span style="color:#a6e22e">request_channel</span> <span style="color:#f92672">&lt;-</span> <span style="color:#e6db74">&#34;get next&#34;</span>
-<span style="color:#66d9ef">return</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">x</span>.<span style="color:#a6e22e">send_channel</span>
-}
-</code></pre></div><p>vs Mutex Implementation</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">x</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">IDGenerator</span>) <span style="color:#a6e22e">next</span>() <span style="color:#66d9ef">int</span> {
-<span style="color:#a6e22e">x</span>.<span style="color:#a6e22e">Lock</span>()
-<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">x</span>.<span style="color:#a6e22e">Unlock</span>()
-<span style="color:#a6e22e">old_state</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">x</span>.<span style="color:#a6e22e">state</span>
-<span style="color:#a6e22e">x</span>.<span style="color:#a6e22e">state</span> <span style="color:#f92672">+=</span> <span style="color:#ae81ff">3</span>
-<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">old_state</span>
-}
-</code></pre></div><p>Functionally, they are more or less the same, though the channel implementation is a bit wordier from needing a send and receive channel<sup id="fnref:3"><a href="#fn:3" class="footnote-ref" role="doc-noteref">3</a></sup>. The main issue with the channel implementation, however, is that it is essentially a memory leak, as the goroutine will live indefinitely. This can be remedied, though it is somewhat tedious, as destructors/&ldquo;done channels&rdquo; in Go have to be explicitly called(just like <code>free</code> in C), compared to C++/Rust where the compiler will generate the call for you. <sup id="fnref:4"><a href="#fn:4" class="footnote-ref" role="doc-noteref">4</a></sup>.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// Inside x&#39;s &#34;Constructor&#34;
+</span><span class="c1"></span><span class="k">go</span> <span class="kd">func</span><span class="p">(){</span>
+<span class="k">for</span><span class="p">{</span>
+<span class="o">&lt;-</span> <span class="nx">x</span><span class="p">.</span><span class="nx">request_channel</span>
+<span class="nx">x</span><span class="p">.</span><span class="nx">state</span> <span class="o">+=</span> <span class="mi">3</span>
+<span class="nx">x</span><span class="p">.</span><span class="nx">receive_channel</span><span class="o">&lt;-</span> <span class="nx">old_state</span>
+<span class="p">}</span>
+<span class="p">}</span>
+<span class="nf">fun</span> <span class="p">(</span><span class="nx">x</span> <span class="o">*</span><span class="nx">IDGenerator</span><span class="p">)</span> <span class="nf">next</span><span class="p">()</span> <span class="kt">int</span><span class="p">{</span>
+<span class="nx">x</span><span class="p">.</span><span class="nx">request_channel</span> <span class="o">&lt;-</span> <span class="s">&#34;get next&#34;</span>
+<span class="k">return</span> <span class="o">&lt;-</span><span class="nx">x</span><span class="p">.</span><span class="nx">send_channel</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>vs Mutex Implementation</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="p">(</span><span class="nx">x</span> <span class="o">*</span><span class="nx">IDGenerator</span><span class="p">)</span> <span class="nf">next</span><span class="p">()</span> <span class="kt">int</span> <span class="p">{</span>
+<span class="nx">x</span><span class="p">.</span><span class="nf">Lock</span><span class="p">()</span>
+<span class="k">defer</span> <span class="nx">x</span><span class="p">.</span><span class="nf">Unlock</span><span class="p">()</span>
+<span class="nx">old_state</span> <span class="o">:=</span> <span class="nx">x</span><span class="p">.</span><span class="nx">state</span>
+<span class="nx">x</span><span class="p">.</span><span class="nx">state</span> <span class="o">+=</span> <span class="mi">3</span>
+<span class="k">return</span> <span class="nx">old_state</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>Functionally, they are more or less the same, though the channel implementation is a bit wordier from needing a send and receive channel<sup id="fnref:3"><a href="#fn:3" class="footnote-ref" role="doc-noteref">3</a></sup>. The main issue with the channel implementation, however, is that it is essentially a memory leak, as the goroutine will live indefinitely. This can be remedied, though it is somewhat tedious, as destructors/&ldquo;done channels&rdquo; in Go have to be explicitly called(just like <code>free</code> in C), compared to C++/Rust where the compiler will generate the call for you. <sup id="fnref:4"><a href="#fn:4" class="footnote-ref" role="doc-noteref">4</a></sup>.</p>
 <h1 id="final-remarks"><!-- raw HTML omitted -->5<!-- raw HTML omitted --> Final Remarks</h1>
 <p>So now that we know about some of the properties of channels, they can hopefully help us make more informed decisions on when to use them. For example, channels are not that great of a choice for broadcasting, as their consumption nature requires us to essentially implement a pub-sub mechanism, and their blocking nature further hinders us from concurrently notifying all listeners/may hang if a listener doesn&rsquo;t respond.</p>
 <p>Queues, on the other hand, are consuming and so channels will probably be a better idea for anything that is stream-like. Furthermore, channels are first class citizens when it comes to for loop termination and select statement(and in <code>select's</code> case, the only citizen).</p>
@@ -395,197 +748,189 @@
 </ol>
 </section>
 
-      </div>
-    </article>
 
-    <hr />
+        
+          <div class="blog-tags">
+            
+              <a href="https://bbli.github.io/tags/go/">go</a>&nbsp;
+            
+              <a href="https://bbli.github.io/tags/software-design/">software-design</a>&nbsp;
+            
+          </div>
+        
 
-    <div class="post-info">
+        
+            <hr/>
+            <section id="social-share">
+              <div class="list-inline footer-links">
+                
+
+<div class="share-box" aria-hidden="true">
+    <ul class="share">
       
-    <p style="font-size:1.05rem">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg>
-
-        <span class="tag"><a href="https://bbli.github.io/tags/go/">go</a></span>
-        <span class="tag"><a href="https://bbli.github.io/tags/software-design/">software-design</a></span>
-        
-    </p>
-
-
+      <li>
+        <a href="//twitter.com/share?url=https%3a%2f%2fbbli.github.io%2fposts%2fgo_channel_properties%2f&amp;text=Properties%20of%20Go%20Channels&amp;via=" target="_blank" title="Share on Twitter">
+          <i class="fab fa-twitter"></i>
+        </a>
+      </li>
+  
       
+      <li>
+        <a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fbbli.github.io%2fposts%2fgo_channel_properties%2f" target="_blank" title="Share on Facebook">
+          <i class="fab fa-facebook"></i>
+        </a>
+      </li>
+  
+      
+      <li>
+        <a href="//reddit.com/submit?url=https%3a%2f%2fbbli.github.io%2fposts%2fgo_channel_properties%2f&amp;title=Properties%20of%20Go%20Channels" target="_blank" title="Share on Reddit">
+          <i class="fab fa-reddit"></i>
+        </a>
+      </li>
+  
+      
+      <li>
+        <a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fbbli.github.io%2fposts%2fgo_channel_properties%2f&amp;title=Properties%20of%20Go%20Channels" target="_blank" title="Share on LinkedIn">
+          <i class="fab fa-linkedin"></i>
+        </a>
+      </li>
+  
+      
+      <li>
+        <a href="//www.stumbleupon.com/submit?url=https%3a%2f%2fbbli.github.io%2fposts%2fgo_channel_properties%2f&amp;title=Properties%20of%20Go%20Channels" target="_blank" title="Share on StumbleUpon">
+          <i class="fab fa-stumbleupon"></i>
+        </a>
+      </li>
+  
+      
+      <li>
+        <a href="//www.pinterest.com/pin/create/button/?url=https%3a%2f%2fbbli.github.io%2fposts%2fgo_channel_properties%2f&amp;description=Properties%20of%20Go%20Channels" target="_blank" title="Share on Pinterest">
+          <i class="fab fa-pinterest"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
+  
 
-      <p>
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text">
-          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-          <polyline points="14 2 14 8 20 8"></polyline>
-          <line x1="16" y1="13" x2="8" y2="13"></line>
-          <line x1="16" y1="17" x2="8" y2="17"></line>
-          <polyline points="10 9 9 9 8 9"></polyline>
-        </svg>
-        2114 Words
-      </p>
-
-      <p>
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar">
-          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-          <line x1="16" y1="2" x2="16" y2="6"></line>
-          <line x1="8" y1="2" x2="8" y2="6"></line>
-          <line x1="3" y1="10" x2="21" y2="10"></line>
-        </svg>
+              </div>
+            </section>
         
-          2021-05-31 00:00
-        
 
-         
+        
+          
+            
+          
+
+          
+                  <h4 class="see-also">See also</h4>
+                  <ul>
+                
+                
+                    <li><a href="/posts/crtp_with_object_model/">Clarifying CRTP with the C&#43;&#43; object model</a></li>
+                
+              </ul>
+
           
         
-      </p>
-    </div>
-      <hr />
-      <div class="sharing-buttons">
+      </article>
+
+      
+        <ul class="pager blog-pager">
+          
+            <li class="previous">
+              <a href="https://bbli.github.io/posts/crtp_with_object_model/" data-toggle="tooltip" data-placement="top" title="Clarifying CRTP with the C&#43;&#43; object model">&larr; Previous Post</a>
+            </li>
+          
+          
+        </ul>
+      
+
+
+      
         
-<a class="resp-sharing-button__link" href="https://facebook.com/sharer/sharer.php?u=https%3a%2f%2fbbli.github.io%2fposts%2fgo_channel_properties%2f" target="_blank" rel="noopener" aria-label="" title="Share on facebook">
-  <div class="resp-sharing-button resp-sharing-button--facebook resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+        
+      
+
     </div>
   </div>
-</a>
+</div>
 
-
-<a class="resp-sharing-button__link" href="https://twitter.com/intent/tweet/?url=https%3a%2f%2fbbli.github.io%2fposts%2fgo_channel_properties%2f" target="_blank" rel="noopener" aria-label="" title="Share on twitter">
-  <div class="resp-sharing-button resp-sharing-button--twitter resp-sharing-button--small">
-      <div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path></svg>
-    </div>
-  </div>
-</a>
-
-
-<a class="resp-sharing-button__link" href="https://www.tumblr.com/widgets/share/tool?posttype=link&amp;title=Properties%20of%20Go%20Channels&amp;caption=Properties%20of%20Go%20Channels&amp;canonicalUrl=https%3a%2f%2fbbli.github.io%2fposts%2fgo_channel_properties%2f" target="_blank" rel="noopener" aria-label="" title="Share on tumblr">
-  <div class="resp-sharing-button resp-sharing-button--tumblr resp-sharing-button--small">
-    <div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.563 24c-5.093 0-7.031-3.756-7.031-6.411V9.747H5.116V6.648c3.63-1.313 4.512-4.596 4.71-6.469C9.84.051 9.941 0 9.999 0h3.517v6.114h4.801v3.633h-4.82v7.47c.016 1.001.375 2.371 2.207 2.371h.09c.631-.02 1.486-.205 1.936-.419l1.156 3.425c-.436.636-2.4 1.374-4.156 1.404h-.178l.011.002z"/></svg>
-    </div>
-  </div>
-</a>
-
-
-<a class="resp-sharing-button__link" href="mailto:?subject=Properties%20of%20Go%20Channels&amp;body=https%3a%2f%2fbbli.github.io%2fposts%2fgo_channel_properties%2f" target="_self" rel="noopener" aria-label="" title="Share via email">
-  <div class="resp-sharing-button resp-sharing-button--email resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-    </div>
-  </div>
-</a>
-
-
-<a class="resp-sharing-button__link" href="https://pinterest.com/pin/create/button/?url=https%3a%2f%2fbbli.github.io%2fposts%2fgo_channel_properties%2f&amp;media=https%3a%2f%2fbbli.github.io%2fposts%2fgo_channel_properties%2f;description=Properties%20of%20Go%20Channels" target="_blank" rel="noopener" aria-label="" title="Share on pinterest">
-  <div class="resp-sharing-button resp-sharing-button--pinterest resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.401.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.354-.629-2.758-1.379l-.749 2.848c-.269 1.045-1.004 2.352-1.498 3.146 1.123.345 2.306.535 3.55.535 6.607 0 11.985-5.365 11.985-11.987C23.97 5.39 18.592.026 11.985.026L12.017 0z"/></svg>
-    </div>
-  </div>
-</a>
-
-
-<a class="resp-sharing-button__link" href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3a%2f%2fbbli.github.io%2fposts%2fgo_channel_properties%2f&amp;title=Properties%20of%20Go%20Channels&amp;summary=Properties%20of%20Go%20Channels&amp;source=https%3a%2f%2fbbli.github.io%2fposts%2fgo_channel_properties%2f" target="_blank" rel="noopener" aria-label="" title="Share on linkedin">
-  <div class="resp-sharing-button resp-sharing-button--linkedin resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
-    </div>
-  </div>
-</a>
-
-
-<a class="resp-sharing-button__link" href="https://reddit.com/submit/?url=https%3a%2f%2fbbli.github.io%2fposts%2fgo_channel_properties%2f&amp;resubmit=true&amp;title=Properties%20of%20Go%20Channels" target="_blank" rel="noopener" aria-label="" title="Share on reddit">
-  <div class="resp-sharing-button resp-sharing-button--reddit resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.617a1.214 1.214 0 0 1 1.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 0 0-.231.094.33.33 0 0 0 0 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 0 0 .029-.463.33.33 0 0 0-.464 0c-.547.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 0 0-.232-.095z"/></svg>
-    </div>
-  </div>
-</a>
-
-
-<a class="resp-sharing-button__link" href="https://www.xing.com/app/user?op=share;url=https%3a%2f%2fbbli.github.io%2fposts%2fgo_channel_properties%2f;title=Properties%20of%20Go%20Channels" target="_blank" rel="noopener" aria-label="" title="Share on xing">
-  <div class="resp-sharing-button resp-sharing-button--xing resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M18.188 0c-.517 0-.741.325-.927.66 0 0-7.455 13.224-7.702 13.657.015.024 4.919 9.023 4.919 9.023.17.308.436.66.967.66h3.454c.211 0 .375-.078.463-.22.089-.151.089-.346-.009-.536l-4.879-8.916c-.004-.006-.004-.016 0-.022L22.139.756c.095-.191.097-.387.006-.535C22.056.078 21.894 0 21.686 0h-3.498zM3.648 4.74c-.211 0-.385.074-.473.216-.09.149-.078.339.02.531l2.34 4.05c.004.01.004.016 0 .021L1.86 16.051c-.099.188-.093.381 0 .529.085.142.239.234.45.234h3.461c.518 0 .766-.348.945-.667l3.734-6.609-2.378-4.155c-.172-.315-.434-.659-.962-.659H3.648v.016z"/></svg>
-    </div>
-  </div>
-</a>
-
-
-<a class="resp-sharing-button__link" href="whatsapp://send?text=Properties%20of%20Go%20Channels%20https%3a%2f%2fbbli.github.io%2fposts%2fgo_channel_properties%2f" target="_blank" rel="noopener" aria-label="" title="Share on whatsapp">
-  <div class="resp-sharing-button resp-sharing-button--whatsapp resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
-    </div>
-  </div>
-</a>
-
-
-<a class="resp-sharing-button__link" href="https://news.ycombinator.com/submitlink?u=https%3a%2f%2fbbli.github.io%2fposts%2fgo_channel_properties%2f&amp;t=Properties%20of%20Go%20Channels" target="_blank" rel="noopener" aria-label="" title="Share on hacker news">
-  <div class="resp-sharing-button resp-sharing-button--hackernews resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
-			<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M0 24V0h24v24H0zM6.951 5.896l4.112 7.708v5.064h1.583v-4.972l4.148-7.799h-1.749l-2.457 4.875c-.372.745-.688 1.434-.688 1.434s-.297-.708-.651-1.434L8.831 5.896h-1.88z"/></svg>
-    </div>
-  </div>
-</a>
-
-
-<a class="resp-sharing-button__link" href="https://telegram.me/share/url?text=Properties%20of%20Go%20Channels&amp;url=https%3a%2f%2fbbli.github.io%2fposts%2fgo_channel_properties%2f" target="_blank" rel="noopener" aria-label="" title="Share on telegram">
-  <div class="resp-sharing-button resp-sharing-button--telegram resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-    </div>
-  </div>
-</a>
-
-      </div>
-
-    
-    <div class="pagination">
-        <div class="pagination__title">
-            <span class="pagination__title-h"></span>
-            <hr />
-        </div>
-
-        <div class="pagination__buttons">
-            
-
-            
-            <span class="button next">
-                <a href="https://bbli.github.io/posts/crtp_with_object_model/">
-                    <span class="button__text">Clarifying CRTP with the C&#43;&#43; object model</span>
-                    <span class="button__icon">→</span>
+      
+<footer>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <ul class="list-inline text-center footer-links">
+          
+              <li>
+                <a href="mailto:bbl2117@columbia.edu" title="Email me">
+                  <span class="fa-stack fa-lg">
+                    <i class="fas fa-circle fa-stack-2x"></i>
+                    <i class="fas fa-envelope fa-stack-1x fa-inverse"></i>
+                  </span>
                 </a>
-            </span>
-            
-        </div>
-    </div>
+              </li>
+              <li>
+                <a href="https://github.com/bbli" title="GitHub">
+                  <span class="fa-stack fa-lg">
+                    <i class="fas fa-circle fa-stack-2x"></i>
+                    <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a href="https://linkedin.com/in/bensonbinbinli" title="LinkedIn">
+                  <span class="fa-stack fa-lg">
+                    <i class="fas fa-circle fa-stack-2x"></i>
+                    <i class="fab fa-linkedin fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          
+          <li>
+            <a href="" title="RSS">
+              <span class="fa-stack fa-lg">
+                <i class="fas fa-circle fa-stack-2x"></i>
+                <i class="fas fa-rss fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          
+        </ul>
+        <p class="credits copyright text-muted">
 
-
-    
-
-    
-
-  </main>
-
-            </div>
-
-            
-                <footer class="footer">
-    
-    
-    <div class="footer__inner">
-        <div class="footer__content">
-            <span>Powered by <a href="http://gohugo.io">Hugo</a> + <a href="https://ox-hugo.scripter.co/">ox-hugo</a> + <a href="https://github.com/hlissner/doom-emacs" >Emacs</a></span><span>Slight adaptation of <a href="https://themes.gohugo.io/hugo-theme-hello-friend-ng">Hello Friend Ng</a> Theme</span>
-        </div>
-    </div>
-    
-</footer>
-
-            
-        </div>
-
+Powered by <a href="http://gohugo.io">Hugo</a> + <a href="https://ox-hugo.scripter.co/">ox-hugo</a> + <a href="https://github.com/hlissner/doom-emacs" >Emacs</a>
+            &nbsp;&bull;&nbsp;
+        Slight Adaption of <a href="https://github.com/halogenica/beautifulhugo">Beautiful Hugo</a> Theme
+          
+        </p>
         
+        
+        
+        
+        
+      </div>
+    </div>
+  </div>
+</footer><script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+<script src="https://bbli.github.io/js/main.js"></script><script> renderMathInElement(document.body); </script><script src="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe.min.js" integrity="sha384-QELNnmcmU8IR9ZAykt67vGr9/rZJdHbiWi64V88fCPaOohUlHCqUD/unNN0BXSqy" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe-ui-default.min.js" integrity="sha384-m67o7SkQ1ALzKZIFh4CiTA8tmadaujiTa9Vu+nqPSwDOqHrDmxLezTdFln8077+q" crossorigin="anonymous"></script><script src="https://bbli.github.io/js/load-photoswipe.js"></script>
 
 
 
-<script type="text/javascript" src="/bundle.min.599099f1f14b78b657d524b28e10e0c5098e7cd46e9c7aed73d577068a276c3ff1bb234cbf29cb313333e83cf411727b43157c91ce5b809e2ffc81664614608e.js" integrity="sha512-WZCZ8fFLeLZX1SSyjhDgxQmOfNRunHrtc9V3BoonbD/xuyNMvynLMTMz6Dz0EXJ7QxV8kc5bgJ4v/IFmRhRgjg=="></script>
 
 
 
-    </body>
+
+
+
+
+
+    
+  </body>
 </html>
+
