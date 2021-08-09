@@ -1,279 +1,150 @@
 <!DOCTYPE html>
-<html lang="en" itemscope itemtype="http://schema.org/WebPage">
-  <head>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="author" content="Benson Li">
+<meta name="description" content="1How CRTP works 2CRTP is not &amp;ldquo;template programming magic&amp;rdquo; 3We already have static polymorphism 4We already have static implementation inheritance&amp;hellip;Except 5Appendix-Dynamic Dispatch  On my first encounter, the Curiously Recurring Template Pattern seemed like magic to me. Apparently, by writing static_cast&amp;lt;T*&amp;gt;(this)-&amp;gt;func(), we now have &amp;ldquo;static polymorphism/inheritance&amp;rdquo;. It wasn&amp;rsquo;t until a few months and some c&#43;&#43; learning resources later, that I was finally able to understand CRTP. In this blogpost, I will talk about CRTP from more of a code generation point of view, and hopefully by then end convince you that &amp;ldquo;static polymorphism/inheritance&amp;rdquo; is a misleading description of this pattern." />
+<meta name="keywords" content="homepage, blog, cpp, software-design" />
+<meta name="robots" content="noodp" />
+<meta name="theme-color" content="" />
+<link rel="canonical" href="https://bbli.github.io/posts/crtp_with_object_model/" />
+
+
+    <title>
+        
+            Clarifying CRTP with the C&#43;&#43; object model :: Benson Li&#39;s Blog 
+        
+    </title>
+
+
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css" rel="stylesheet"
+    type="text/css">
+
+
+
+<link rel="stylesheet" href="/main.a688db8f9001a2f18b75ead0f81e3ea78b55a8a51a0b1d93c546648f21308651.css">
+
+
+
+
+
+
+<meta itemprop="name" content="Clarifying CRTP with the C&#43;&#43; object model">
+<meta itemprop="description" content="1How CRTP works 2CRTP is not &ldquo;template programming magic&rdquo; 3We already have static polymorphism 4We already have static implementation inheritance&hellip;Except 5Appendix-Dynamic Dispatch  On my first encounter, the Curiously Recurring Template Pattern seemed like magic to me. Apparently, by writing static_cast&lt;T*&gt;(this)-&gt;func(), we now have &ldquo;static polymorphism/inheritance&rdquo;. It wasn&rsquo;t until a few months and some c&#43;&#43; learning resources later, that I was finally able to understand CRTP. In this blogpost, I will talk about CRTP from more of a code generation point of view, and hopefully by then end convince you that &ldquo;static polymorphism/inheritance&rdquo; is a misleading description of this pattern."><meta itemprop="datePublished" content="2021-05-20T19:36:00-07:00" />
+<meta itemprop="dateModified" content="2021-05-20T19:36:00-07:00" />
+<meta itemprop="wordCount" content="1768"><meta itemprop="image" content="https://bbli.github.io"/>
+<meta itemprop="keywords" content="cpp,software-design," />
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://bbli.github.io"/>
+
+<meta name="twitter:title" content="Clarifying CRTP with the C&#43;&#43; object model"/>
+<meta name="twitter:description" content="1How CRTP works 2CRTP is not &ldquo;template programming magic&rdquo; 3We already have static polymorphism 4We already have static implementation inheritance&hellip;Except 5Appendix-Dynamic Dispatch  On my first encounter, the Curiously Recurring Template Pattern seemed like magic to me. Apparently, by writing static_cast&lt;T*&gt;(this)-&gt;func(), we now have &ldquo;static polymorphism/inheritance&rdquo;. It wasn&rsquo;t until a few months and some c&#43;&#43; learning resources later, that I was finally able to understand CRTP. In this blogpost, I will talk about CRTP from more of a code generation point of view, and hopefully by then end convince you that &ldquo;static polymorphism/inheritance&rdquo; is a misleading description of this pattern."/>
+
+
+
+
+
+
+
+
+    <meta property="article:published_time" content="2021-05-20 19:36:00 -0700 PDT" />
+
+
+
+
+
+
+
+
+    </head>
+
     
-
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-
-  <title>Clarifying CRTP with the C&#43;&#43; object model - Benson Li&#39;s Blog</title>
-  <meta name="description" content="1How CRTP works 2CRTP is not &ldquo;template programming magic&rdquo; 3We already have static polymorphism 4We already have static implementation inheritance&hellip;Except 5Appendix-Dynamic Dispatch  On my first encounter, the Curiously Recurring Template Pattern seemed like magic to me. Apparently, by writing static_cast&lt;T*&gt;(this)-&gt;func(), we now have &ldquo;static polymorphism/inheritance&rdquo;. It wasn&rsquo;t until a few months and some c&#43;&#43; learning resources later, that I was finally able to understand CRTP. In this blogpost, I will talk about CRTP from more of a code generation point of view, and hopefully by then end convince you that &ldquo;static polymorphism/inheritance&rdquo; is a misleading description of this pattern.">
-  <meta name="author" content="Benson Li"/><script type="application/ld+json">
-{
-    "@context": "http://schema.org",
-    "@type": "WebSite",
-    "name": "Benson Li\u0027s Blog",
+        <body>
     
-    "url": "https:\/\/bbli.github.io"
-}
-</script><script type="application/ld+json">
-{
-  "@context": "http://schema.org",
-  "@type": "Organization",
-  "name": "",
-  "url": "https:\/\/bbli.github.io"
-  
-  
-  
-  
-}
-</script>
-<script type="application/ld+json">
-{
-  "@context": "http://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [{
-        "@type": "ListItem",
-        "position": 1,
-        "item": {
-          "@id": "https:\/\/bbli.github.io",
-          "name": "home"
-        }
-    },{
-        "@type": "ListItem",
-        "position": 3,
-        "item": {
-          "@id": "https:\/\/bbli.github.io\/posts\/crtp_with_object_model\/",
-          "name": "Clarifying CRT p with the c object model"
-        }
-    }]
-}
-</script><script type="application/ld+json">
-{
-  "@context": "http://schema.org",
-  "@type": "Article",
-  "author": {
-    "name" : "Benson Li"
-  },
-  "headline": "Clarifying CRTP with the C\u002b\u002b object model",
-  "description" : "1How CRTP works 2CRTP is not \u0026ldquo;template programming magic\u0026rdquo; 3We already have static polymorphism 4We already have static implementation inheritance\u0026hellip;Except 5Appendix-Dynamic Dispatch  On my first encounter, the Curiously Recurring Template Pattern seemed like magic to me. Apparently, by writing static_cast\u0026lt;T*\u0026gt;(this)-\u0026gt;func(), we now have \u0026ldquo;static polymorphism\/inheritance\u0026rdquo;. It wasn\u0026rsquo;t until a few months and some c\u002b\u002b learning resources later, that I was finally able to understand CRTP. In this blogpost, I will talk about CRTP from more of a code generation point of view, and hopefully by then end convince you that \u0026ldquo;static polymorphism\/inheritance\u0026rdquo; is a misleading description of this pattern.",
-  "inLanguage" : "en",
-  "wordCount":  1768 ,
-  "datePublished" : "2021-05-20T19:36:00",
-  "dateModified" : "2021-05-20T19:36:00",
-  "image" : "https:\/\/bbli.github.io\/img\/avatar-icon.png",
-  "keywords" : [ "cpp, software-design" ],
-  "mainEntityOfPage" : "https:\/\/bbli.github.io\/posts\/crtp_with_object_model\/",
-  "publisher" : {
-    "@type": "Organization",
-    "name" : "https:\/\/bbli.github.io",
-    "logo" : {
-        "@type" : "ImageObject",
-        "url" : "https:\/\/bbli.github.io\/img\/avatar-icon.png",
-        "height" :  60 ,
-        "width" :  60
-    }
-  }
-}
-</script>
-
-<meta property="og:title" content="Clarifying CRTP with the C&#43;&#43; object model" />
-<meta property="og:description" content="1How CRTP works 2CRTP is not &ldquo;template programming magic&rdquo; 3We already have static polymorphism 4We already have static implementation inheritance&hellip;Except 5Appendix-Dynamic Dispatch  On my first encounter, the Curiously Recurring Template Pattern seemed like magic to me. Apparently, by writing static_cast&lt;T*&gt;(this)-&gt;func(), we now have &ldquo;static polymorphism/inheritance&rdquo;. It wasn&rsquo;t until a few months and some c&#43;&#43; learning resources later, that I was finally able to understand CRTP. In this blogpost, I will talk about CRTP from more of a code generation point of view, and hopefully by then end convince you that &ldquo;static polymorphism/inheritance&rdquo; is a misleading description of this pattern.">
-<meta property="og:image" content="https://bbli.github.io/img/avatar-icon.png" />
-<meta property="og:url" content="https://bbli.github.io/posts/crtp_with_object_model/" />
-<meta property="og:type" content="website" />
-<meta property="og:site_name" content="Benson Li&#39;s Blog" />
-
-  <meta name="twitter:title" content="Clarifying CRTP with the C&#43;&#43; object model" />
-  <meta name="twitter:description" content="1How CRTP works 2CRTP is not &ldquo;template programming magic&rdquo; 3We already have static polymorphism 4We already have static implementation inheritance&hellip;Except 5Appendix-Dynamic Dispatch …">
-  <meta name="twitter:image" content="https://bbli.github.io/img/avatar-icon.png" />
-  <meta name="twitter:card" content="summary" />
-  <link href='https://bbli.github.io/img/favicon.ico' rel='icon' type='image/x-icon'/>
-  <meta name="generator" content="Hugo 0.86.0" />
-  <link rel="alternate" href="https://bbli.github.io/index.xml" type="application/rss+xml" title="Benson Li&#39;s Blog"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"><link rel="stylesheet" href="https://bbli.github.io/css/main.css" /><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" /><link rel="stylesheet" href="https://bbli.github.io/css/syntax.css" /><link rel="stylesheet" href="https://bbli.github.io/css/codeblock.css" /><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe.min.css" integrity="sha384-h/L2W9KefUClHWaty3SLE5F/qvc4djlyR4qY3NUV5HGQBBW7stbcfff1+I/vmsHh" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/default-skin/default-skin.min.css" integrity="sha384-iD0dNku6PYSIQLyfTOpB06F2KCZJAKLOThS5HRe8b3ibhdEQ6eKsFf/EeFxdOt5R" crossorigin="anonymous">
-
-
-
-  </head>
-  <body>
-    <nav class="navbar navbar-default navbar-fixed-top navbar-custom">
-  <div class="container-fluid">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#main-navbar">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <a class="navbar-brand" href="https://bbli.github.io">Benson Li&#39;s Blog</a>
+    
+        <div class="container">
+            <header class="header">
+    <span class="header__inner">
+        <a href="/" style="text-decoration: none;">
+    <div class="logo">
+        
+            <span class="logo__mark">&gt;</span>
+            <span class="logo__text">Home</span>
+            <span class="logo__cursor" style=
+                  "
+                   
+                   ">
+            </span>
+        
     </div>
+</a>
 
-    <div class="collapse navbar-collapse" id="main-navbar">
-      <ul class="nav navbar-nav navbar-right">
-        
-          
-            <li>
-              <a title="Posts" href="/">Posts</a>
-            </li>
-          
-        
-          
-            <li>
-              <a title="About" href="/about">About</a>
-            </li>
-          
-        
-          
-            <li>
-              <a title="Tags" href="/tags">Tags</a>
-            </li>
-          
-        
 
-        
-
-        
-      </ul>
-    </div>
-
-    
-      <div class="avatar-container">
-        <div class="avatar-img-border">
-          <a title="Benson Li&#39;s Blog" href="https://bbli.github.io">
-            <img class="avatar-img" src="https://bbli.github.io/img/avatar-icon.png" alt="Benson Li&#39;s Blog" />
-          </a>
-        </div>
-      </div>
-    
-
-  </div>
+        <span class="header__right">
+            
+                <nav class="menu">
+    <ul class="menu__inner"><li><a href="/posts">Posts</a></li><li><a href="/tags">Tags</a></li><li><a href="/about">About</a></li>
+    </ul>
 </nav>
 
+                <span class="menu-trigger">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+                    </svg>
+                </span>
+            
+                <span class="theme-toggle not-selectable"><svg class="theme-toggler" width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+   <path d="M22 41C32.4934 41 41 32.4934 41 22C41 11.5066 32.4934 3 22
+   3C11.5066 3 3 11.5066 3 22C3 32.4934 11.5066 41 22 41ZM7 22C7
+   13.7157 13.7157 7 22 7V37C13.7157 37 7 30.2843 7 22Z"/>
+ </svg></span>
+        </span>
+    </span>
+</header>
 
 
-
-    
-
-
-<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
-
-<div class="pswp__bg"></div>
-
-<div class="pswp__scroll-wrap">
-    
-    <div class="pswp__container">
-      <div class="pswp__item"></div>
-      <div class="pswp__item"></div>
-      <div class="pswp__item"></div>
-    </div>
-    
-    <div class="pswp__ui pswp__ui--hidden">
-    <div class="pswp__top-bar">
-      
-      <div class="pswp__counter"></div>
-      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
-      <button class="pswp__button pswp__button--share" title="Share"></button>
-      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
-      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
-      
-      
-      <div class="pswp__preloader">
-        <div class="pswp__preloader__icn">
-          <div class="pswp__preloader__cut">
-            <div class="pswp__preloader__donut"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
-      <div class="pswp__share-tooltip"></div>
-    </div>
-    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
-    </button>
-    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
-    </button>
-    <div class="pswp__caption">
-      <div class="pswp__caption__center"></div>
-    </div>
-    </div>
-    </div>
-</div>
-
-
-  
-  
-  
-
-
-
-
-
-
-  
-
-  <header class="header-section ">
-    
-    <div class="intro-header no-img">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-            <div class="posts-heading">
-              
-              
-                <h1>Clarifying CRTP with the C&#43;&#43; object model</h1>
+            <div class="content">
                 
-              
-              
-                <hr class="small">
-              
-              
-              
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </header>
+  <main class="post">
 
+    <div class="post-info">
+      <p style="font-size:1.05rem">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-clock">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+        9 minutes
 
-    
-<div class="container" role="main">
-  <div class="row">
-    <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-      <article role="main" class="blog-post">
-    <p class="post-meta">
-        <span class="post-meta">
-  
-  
-  <i class="fas fa-calendar"></i>&nbsp;Posted on May 20, 2021
-  
-  
-    &nbsp;|&nbsp;<i class="fas fa-clock"></i>&nbsp;9&nbsp;minutes
-  
-  
-    &nbsp;|&nbsp;<i class="fas fa-book"></i>&nbsp;1768&nbsp;words
-  
-  
-  
-</span>
+        
+      
+    <p style="font-size:1.05rem">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg>
 
-
+        <span class="tag"><a href="https://bbli.github.io/tags/cpp/">cpp</a></span>
+        <span class="tag"><a href="https://bbli.github.io/tags/software-design/">software-design</a></span>
+        
     </p>
-        
-          <div class="blog-tags">
-            
-              <a href="https://bbli.github.io/tags/cpp/">cpp</a>&nbsp;
-            
-              <a href="https://bbli.github.io/tags/software-design/">software-design</a>&nbsp;
-            
-          </div>
-        
 
+
+      </p>
+    </div>
+
+    <article>
+      <h1 class="post-title">
+        <a href="https://bbli.github.io/posts/crtp_with_object_model/">Clarifying CRTP with the C++ object model</a>
+      </h1>
+
+      
+
+      
+
+      
+
+      <div class="post-content">
         <!-- raw HTML omitted -->
 <!-- raw HTML omitted -->
 <!-- raw HTML omitted -->
@@ -288,389 +159,389 @@
 <!-- raw HTML omitted -->
 <p>On my first encounter, the Curiously Recurring Template Pattern seemed like magic to me. Apparently, by writing <code>static_cast&lt;T*&gt;(this)-&gt;func()</code>,  we now have &ldquo;static polymorphism/inheritance&rdquo;. It wasn&rsquo;t until a few months and some c++ <a href="https://www.youtube.com/watch?v=SShSV%5FiV1Ko">learning resources</a> later, that I was finally able to understand CRTP. In this blogpost, I will talk about CRTP from more of a code generation point of view, and hopefully by then end convince you that &ldquo;static polymorphism/inheritance&rdquo; is a misleading description of this pattern.</p>
 <h1 id="how-crtp-works"><!-- raw HTML omitted -->1<!-- raw HTML omitted --> How CRTP works</h1>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
 </span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
-<span class="k">class</span> <span class="nc">BaseT</span><span class="p">{</span>
-<span class="k">public</span><span class="o">:</span>
-    <span class="kt">void</span> <span class="n">func</span><span class="p">(){</span>
-        <span class="c1">// Note: the use of pointers instead of references is for pedagogy reasons
-</span><span class="c1"></span>        <span class="n">T</span><span class="o">*</span> <span class="n">derived</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">T</span><span class="o">*&gt;</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
-        <span class="c1">// pre function call code
-</span><span class="c1"></span>        <span class="n">derived</span><span class="o">-&gt;</span><span class="n">do_func1</span><span class="p">();</span>
-        <span class="n">derived</span><span class="o">-&gt;</span><span class="n">do_func2</span><span class="p">();</span>
-        <span class="c1">// post function call code
-</span><span class="c1"></span>    <span class="p">}</span>
-<span class="k">private</span><span class="o">:</span>
-    <span class="kt">void</span> <span class="n">do_func1</span><span class="p">();</span>
-    <span class="kt">void</span> <span class="nf">do_func2</span><span class="p">();</span>
-<span class="p">};</span>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">template</span> <span style="color:#f92672">&lt;</span><span style="color:#66d9ef">typename</span> T<span style="color:#f92672">&gt;</span>
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">BaseT</span>{
+<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">void</span> func(){
+        <span style="color:#75715e">// Note: the use of pointers instead of references is for pedagogy reasons
+</span><span style="color:#75715e"></span>        T<span style="color:#f92672">*</span> derived <span style="color:#f92672">=</span> <span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span>T<span style="color:#f92672">*&gt;</span>(<span style="color:#66d9ef">this</span>);
+        <span style="color:#75715e">// pre function call code
+</span><span style="color:#75715e"></span>        derived<span style="color:#f92672">-&gt;</span>do_func1();
+        derived<span style="color:#f92672">-&gt;</span>do_func2();
+        <span style="color:#75715e">// post function call code
+</span><span style="color:#75715e"></span>    }
+<span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">void</span> do_func1();
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">do_func2</span>();
+};
 
-<span class="k">class</span> <span class="nc">Derived</span><span class="o">:</span> <span class="k">public</span> <span class="n">BaseT</span><span class="o">&lt;</span><span class="n">Derived</span><span class="o">&gt;</span><span class="p">{</span>
-<span class="k">private</span><span class="o">:</span>
-    <span class="kt">void</span> <span class="n">do_func1</span><span class="p">(){};</span>
-    <span class="kt">void</span> <span class="nf">do_func2</span><span class="p">(){};</span>
-<span class="p">};</span></code></pre></td></tr></table>
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Derived</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> BaseT<span style="color:#f92672">&lt;</span>Derived<span style="color:#f92672">&gt;</span>{
+<span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">void</span> do_func1(){};
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">do_func2</span>(){};
+};</code></pre></td></tr></table>
 </div>
 </div>
 <p>Here is the general form of the pattern, with some modifications that will come to light by the end of this article. Let us now walk through what <code>foo</code> translates to for this <code>Derived</code> class. When the compiler processes<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup> this function, whose <code>func1</code>  does it insert, <code>BaseT&lt;Derived&gt;</code> or <code>Derived</code>?</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span><span class="lnt">8
-</span><span class="lnt">9
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">9
 </span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="c1">// rough translation
-</span><span class="c1"></span><span class="kt">void</span> <span class="nf">func</span><span class="p">(</span><span class="n">BaseT</span><span class="o">&lt;</span><span class="n">Derived</span><span class="o">&gt;*</span> <span class="k">this</span><span class="p">){</span>
-    <span class="c1">// From now on, generate code as if we have a pointer to Derived(whichc we do)
-</span><span class="c1"></span>    <span class="n">Derived</span><span class="o">*</span> <span class="n">derived</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">Derived</span><span class="o">*&gt;</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
-    <span class="c1">// pre function call code
-</span><span class="c1"></span>    <span class="n">Derived</span><span class="o">::</span><span class="n">do_func1</span><span class="p">(</span><span class="n">derived</span><span class="p">);</span>
-    <span class="n">Derived</span><span class="o">::</span><span class="n">do_func2</span><span class="p">(</span><span class="n">derived</span><span class="p">);</span>
-    <span class="c1">// post function call code
-</span><span class="c1"></span><span class="p">}</span></code></pre></td></tr></table>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// rough translation
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">func</span>(BaseT<span style="color:#f92672">&lt;</span>Derived<span style="color:#f92672">&gt;*</span> <span style="color:#66d9ef">this</span>){
+    <span style="color:#75715e">// From now on, generate code as if we have a pointer to Derived(whichc we do)
+</span><span style="color:#75715e"></span>    Derived<span style="color:#f92672">*</span> derived <span style="color:#f92672">=</span> <span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span>Derived<span style="color:#f92672">*&gt;</span>(<span style="color:#66d9ef">this</span>);
+    <span style="color:#75715e">// pre function call code
+</span><span style="color:#75715e"></span>    Derived<span style="color:#f92672">::</span>do_func1(derived);
+    Derived<span style="color:#f92672">::</span>do_func2(derived);
+    <span style="color:#75715e">// post function call code
+</span><span style="color:#75715e"></span>}</code></pre></td></tr></table>
 </div>
 </div>
 <p>The way the C++ object model works is that when there are no virtual functions, the compiler inserts the function corresponding with the <strong>whatever the compile time type CURRENTLY is of the object who calls that method</strong> <sup id="fnref:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">2</a></sup></p>
 <p>Now, that was a bit of a mouthful. Let us walk through another example of using <code>static_cast</code> to help the compiler with name resolution.</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
 </span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="k">struct</span> <span class="nc">Parent1</span><span class="p">{</span>
-    <span class="kt">void</span> <span class="nf">f</span><span class="p">(){</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&#34;1&#34;</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;}</span>
-<span class="p">};</span>
-<span class="k">struct</span> <span class="nc">Parent2</span><span class="p">{</span>
-    <span class="kt">void</span> <span class="nf">f</span><span class="p">(){</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&#34;2&#34;</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;}</span>
-<span class="p">};</span>
-<span class="k">struct</span> <span class="nc">Child</span><span class="o">:</span><span class="k">public</span> <span class="n">Parent1</span><span class="p">,</span><span class="k">public</span> <span class="n">Parent2</span><span class="p">{</span>
-    <span class="kt">void</span> <span class="nf">g</span><span class="p">(){</span>
-        <span class="n">Parent2</span><span class="o">*</span> <span class="n">casted</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">Parent2</span><span class="o">*&gt;</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
-        <span class="n">casted</span><span class="o">-&gt;</span><span class="n">f</span><span class="p">();</span>
-        <span class="c1">// Parent2::f(); // can also be done with explicit scoping
-</span><span class="c1"></span>    <span class="p">}</span>
-<span class="p">};</span></code></pre></td></tr></table>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Parent1</span>{
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">f</span>(){cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;1&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;}
+};
+<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Parent2</span>{
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">f</span>(){cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;2&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;}
+};
+<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Child</span><span style="color:#f92672">:</span><span style="color:#66d9ef">public</span> Parent1,<span style="color:#66d9ef">public</span> Parent2{
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">g</span>(){
+        Parent2<span style="color:#f92672">*</span> casted <span style="color:#f92672">=</span> <span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span>Parent2<span style="color:#f92672">*&gt;</span>(<span style="color:#66d9ef">this</span>);
+        casted<span style="color:#f92672">-&gt;</span>f();
+        <span style="color:#75715e">// Parent2::f(); // can also be done with explicit scoping
+</span><span style="color:#75715e"></span>    }
+};</code></pre></td></tr></table>
 </div>
 </div>
 <p>Without the static_cast, the compiler will throw an error, saying <code>f</code> is found in multiple base classes. But by using it, the compiler will no longer look in <code>Child</code> or <code>Parent1</code> during name resolution. One can also use explicit scoping to achieve this, but the difference is that static_cast will walk the class hierarchy until it finds a <code>f</code> . Furthermore explicit scoping requires retyping <code>Parent1</code> on every subsequent member function call.</p>
 <p>I find this explanation in terms of &ldquo;manipulating the name resolution path&rdquo; to be much clearer than saying &ldquo;the base class can now access the derived class&rdquo; or &ldquo;we inject the derived class into the base&rdquo; as I have found in other blogs. For all intensive purposes, the compiler thinks it has a Derived object now. And in fact, it is the other way around, that the derived class has access to the base. Which isn&rsquo;t that suprising, as that&rsquo;s basically the definition of how classes work.</p>
 <p>So to repeat, after the <code>static_cast</code>, there is no Base anymore. With the fundamental understanding of CRTP down, let us now dispel some myths/confusion around its usage.</p>
 <h1 id="crtp-is-not-template-programming-magic"><!-- raw HTML omitted -->2<!-- raw HTML omitted --> CRTP is not &ldquo;template programming magic&rdquo;</h1>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
 </span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="k">struct</span> <span class="nc">Widget</span><span class="p">{</span>
-    <span class="kt">void</span> <span class="nf">update</span><span class="p">(){</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&#34;hi&#34;</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;};</span>
-<span class="p">};</span>
-<span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
-<span class="kt">void</span> <span class="n">generic_function</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">x</span><span class="p">){</span>
-    <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">T</span><span class="o">*&gt;</span><span class="p">(</span><span class="k">this</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">update</span><span class="p">();</span>
-<span class="p">}</span>
-<span class="c1">// vs
-</span><span class="c1"></span><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
-<span class="kt">void</span> <span class="n">generic_function2</span><span class="p">(</span><span class="n">T</span><span class="o">*</span> <span class="n">x</span><span class="p">){</span>
-    <span class="n">x</span><span class="o">-&gt;</span><span class="n">update</span><span class="p">();</span>
-<span class="p">}</span>
-<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">){</span>
-    <span class="n">Widget</span><span class="o">*</span> <span class="n">x</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Widget</span><span class="p">;</span>
-    <span class="n">generic_function</span><span class="o">&lt;</span><span class="n">Widget</span><span class="o">&gt;</span><span class="p">((</span><span class="kt">void</span><span class="o">*</span><span class="p">)</span><span class="n">x</span><span class="p">);</span>
-    <span class="n">generic_function2</span><span class="p">(</span><span class="n">x</span><span class="p">);</span>
-<span class="p">}</span></code></pre></td></tr></table>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Widget</span>{
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">update</span>(){cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;hi&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;};
+};
+<span style="color:#66d9ef">template</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">typename</span> T<span style="color:#f92672">&gt;</span>
+<span style="color:#66d9ef">void</span> generic_function(<span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> x){
+    <span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span>T<span style="color:#f92672">*&gt;</span>(<span style="color:#66d9ef">this</span>)<span style="color:#f92672">-&gt;</span>update();
+}
+<span style="color:#75715e">// vs
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">template</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">typename</span> T<span style="color:#f92672">&gt;</span>
+<span style="color:#66d9ef">void</span> generic_function2(T<span style="color:#f92672">*</span> x){
+    x<span style="color:#f92672">-&gt;</span>update();
+}
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">void</span>){
+    Widget<span style="color:#f92672">*</span> x <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Widget;
+    generic_function<span style="color:#f92672">&lt;</span>Widget<span style="color:#f92672">&gt;</span>((<span style="color:#66d9ef">void</span><span style="color:#f92672">*</span>)x);
+    generic_function2(x);
+}</code></pre></td></tr></table>
 </div>
 </div>
 <p>Consider the above example. They both will print &ldquo;hi&rdquo;. The difference is just that we gave the first one a bad input argument, and so we had to &ldquo;compensate&rdquo; via the static_cast. So if you understand static_cast and basic generic programming<sup id="fnref:3"><a href="#fn:3" class="footnote-ref" role="doc-noteref">3</a></sup>
 there is no reason you shouldn&rsquo;t understand CRTP.</p>
 <h1 id="we-already-have-static-polymorphism"><!-- raw HTML omitted -->3<!-- raw HTML omitted --> We already have static polymorphism</h1>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span><span class="lnt">30
-</span><span class="lnt">31
-</span><span class="lnt">32
-</span><span class="lnt">33
-</span><span class="lnt">34
-</span><span class="lnt">35
-</span><span class="lnt">36
-</span><span class="lnt">37
-</span><span class="lnt">38
-</span><span class="lnt">39
-</span><span class="lnt">40
-</span><span class="lnt">41
-</span><span class="lnt">42
-</span><span class="lnt">43
-</span><span class="lnt">44
-</span><span class="lnt">45
-</span><span class="lnt">46
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
 </span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="k">struct</span> <span class="nc">Object1</span><span class="p">{</span>
-<span class="k">public</span><span class="o">:</span>
-    <span class="kt">void</span> <span class="n">interface</span><span class="p">(){</span>
-        <span class="c1">// pre function call code
-</span><span class="c1"></span>        <span class="n">impl</span><span class="p">();</span>
-        <span class="c1">// post function call code
-</span><span class="c1"></span>    <span class="p">}</span>
-<span class="k">private</span><span class="o">:</span>
-   <span class="kt">void</span> <span class="n">impl</span><span class="p">(){</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&#34;a&#34;</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;}</span>
-<span class="p">};</span>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Object1</span>{
+<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">void</span> interface(){
+        <span style="color:#75715e">// pre function call code
+</span><span style="color:#75715e"></span>        impl();
+        <span style="color:#75715e">// post function call code
+</span><span style="color:#75715e"></span>    }
+<span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+   <span style="color:#66d9ef">void</span> impl(){cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;a&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;}
+};
 
-<span class="k">struct</span> <span class="nc">Object2</span><span class="p">{</span>
-<span class="k">public</span><span class="o">:</span>
-    <span class="kt">void</span> <span class="n">interface</span><span class="p">(){</span>
-        <span class="c1">// Notice we call whatever functions we want here, unlike CRTP
-</span><span class="c1"></span>        <span class="n">impl_a</span><span class="p">();</span>
-        <span class="n">impl_b</span><span class="p">();</span>
-    <span class="p">}</span>
-<span class="k">private</span><span class="o">:</span>
-    <span class="kt">void</span> <span class="n">impl_a</span><span class="p">(){</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&#34;b1&#34;</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;}</span>
-    <span class="kt">void</span> <span class="nf">impl_b</span><span class="p">(){</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&#34;b2&#34;</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;}</span>
-<span class="p">};</span>
-<span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
-<span class="k">struct</span> <span class="nc">BaseT</span><span class="p">{</span>
-    <span class="kt">void</span> <span class="nf">interface</span><span class="p">(){</span>
-        <span class="c1">// pre function call code
-</span><span class="c1"></span>        <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">T</span><span class="o">*&gt;</span><span class="p">(</span><span class="k">this</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">impl</span><span class="p">();</span>
-        <span class="c1">// post function call code
-</span><span class="c1"></span>    <span class="p">}</span>
-<span class="p">};</span>
-<span class="k">struct</span> <span class="nc">Derived</span><span class="o">:</span> <span class="k">public</span> <span class="n">BaseT</span><span class="o">&lt;</span><span class="n">Derived</span><span class="o">&gt;</span><span class="p">{</span>
-    <span class="kt">void</span> <span class="nf">impl</span><span class="p">(){</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&#34;c&#34;</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;}</span>
-<span class="p">};</span>
+<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Object2</span>{
+<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">void</span> interface(){
+        <span style="color:#75715e">// Notice we call whatever functions we want here, unlike CRTP
+</span><span style="color:#75715e"></span>        impl_a();
+        impl_b();
+    }
+<span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">void</span> impl_a(){cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;b1&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;}
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">impl_b</span>(){cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;b2&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;}
+};
+<span style="color:#66d9ef">template</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">typename</span> T<span style="color:#f92672">&gt;</span>
+<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">BaseT</span>{
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">interface</span>(){
+        <span style="color:#75715e">// pre function call code
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span>T<span style="color:#f92672">*&gt;</span>(<span style="color:#66d9ef">this</span>)<span style="color:#f92672">-&gt;</span>impl();
+        <span style="color:#75715e">// post function call code
+</span><span style="color:#75715e"></span>    }
+};
+<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Derived</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> BaseT<span style="color:#f92672">&lt;</span>Derived<span style="color:#f92672">&gt;</span>{
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">impl</span>(){cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;c&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;}
+};
 
-<span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
-<span class="kt">void</span> <span class="n">call_a_function</span><span class="p">(</span><span class="n">T</span><span class="o">&amp;</span> <span class="n">x</span><span class="p">){</span>
-    <span class="n">x</span><span class="p">.</span><span class="n">interface</span><span class="p">();</span>
-<span class="p">}</span>
-<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">){</span>
-    <span class="n">Object1</span> <span class="n">a</span><span class="p">;</span>
-    <span class="n">Object2</span> <span class="n">b</span><span class="p">;</span>
-    <span class="n">Derived</span> <span class="n">c</span><span class="p">;</span>
-    <span class="n">call_a_function</span><span class="p">(</span><span class="n">a</span><span class="p">);</span><span class="c1">// They all work!
-</span><span class="c1"></span>    <span class="n">call_a_function</span><span class="p">(</span><span class="n">b</span><span class="p">);</span>
-    <span class="n">call_a_function</span><span class="p">(</span><span class="n">c</span><span class="p">);</span>
-<span class="p">}</span></code></pre></td></tr></table>
+<span style="color:#66d9ef">template</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">typename</span> T<span style="color:#f92672">&gt;</span>
+<span style="color:#66d9ef">void</span> call_a_function(T<span style="color:#f92672">&amp;</span> x){
+    x.interface();
+}
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">void</span>){
+    Object1 a;
+    Object2 b;
+    Derived c;
+    call_a_function(a);<span style="color:#75715e">// They all work!
+</span><span style="color:#75715e"></span>    call_a_function(b);
+    call_a_function(c);
+}</code></pre></td></tr></table>
 </div>
 </div>
 <p>As we can see, CRTP is not necessary here(and actually is not even a &ldquo;true&rdquo; interface in some sense, as it has already predetermined the implementation). What is really giving us polymorphism is generic programming. Furthermore, inheriting from a CRTP doesn&rsquo;t actually guarantee the Derived class will satisfy the interface. Consider this example</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
 </span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
-<span class="k">struct</span> <span class="nc">BaseT</span><span class="p">{</span>
-    <span class="kt">void</span> <span class="nf">f</span><span class="p">(){</span>
-        <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">T</span><span class="o">*&gt;</span><span class="p">(</span><span class="k">this</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">not_implemented</span><span class="p">();</span>
-    <span class="p">}</span>
-<span class="p">};</span>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">template</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">typename</span> T<span style="color:#f92672">&gt;</span>
+<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">BaseT</span>{
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">f</span>(){
+        <span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span>T<span style="color:#f92672">*&gt;</span>(<span style="color:#66d9ef">this</span>)<span style="color:#f92672">-&gt;</span>not_implemented();
+    }
+};
 
-<span class="k">struct</span> <span class="nc">Derived</span><span class="o">:</span><span class="k">public</span> <span class="n">BaseT</span><span class="o">&lt;</span><span class="n">Derived</span><span class="o">&gt;</span><span class="p">{</span>
-<span class="p">};</span>
+<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Derived</span><span style="color:#f92672">:</span><span style="color:#66d9ef">public</span> BaseT<span style="color:#f92672">&lt;</span>Derived<span style="color:#f92672">&gt;</span>{
+};
 
-<span class="k">struct</span> <span class="nc">B</span><span class="p">{</span>
-    <span class="k">virtual</span> <span class="kt">void</span> <span class="nf">f</span><span class="p">()</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-<span class="p">};</span>
-<span class="k">struct</span> <span class="nc">D</span><span class="o">:</span><span class="k">public</span> <span class="n">B</span><span class="p">{</span>
-<span class="p">};</span>
-<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">){</span>
-    <span class="n">Derived</span> <span class="n">a</span><span class="p">;</span>
-    <span class="n">D</span> <span class="n">b</span><span class="p">;</span>
-<span class="p">}</span></code></pre></td></tr></table>
+<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">B</span>{
+    <span style="color:#66d9ef">virtual</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">f</span>() <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+};
+<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">D</span><span style="color:#f92672">:</span><span style="color:#66d9ef">public</span> B{
+};
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">void</span>){
+    Derived a;
+    D b;
+}</code></pre></td></tr></table>
 </div>
 </div>
 <p>Comment out the <code>D b;</code> initialization in main, and the code compiles. With it, we get an error. Why? Because abstract base classes force their inheritors to implement the interface, even if the function never gets called. There are no such guarantees, however, with CRTP.(If we do call Derived&rsquo;s <code>f</code> function, we will get an error&hellip;but we basically get the same error had <code>f</code> been a templated free function)<sup id="fnref:4"><a href="#fn:4" class="footnote-ref" role="doc-noteref">4</a></sup></p>
 <h1 id="we-already-have-static-implementation-inheritance-dot-dot-dot-except"><!-- raw HTML omitted -->4<!-- raw HTML omitted --> We already have static implementation inheritance&hellip;Except</h1>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
 </span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="k">struct</span> <span class="nc">EngineMixin</span><span class="p">{</span>
-    <span class="kt">void</span> <span class="nf">do_work</span><span class="p">();</span>
-<span class="p">};</span>
-<span class="k">struct</span> <span class="nc">SpecificEngine</span><span class="o">:</span><span class="k">public</span> <span class="n">EngineMixin</span><span class="p">{</span>
-<span class="p">};</span>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">EngineMixin</span>{
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">do_work</span>();
+};
+<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">SpecificEngine</span><span style="color:#f92672">:</span><span style="color:#66d9ef">public</span> EngineMixin{
+};
 
-<span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
-<span class="k">struct</span> <span class="nc">BaseT</span><span class="p">{</span>
-    <span class="kt">void</span> <span class="nf">do_work</span><span class="p">();</span>
-<span class="p">};</span>
-<span class="k">struct</span> <span class="nc">Derived</span><span class="o">:</span><span class="k">public</span> <span class="n">BaseT</span><span class="o">&lt;</span><span class="n">Derived</span><span class="o">&gt;</span><span class="p">{</span>
-<span class="p">};</span>
-<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">){</span>
-    <span class="n">SpecificEngine</span> <span class="n">e</span><span class="p">;</span>
-    <span class="n">Derived</span> <span class="n">d</span><span class="p">;</span>
-    <span class="n">e</span><span class="p">.</span><span class="n">work</span><span class="p">();</span> <span class="c1">//They both static dispatch to the same thing!
-</span><span class="c1"></span>    <span class="n">d</span><span class="p">.</span><span class="n">work</span><span class="p">();</span>
-<span class="p">}</span></code></pre></td></tr></table>
+<span style="color:#66d9ef">template</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">typename</span> T<span style="color:#f92672">&gt;</span>
+<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">BaseT</span>{
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">do_work</span>();
+};
+<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Derived</span><span style="color:#f92672">:</span><span style="color:#66d9ef">public</span> BaseT<span style="color:#f92672">&lt;</span>Derived<span style="color:#f92672">&gt;</span>{
+};
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">void</span>){
+    SpecificEngine e;
+    Derived d;
+    e.work(); <span style="color:#75715e">//They both static dispatch to the same thing!
+</span><span style="color:#75715e"></span>    d.work();
+}</code></pre></td></tr></table>
 </div>
 </div>
 <p>Let us now consider the other aspect of inheritance, inheritance of functionality. In the above example, <code>SpecificEngine</code> and <code>Derived</code> will both resolve the function call at compile time, as there are no <a href="#appendix-dynamic-dispatch">virtual functions + pointers here</a>. I would like to emphasis this, as I feel some people may think that just because there is a &ldquo;static_cast&rdquo; in CRTP, it is somehow related to the function call being static too. As I have explained above, <code>static_cast</code> <strong>controls what name we dispatch to, and not the type of the dispatch</strong></p>
 <p>So given all of this, when exactly should we use CRTP? Let us reconsider the initial example</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
 </span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="k">class</span> <span class="nc">BaseT</span><span class="p">{</span>
-<span class="k">public</span><span class="o">:</span>
-    <span class="kt">void</span> <span class="n">func</span><span class="p">(){</span>
-        <span class="c1">// pre function call code
-</span><span class="c1"></span>        <span class="n">derived</span><span class="o">-&gt;</span><span class="n">do_func1</span><span class="p">();</span>
-        <span class="n">derived</span><span class="o">-&gt;</span><span class="n">do_func2</span><span class="p">();</span>
-        <span class="c1">// post function call code
-</span><span class="c1"></span>    <span class="p">}</span>
-<span class="k">private</span><span class="o">:</span>
-    <span class="k">virtual</span> <span class="kt">void</span> <span class="n">do_func1</span><span class="p">();</span>
-    <span class="k">virtual</span> <span class="kt">void</span> <span class="nf">do_func2</span><span class="p">();</span>
-<span class="p">};</span>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">BaseT</span>{
+<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">void</span> func(){
+        <span style="color:#75715e">// pre function call code
+</span><span style="color:#75715e"></span>        derived<span style="color:#f92672">-&gt;</span>do_func1();
+        derived<span style="color:#f92672">-&gt;</span>do_func2();
+        <span style="color:#75715e">// post function call code
+</span><span style="color:#75715e"></span>    }
+<span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">virtual</span> <span style="color:#66d9ef">void</span> do_func1();
+    <span style="color:#66d9ef">virtual</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">do_func2</span>();
+};
 
-<span class="k">class</span> <span class="nc">Derived</span><span class="o">:</span> <span class="k">public</span> <span class="n">BaseT</span><span class="o">&lt;</span><span class="n">Derived</span><span class="o">&gt;</span><span class="p">{</span>
-<span class="k">private</span><span class="o">:</span>
-    <span class="kt">void</span> <span class="n">do_func1</span><span class="p">(){};</span>
-    <span class="kt">void</span> <span class="nf">do_func2</span><span class="p">(){};</span>
-<span class="p">};</span></code></pre></td></tr></table>
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Derived</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> BaseT<span style="color:#f92672">&lt;</span>Derived<span style="color:#f92672">&gt;</span>{
+<span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">void</span> do_func1(){};
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">do_func2</span>(){};
+};</code></pre></td></tr></table>
 </div>
 </div>
 <p>Now, if you look closely, I haven&rsquo;t actually reproduced the initial example! Instead, by removing the static_cast and adding <code>virtual</code> to <code>do_func1/do_func2</code>, I have actually introduced another pattern, known as the &ldquo;NVI idiom&rdquo; or Facade Design Pattern. The purpose of this pattern is the Base class provides most of the code scaffolding/wiring/or public interface, and the Derived class simply needs to &ldquo;fill in the blanks&rdquo;. So if you have been wondering why I have been writing &ldquo;pre function call&rdquo; comments throughout this post, it is because <strong>I want to encourage you to think of CRTP as a &ldquo;static NVI idiom&rdquo;</strong>, and not &ldquo;static inheritance&rdquo;. If all the Base class does is forward to the implementation, one has to wonder &ldquo;What was the point?&rdquo;</p>
@@ -678,84 +549,84 @@ there is no reason you shouldn&rsquo;t understand CRTP.</p>
 <hr>
 <h1 id="appendix-dynamic-dispatch"><!-- raw HTML omitted -->5<!-- raw HTML omitted --> Appendix-Dynamic Dispatch</h1>
 <p>(Note: This section may or may not be helpful in understanding how CRTP works. )</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
 </span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="k">class</span> <span class="nc">Animal</span><span class="p">{</span>
-    <span class="k">virtual</span> <span class="kt">void</span> <span class="nf">walk</span><span class="p">();</span>
-    <span class="k">virtual</span> <span class="kt">void</span> <span class="nf">eat</span><span class="p">()</span>  <span class="p">;</span>
-    <span class="kt">int</span> <span class="n">data</span><span class="p">;</span>
-<span class="p">};</span>
-<span class="c1">// is roughly
-</span><span class="c1"></span><span class="k">struct</span> <span class="nc">Animal</span><span class="p">{</span>
-    <span class="kt">void</span><span class="o">*</span> <span class="n">_vtable</span><span class="p">;</span>
-    <span class="kt">int</span> <span class="n">data</span><span class="p">;</span>
-<span class="p">};</span>
-<span class="kt">void</span> <span class="nf">update</span><span class="p">(</span><span class="n">Animal</span><span class="o">*</span><span class="p">){};</span></code></pre></td></tr></table>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Animal</span>{
+    <span style="color:#66d9ef">virtual</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">walk</span>();
+    <span style="color:#66d9ef">virtual</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">eat</span>()  ;
+    <span style="color:#66d9ef">int</span> data;
+};
+<span style="color:#75715e">// is roughly
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Animal</span>{
+    <span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> _vtable;
+    <span style="color:#66d9ef">int</span> data;
+};
+<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">update</span>(Animal<span style="color:#f92672">*</span>){};</code></pre></td></tr></table>
 </div>
 </div>
 <p>When you declare a virtual function inside the `Animal` class in C++, the compile will add a pointer inside every created object that points to the same location: the start of `Animal` vtable. In this region of memory, every 8 byte interval(the size of a pointer) will correspond with the address of a virtual function for this object. When virtual functions get called, the following translation happens</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
 </span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="c1">// Note: the use of raw pointers is for pedagogy reasons
-</span><span class="c1"></span><span class="n">Animal</span><span class="o">*</span> <span class="n">animal</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Animal</span><span class="p">;</span>
-<span class="n">animal</span><span class="o">-&gt;</span><span class="n">eat</span><span class="p">();</span>
-<span class="c1">// is roughly
-</span><span class="c1"></span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="o">*</span><span class="n">animal</span><span class="p">.</span><span class="n">_vtable</span><span class="o">+</span><span class="mi">1</span><span class="n">byte</span><span class="p">))(</span><span class="n">animal</span><span class="p">);</span> <span class="c1">// 1byte offset to get to 2nd virtual function
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// Note: the use of raw pointers is for pedagogy reasons
+</span><span style="color:#75715e"></span>Animal<span style="color:#f92672">*</span> animal <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Animal;
+animal<span style="color:#f92672">-&gt;</span>eat();
+<span style="color:#75715e">// is roughly
+</span><span style="color:#75715e"></span>(<span style="color:#f92672">*</span>(<span style="color:#f92672">*</span>animal._vtable<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>byte))(animal); <span style="color:#75715e">// 1byte offset to get to 2nd virtual function
 </span></code></pre></td></tr></table>
 </div>
 </div>
 <p>Note the <code>w</code> is a pointer. Had we declare it as variable, static dispatch would have to happen, even if the <strong>function was declared virtual</strong>. I won&rsquo;t go completely into detail as to why here, but let&rsquo;s just say that given <code>animal</code> is declared on the stack, there is no way to &ldquo;lie&rdquo; and say it is anything but an <code>Animal</code></p>
 <p>Finally, the way that this indirection allows for polymorphism is that the dynamic dispatch translation is the same <strong>regardless of what the Animal pointer actually points to</strong></p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
 </span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="k">struct</span> <span class="nc">Dog</span><span class="o">:</span><span class="k">public</span> <span class="n">Animal</span><span class="p">{</span>
-    <span class="k">virtual</span> <span class="nf">eat</span><span class="p">(){</span>
-        <span class="c1">//something different
-</span><span class="c1"></span>    <span class="p">}</span>
-<span class="p">}</span>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Dog</span><span style="color:#f92672">:</span><span style="color:#66d9ef">public</span> Animal{
+    <span style="color:#66d9ef">virtual</span> <span style="color:#a6e22e">eat</span>(){
+        <span style="color:#75715e">//something different
+</span><span style="color:#75715e"></span>    }
+}
 
-<span class="n">Animal</span><span class="o">*</span> <span class="n">dog</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Dog</span><span class="p">;</span>
-<span class="n">dog</span><span class="o">-&gt;</span><span class="n">eat</span><span class="p">();</span>
-<span class="c1">// is roughly
-</span><span class="c1"></span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="o">*</span><span class="n">dog</span><span class="p">.</span><span class="n">_vtable</span><span class="o">+</span><span class="mi">1</span><span class="n">byte</span><span class="p">))(</span><span class="n">dog</span><span class="p">);</span>
+Animal<span style="color:#f92672">*</span> dog <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Dog;
+dog<span style="color:#f92672">-&gt;</span>eat();
+<span style="color:#75715e">// is roughly
+</span><span style="color:#75715e"></span>(<span style="color:#f92672">*</span>(<span style="color:#f92672">*</span>dog._vtable<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>byte))(dog);
 
-<span class="c1">// so basically the same as
-</span><span class="c1">// (*(*animal._vtable+1byte))(animal);
+<span style="color:#75715e">// so basically the same as
+</span><span style="color:#75715e">// (*(*animal._vtable+1byte))(animal);
 </span></code></pre></td></tr></table>
 </div>
 </div>
@@ -778,189 +649,197 @@ there is no reason you shouldn&rsquo;t understand CRTP.</p>
 </ol>
 </section>
 
-
-        
-          <div class="blog-tags">
-            
-              <a href="https://bbli.github.io/tags/cpp/">cpp</a>&nbsp;
-            
-              <a href="https://bbli.github.io/tags/software-design/">software-design</a>&nbsp;
-            
-          </div>
-        
-
-        
-            <hr/>
-            <section id="social-share">
-              <div class="list-inline footer-links">
-                
-
-<div class="share-box" aria-hidden="true">
-    <ul class="share">
-      
-      <li>
-        <a href="//twitter.com/share?url=https%3a%2f%2fbbli.github.io%2fposts%2fcrtp_with_object_model%2f&amp;text=Clarifying%20CRTP%20with%20the%20C%2b%2b%20object%20model&amp;via=" target="_blank" title="Share on Twitter">
-          <i class="fab fa-twitter"></i>
-        </a>
-      </li>
-  
-      
-      <li>
-        <a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fbbli.github.io%2fposts%2fcrtp_with_object_model%2f" target="_blank" title="Share on Facebook">
-          <i class="fab fa-facebook"></i>
-        </a>
-      </li>
-  
-      
-      <li>
-        <a href="//reddit.com/submit?url=https%3a%2f%2fbbli.github.io%2fposts%2fcrtp_with_object_model%2f&amp;title=Clarifying%20CRTP%20with%20the%20C%2b%2b%20object%20model" target="_blank" title="Share on Reddit">
-          <i class="fab fa-reddit"></i>
-        </a>
-      </li>
-  
-      
-      <li>
-        <a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fbbli.github.io%2fposts%2fcrtp_with_object_model%2f&amp;title=Clarifying%20CRTP%20with%20the%20C%2b%2b%20object%20model" target="_blank" title="Share on LinkedIn">
-          <i class="fab fa-linkedin"></i>
-        </a>
-      </li>
-  
-      
-      <li>
-        <a href="//www.stumbleupon.com/submit?url=https%3a%2f%2fbbli.github.io%2fposts%2fcrtp_with_object_model%2f&amp;title=Clarifying%20CRTP%20with%20the%20C%2b%2b%20object%20model" target="_blank" title="Share on StumbleUpon">
-          <i class="fab fa-stumbleupon"></i>
-        </a>
-      </li>
-  
-      
-      <li>
-        <a href="//www.pinterest.com/pin/create/button/?url=https%3a%2f%2fbbli.github.io%2fposts%2fcrtp_with_object_model%2f&amp;description=Clarifying%20CRTP%20with%20the%20C%2b%2b%20object%20model" target="_blank" title="Share on Pinterest">
-          <i class="fab fa-pinterest"></i>
-        </a>
-      </li>
-    </ul>
-  </div>
-  
-
-              </div>
-            </section>
-        
-
-        
-          
-            
-          
-
-          
-                  <h4 class="see-also">See also</h4>
-                  <ul>
-                
-                
-                    <li><a href="/posts/go_channel_properties/">Properties of Go Channels</a></li>
-                
-              </ul>
-
-          
-        
-      </article>
-
-      
-        <ul class="pager blog-pager">
-          
-          
-            <li class="next">
-              <a href="https://bbli.github.io/posts/go_channel_properties/" data-toggle="tooltip" data-placement="top" title="Properties of Go Channels">Next Post &rarr;</a>
-            </li>
-          
-        </ul>
-      
-
-
-      
-        
-        
-      
-
-    </div>
-  </div>
-</div>
-
-      
-<footer>
-  <div class="container">
-    <div class="row">
-      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-        <ul class="list-inline text-center footer-links">
-          
-              <li>
-                <a href="mailto:bbl2117@columbia.edu" title="Email me">
-                  <span class="fa-stack fa-lg">
-                    <i class="fas fa-circle fa-stack-2x"></i>
-                    <i class="fas fa-envelope fa-stack-1x fa-inverse"></i>
-                  </span>
-                </a>
-              </li>
-              <li>
-                <a href="https://github.com/bbli" title="GitHub">
-                  <span class="fa-stack fa-lg">
-                    <i class="fas fa-circle fa-stack-2x"></i>
-                    <i class="fab fa-github fa-stack-1x fa-inverse"></i>
-                  </span>
-                </a>
-              </li>
-              <li>
-                <a href="https://linkedin.com/in/bensonbinbinli" title="LinkedIn">
-                  <span class="fa-stack fa-lg">
-                    <i class="fas fa-circle fa-stack-2x"></i>
-                    <i class="fab fa-linkedin fa-stack-1x fa-inverse"></i>
-                  </span>
-                </a>
-              </li>
-          
-          <li>
-            <a href="" title="RSS">
-              <span class="fa-stack fa-lg">
-                <i class="fas fa-circle fa-stack-2x"></i>
-                <i class="fas fa-rss fa-stack-1x fa-inverse"></i>
-              </span>
-            </a>
-          </li>
-          
-        </ul>
-        <p class="credits copyright text-muted">
-
-Powered by <a href="http://gohugo.io">Hugo</a> + <a href="https://ox-hugo.scripter.co/">ox-hugo</a> + <a href="https://github.com/hlissner/doom-emacs" >Emacs</a>
-            &nbsp;&bull;&nbsp;
-        Slight Adaption of <a href="https://github.com/halogenica/beautifulhugo">Beautiful Hugo</a> Theme
-          
-        </p>
-        
-        
-        
-        
-        
       </div>
+    </article>
+
+    <hr />
+
+    <div class="post-info">
+      
+    <p style="font-size:1.05rem">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg>
+
+        <span class="tag"><a href="https://bbli.github.io/tags/cpp/">cpp</a></span>
+        <span class="tag"><a href="https://bbli.github.io/tags/software-design/">software-design</a></span>
+        
+    </p>
+
+
+      
+
+      <p>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>
+        1768 Words
+      </p>
+
+      <p>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="16" y1="2" x2="16" y2="6"></line>
+          <line x1="8" y1="2" x2="8" y2="6"></line>
+          <line x1="3" y1="10" x2="21" y2="10"></line>
+        </svg>
+        
+          2021-05-20 19:36
+        
+
+         
+          
+        
+      </p>
+    </div>
+      <hr />
+      <div class="sharing-buttons">
+        
+<a class="resp-sharing-button__link" href="https://facebook.com/sharer/sharer.php?u=https%3a%2f%2fbbli.github.io%2fposts%2fcrtp_with_object_model%2f" target="_blank" rel="noopener" aria-label="" title="Share on facebook">
+  <div class="resp-sharing-button resp-sharing-button--facebook resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
     </div>
   </div>
-</footer><script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"></script>
-<script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-
-<script src="https://bbli.github.io/js/main.js"></script><script> renderMathInElement(document.body); </script><script src="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe.min.js" integrity="sha384-QELNnmcmU8IR9ZAykt67vGr9/rZJdHbiWi64V88fCPaOohUlHCqUD/unNN0BXSqy" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe-ui-default.min.js" integrity="sha384-m67o7SkQ1ALzKZIFh4CiTA8tmadaujiTa9Vu+nqPSwDOqHrDmxLezTdFln8077+q" crossorigin="anonymous"></script><script src="https://bbli.github.io/js/load-photoswipe.js"></script>
+</a>
 
 
+<a class="resp-sharing-button__link" href="https://twitter.com/intent/tweet/?url=https%3a%2f%2fbbli.github.io%2fposts%2fcrtp_with_object_model%2f" target="_blank" rel="noopener" aria-label="" title="Share on twitter">
+  <div class="resp-sharing-button resp-sharing-button--twitter resp-sharing-button--small">
+      <div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path></svg>
+    </div>
+  </div>
+</a>
 
 
+<a class="resp-sharing-button__link" href="https://www.tumblr.com/widgets/share/tool?posttype=link&amp;title=Clarifying%20CRTP%20with%20the%20C%2b%2b%20object%20model&amp;caption=Clarifying%20CRTP%20with%20the%20C%2b%2b%20object%20model&amp;canonicalUrl=https%3a%2f%2fbbli.github.io%2fposts%2fcrtp_with_object_model%2f" target="_blank" rel="noopener" aria-label="" title="Share on tumblr">
+  <div class="resp-sharing-button resp-sharing-button--tumblr resp-sharing-button--small">
+    <div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.563 24c-5.093 0-7.031-3.756-7.031-6.411V9.747H5.116V6.648c3.63-1.313 4.512-4.596 4.71-6.469C9.84.051 9.941 0 9.999 0h3.517v6.114h4.801v3.633h-4.82v7.47c.016 1.001.375 2.371 2.207 2.371h.09c.631-.02 1.486-.205 1.936-.419l1.156 3.425c-.436.636-2.4 1.374-4.156 1.404h-.178l.011.002z"/></svg>
+    </div>
+  </div>
+</a>
 
 
+<a class="resp-sharing-button__link" href="mailto:?subject=Clarifying%20CRTP%20with%20the%20C%2b%2b%20object%20model&amp;body=https%3a%2f%2fbbli.github.io%2fposts%2fcrtp_with_object_model%2f" target="_self" rel="noopener" aria-label="" title="Share via email">
+  <div class="resp-sharing-button resp-sharing-button--email resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+    </div>
+  </div>
+</a>
 
 
+<a class="resp-sharing-button__link" href="https://pinterest.com/pin/create/button/?url=https%3a%2f%2fbbli.github.io%2fposts%2fcrtp_with_object_model%2f&amp;media=https%3a%2f%2fbbli.github.io%2fposts%2fcrtp_with_object_model%2f;description=Clarifying%20CRTP%20with%20the%20C%2b%2b%20object%20model" target="_blank" rel="noopener" aria-label="" title="Share on pinterest">
+  <div class="resp-sharing-button resp-sharing-button--pinterest resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.401.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.354-.629-2.758-1.379l-.749 2.848c-.269 1.045-1.004 2.352-1.498 3.146 1.123.345 2.306.535 3.55.535 6.607 0 11.985-5.365 11.985-11.987C23.97 5.39 18.592.026 11.985.026L12.017 0z"/></svg>
+    </div>
+  </div>
+</a>
 
+
+<a class="resp-sharing-button__link" href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3a%2f%2fbbli.github.io%2fposts%2fcrtp_with_object_model%2f&amp;title=Clarifying%20CRTP%20with%20the%20C%2b%2b%20object%20model&amp;summary=Clarifying%20CRTP%20with%20the%20C%2b%2b%20object%20model&amp;source=https%3a%2f%2fbbli.github.io%2fposts%2fcrtp_with_object_model%2f" target="_blank" rel="noopener" aria-label="" title="Share on linkedin">
+  <div class="resp-sharing-button resp-sharing-button--linkedin resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+    </div>
+  </div>
+</a>
+
+
+<a class="resp-sharing-button__link" href="https://reddit.com/submit/?url=https%3a%2f%2fbbli.github.io%2fposts%2fcrtp_with_object_model%2f&amp;resubmit=true&amp;title=Clarifying%20CRTP%20with%20the%20C%2b%2b%20object%20model" target="_blank" rel="noopener" aria-label="" title="Share on reddit">
+  <div class="resp-sharing-button resp-sharing-button--reddit resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.617a1.214 1.214 0 0 1 1.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 0 0-.231.094.33.33 0 0 0 0 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 0 0 .029-.463.33.33 0 0 0-.464 0c-.547.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 0 0-.232-.095z"/></svg>
+    </div>
+  </div>
+</a>
+
+
+<a class="resp-sharing-button__link" href="https://www.xing.com/app/user?op=share;url=https%3a%2f%2fbbli.github.io%2fposts%2fcrtp_with_object_model%2f;title=Clarifying%20CRTP%20with%20the%20C%2b%2b%20object%20model" target="_blank" rel="noopener" aria-label="" title="Share on xing">
+  <div class="resp-sharing-button resp-sharing-button--xing resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M18.188 0c-.517 0-.741.325-.927.66 0 0-7.455 13.224-7.702 13.657.015.024 4.919 9.023 4.919 9.023.17.308.436.66.967.66h3.454c.211 0 .375-.078.463-.22.089-.151.089-.346-.009-.536l-4.879-8.916c-.004-.006-.004-.016 0-.022L22.139.756c.095-.191.097-.387.006-.535C22.056.078 21.894 0 21.686 0h-3.498zM3.648 4.74c-.211 0-.385.074-.473.216-.09.149-.078.339.02.531l2.34 4.05c.004.01.004.016 0 .021L1.86 16.051c-.099.188-.093.381 0 .529.085.142.239.234.45.234h3.461c.518 0 .766-.348.945-.667l3.734-6.609-2.378-4.155c-.172-.315-.434-.659-.962-.659H3.648v.016z"/></svg>
+    </div>
+  </div>
+</a>
+
+
+<a class="resp-sharing-button__link" href="whatsapp://send?text=Clarifying%20CRTP%20with%20the%20C%2b%2b%20object%20model%20https%3a%2f%2fbbli.github.io%2fposts%2fcrtp_with_object_model%2f" target="_blank" rel="noopener" aria-label="" title="Share on whatsapp">
+  <div class="resp-sharing-button resp-sharing-button--whatsapp resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+    </div>
+  </div>
+</a>
+
+
+<a class="resp-sharing-button__link" href="https://news.ycombinator.com/submitlink?u=https%3a%2f%2fbbli.github.io%2fposts%2fcrtp_with_object_model%2f&amp;t=Clarifying%20CRTP%20with%20the%20C%2b%2b%20object%20model" target="_blank" rel="noopener" aria-label="" title="Share on hacker news">
+  <div class="resp-sharing-button resp-sharing-button--hackernews resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
+			<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M0 24V0h24v24H0zM6.951 5.896l4.112 7.708v5.064h1.583v-4.972l4.148-7.799h-1.749l-2.457 4.875c-.372.745-.688 1.434-.688 1.434s-.297-.708-.651-1.434L8.831 5.896h-1.88z"/></svg>
+    </div>
+  </div>
+</a>
+
+
+<a class="resp-sharing-button__link" href="https://telegram.me/share/url?text=Clarifying%20CRTP%20with%20the%20C%2b%2b%20object%20model&amp;url=https%3a%2f%2fbbli.github.io%2fposts%2fcrtp_with_object_model%2f" target="_blank" rel="noopener" aria-label="" title="Share on telegram">
+  <div class="resp-sharing-button resp-sharing-button--telegram resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+    </div>
+  </div>
+</a>
+
+      </div>
+
+    
+    <div class="pagination">
+        <div class="pagination__title">
+            <span class="pagination__title-h"></span>
+            <hr />
+        </div>
+
+        <div class="pagination__buttons">
+            
+            <span class="button previous">
+                <a href="https://bbli.github.io/posts/go_channel_properties/">
+                    <span class="button__icon">←</span>
+                    <span class="button__text">Properties of Go Channels</span>
+                </a>
+            </span>
+            
+
+            
+        </div>
+    </div>
 
 
     
-  </body>
-</html>
 
+    
+
+  </main>
+
+            </div>
+
+            
+                <footer class="footer">
+    
+    
+    <div class="footer__inner">
+        <div class="footer__content">
+            <span>Powered by <a href="http://gohugo.io">Hugo</a> + <a href="https://ox-hugo.scripter.co/">ox-hugo</a> + <a href="https://github.com/hlissner/doom-emacs" >Emacs</a></span><span>Slight adaptation of <a href="https://themes.gohugo.io/hugo-theme-hello-friend-ng">Hello Friend Ng</a> Theme</span>
+        </div>
+    </div>
+    
+</footer>
+
+            
+        </div>
+
+        
+
+
+
+<script type="text/javascript" src="/bundle.min.599099f1f14b78b657d524b28e10e0c5098e7cd46e9c7aed73d577068a276c3ff1bb234cbf29cb313333e83cf411727b43157c91ce5b809e2ffc81664614608e.js" integrity="sha512-WZCZ8fFLeLZX1SSyjhDgxQmOfNRunHrtc9V3BoonbD/xuyNMvynLMTMz6Dz0EXJ7QxV8kc5bgJ4v/IFmRhRgjg=="></script>
+
+
+
+    </body>
+</html>
