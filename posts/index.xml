@@ -6,8 +6,96 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>en-us</language>
         <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
-        <lastBuildDate>Thu, 20 May 2021 19:36:00 -0700</lastBuildDate>
+        <lastBuildDate>Sun, 01 May 2022 00:00:00 -0700</lastBuildDate>
         <atom:link href="https://bbli.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+        
+        <item>
+            <title>On the Cost of Code Resuse</title>
+            <link>https://bbli.github.io/posts/on_cost_of_code_reuse/</link>
+            <pubDate>Sun, 01 May 2022 00:00:00 -0700</pubDate>
+            
+            <guid>https://bbli.github.io/posts/on_cost_of_code_reuse/</guid>
+            <description>Increases Compile Times -&amp;gt; Lowers Programmer Productivity  Why Compile Time is Important How Code Reuse affects Compile Time   Harder to Change and doesn&amp;rsquo;t always create Higher Level Abstractions Harder to Understand/Debug Final Thoughts  Increases Compile Times -&amp;gt; Lowers Programmer Productivity (Preface: This section will be in the context of C++, though the points will generally apply to other programming languages as well.)
+Why Compile Time is Important Because no matter how smart you think you are, you will write bugs.</description>
+            <content type="html"><![CDATA[<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+<ul>
+<li><a href="#increases-compile-times-lowers-programmer-productivity">Increases Compile Times -&gt; Lowers Programmer Productivity</a>
+<ul>
+<li><a href="#why-compile-time-is-important">Why Compile Time is Important</a></li>
+<li><a href="#how-code-reuse-affects-compile-time">How Code Reuse affects Compile Time</a></li>
+</ul>
+</li>
+<li><a href="#harder-to-change-and-doesn-t-always-create-higher-level-abstractions">Harder to Change and doesn&rsquo;t always create Higher Level Abstractions</a></li>
+<li><a href="#harder-to-understand-debug">Harder to Understand/Debug</a></li>
+<li><a href="#final-thoughts">Final Thoughts</a></li>
+</ul>
+<!-- raw HTML omitted -->
+<h1 id="increases-compile-times-lowers-programmer-productivity">Increases Compile Times -&gt; Lowers Programmer Productivity</h1>
+<p>(Preface: This section will be in the context of C++, though the points will generally apply to other programming languages as well.)</p>
+<h2 id="why-compile-time-is-important">Why Compile Time is Important</h2>
+<p>Because no matter how smart you think you are, you will write bugs. Iteration, experimentation, actually running your code is king in programming. So what happens when compile times start to take too long?</p>
+<ol>
+<li>Well, you will start to amortize changes before rerunning tests. This will make it harder to debug, because will not be caught early on, and so there can be times when the cause of a unit test failure at a particular call site actually happens earlier on in the call stack</li>
+<li>There will be less test coverage: If compiling my code and running the tests takes say, over 20 minutes each time, I am significantly less likely to througouhly test it, opting instead to cover just the &ldquo;happy path&rdquo; and a bit more. This is because in the real world, there are deadlines to meet.</li>
+<li>The shorter the compile time, the more you will be in the flow state. The issue is that as humans, it is hard for us to completely suspend our train of thoughts while we wait for the compiler. And so typically what happens is that we try to find some other task to do during the &ldquo;downtime&rdquo;. The issue with this is that after the compile is done, we have to bring back into working memory the original line of thinking. When compile times are short, we never need to &ldquo;<a href="https://stackoverflow.com/a/59414141">flush our brain&rsquo;s cache</a>&rdquo;.</li>
+<li>Hotfixes will be more stressful, as you will spend more time under stress because of the long compiles.</li>
+</ol>
+<h2 id="how-code-reuse-affects-compile-time">How Code Reuse affects Compile Time</h2>
+<p>(Preface: This will be in the context of C++, though the idea applies to other programming languages as well, even if the terminology and extent of the effect may be different)</p>
+<p>Often times, we will import the entire header of a library just for the sake of calling 1 or 2 functions. This has the effect of not only forcing us to parse unnesscary lines of code from that header, <strong>but all headers it includes recursively</strong>. But it gets even worse. If that header was not from a third-party library but rather internal/from the codebase itself, then anytime a change happens in the header, all files that depend on it are forced to recompile, and so the average incremental compilation will go up. If instead, however, we define the functions ourselves, we parse exactly what we need and no more. So the next time you think about importing yet another library with <code>npm</code>, consider whether or not you can write the function yourself.</p>
+<h1 id="harder-to-change-and-doesn-t-always-create-higher-level-abstractions">Harder to Change and doesn&rsquo;t always create Higher Level Abstractions</h1>
+<p>An example of when code reuse gets you in trouble is the &ldquo;Fragile Base Class&rdquo; problem. In an effort to reuse the code from class A, we inherit from it in class B. The issue with this is that A no longer obeys the Single Responsibility Principle. Class A not only needs to maintain the correctness of its public interface, but also the correctness of all the methods and class invariants that B depends on/should continue to enforce.</p>
+<p>And this applies to every subsequent class that inherits from A or B. What eventually happens, once your inheritance hierarchy is deep enough, is that when changing a method in a parent class, you break the functionality of a child class, with the classic example being the <a href="https://en.wikipedia.org/wiki/Fragile%5Fbase%5Fclass">infinite recursion error</a>. One can argue this is an issue caused by virtual methods, but the idea is still the same even without virtual methods and without classes. Everytime you change a function, you need to check all the call sites to make sure the function is still valid. And so for the same reason that abstracting into a function reduces code maintence in the future by removing redundancy(and thus changes to the function propagate automatically to all the call sites) <strong>it can increase code maintence for the exact same reason</strong>: changes to the function to satisfy the call site at location 1 inadvertently spread to all the other call sites too. What was once the same piece of functionality is now different.</p>
+<p>But that said, there&rsquo;s actually a good fix for this: copy paste the function into a new one, change the bit that you need to change, and call the new function at location 1 instead of the old one. Unfortunately, what people tend to do is to modify the old function to fit in the &ldquo;new&rdquo; logic, which is evident by code smell of additonal &ldquo;boolean flags&rdquo; to the function signature. The issue with this is that the function can quickly become scattered with if statments, leading to <a href="https://martinfowler.com/bliki/FlagArgument.html">&ldquo;tangled logic&rdquo;</a>. And perhaps at a more philosophical level, the function becomes more about resusing code structure(like a macro) than about reusing/creating higher level abstractions. For a concrete example of this, consider the &ldquo;fold/reduce&rdquo; function in many programming languages. It has been purported to make code higher level and more &ldquo;declarative&rdquo;. But does it though? Consider the following example.</p>
+<pre><code class="language-rust">// Implementation 1
+let sum1 = vec.clone().into_iter()
+    .reduce(|accum, item | {
+            if pred(item){ accum+1 } else{ accum }
+        });
+// Implementation 2
+let sum2 = vec.clone().into_iter()
+    .count_if(|item|pred(*item))
+// Implementation 3
+let mut accum: i32 = 0;
+for item in vec {
+    if pred(item) {accum+=1}
+}
+</code></pre>
+<p>When I read the for loop implemenation(Implementation 3), I have to read what is inside the for loop to understand what the code is doing, make it supposedly &ldquo;low level&rdquo;. But when I read the fold function implemenation &hellip; I still have to read the lambda to understand what is going on. While I believe in Sean Parent&rsquo;s statement in &ldquo;<a href="https://www.youtube.com/watch?v=W2tWOdzgXHA">no raw loops</a>&rdquo;,  I do not believe <code>reduce</code> is the solution to this. Rather, one should functions such as <code>count_if</code>, which is more restrictive than <code>reduce</code> and thus better expresses intent. <code>count_if</code> is declarative. <code>reduce</code> is not.</p>
+<h1 id="harder-to-understand-debug">Harder to Understand/Debug</h1>
+<p>Suppose we are reading log files from a production server to debug an issue, and we see</p>
+<pre><code class="language-cpp">void helper_function(Object&amp; oranges){
+    log_line(&quot;2nd log line&quot;,oranges.string());
+    // ...
+}
+void func(){
+    log_line(&quot;first log line&quot;);
+    // ...
+    helper_function(apples);
+    // ...
+}
+// In the logs, we see
+// [INFO] first log line
+// ... stuff
+// [INFO] 2nd log line, apples(weight:10)
+// ... stuff2
+// [INFO] 2nd log line, apples(weight:20)
+</code></pre>
+<p>This can happen if in between <code>log_line</code> and <code>helper_function</code>, another function calls out to <code>helper_function</code>. But now the issue arises, which log line corresponds to the call by <code>func</code>? Perhaps by examing the local call path of logs, you can disambiguate. But if there is a lot of log lines inbetween(aka <code>stuff2</code>), you may not even realize that there was a duplicate!</p>
+<p>Another concern is the mapping of variable names through the call path. In the code above I purposely created a naming mismatch between the function signature and the object passed in by <code>func</code>. Although it usually is not that extreme, helper function tend to have different variable names, and it requires a non-trivial effort to keep this mapping in mind, especially for multiple variables across multiple depths. When trying to understand a codebase, you can forget your original purpose after making 3-5 &ldquo;jump to definition&rdquo; calls to your IDE/language server because of this, and also because while you were trying to understand something &ldquo;specific&rdquo;, the callpath brings you out to something more &ldquo;general&rdquo;, just for the sake of this &ldquo;code reuse&rdquo;.</p>
+<h1 id="final-thoughts">Final Thoughts</h1>
+<p>Now, there are certainly benefits of code reuse. It can save time from needing to reimplement. Reusing code can also mean using code that someone has already tested. It can also allow programmers who are not experts on a certain subject to nevertheless write code for that domain. But as I hope this article shows, code reuse is not a &ldquo;zero-cost&rdquo; thing. So the next time you see code duplication in your codebase and want to refactor, be wary that you are not simply &ldquo;seeing faces in the clouds&rdquo;. As Sandi Metz has said: <a href="https://sandimetz.com/blog/2016/1/20/the-wrong-abstraction">&ldquo;Code duplication is far cheaper than the wrong abstraction&rdquo;</a>. <sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup>.</p>
+<section class="footnotes" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn:1" role="doc-endnote">
+<p>See <a href="https://news.ycombinator.com/item?id=12061453">https://news.ycombinator.com/item?id=12061453</a> for more discussion about this&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+</ol>
+</section>
+]]></content>
+        </item>
         
         <item>
             <title>Clarifying CRTP with the C&#43;&#43; object model</title>

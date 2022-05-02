@@ -7,7 +7,17 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
-    <lastBuildDate>Thu, 20 May 2021 19:36:00 -0700</lastBuildDate><atom:link href="https://bbli.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 01 May 2022 00:00:00 -0700</lastBuildDate><atom:link href="https://bbli.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>On the Cost of Code Resuse</title>
+      <link>https://bbli.github.io/posts/on_cost_of_code_reuse/</link>
+      <pubDate>Sun, 01 May 2022 00:00:00 -0700</pubDate>
+      
+      <guid>https://bbli.github.io/posts/on_cost_of_code_reuse/</guid>
+      <description>Increases Compile Times -&amp;gt; Lowers Programmer Productivity  Why Compile Time is Important How Code Reuse affects Compile Time   Harder to Change and doesn&amp;rsquo;t always create Higher Level Abstractions Harder to Understand/Debug Final Thoughts  Increases Compile Times -&amp;gt; Lowers Programmer Productivity (Preface: This section will be in the context of C++, though the points will generally apply to other programming languages as well.)
+Why Compile Time is Important Because no matter how smart you think you are, you will write bugs.</description>
+    </item>
+    
     <item>
       <title>Clarifying CRTP with the C&#43;&#43; object model</title>
       <link>https://bbli.github.io/posts/crtp_with_object_model/</link>
