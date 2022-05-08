@@ -16,7 +16,7 @@
             
             <guid>https://bbli.github.io/posts/on_cost_of_code_reuse/</guid>
             <description>Increases Compile Times -&amp;gt; Lowers Programmer Productivity  Why Compile Time is Important How Code Reuse affects Compile Time   Harder to Change and doesn&amp;rsquo;t always create Higher Level Abstractions Harder to Understand/Debug Final Thoughts  Increases Compile Times -&amp;gt; Lowers Programmer Productivity (Preface: This section will be in the context of C++, though the points will generally apply to other programming languages as well.)
-Why Compile Time is Important Because no matter how smart you think you are, you will write bugs.</description>
+Why Compile Time is Important  You will start to amortize changes before rerunning tests.</description>
             <content type="html"><![CDATA[<!-- raw HTML omitted -->
 <!-- raw HTML omitted -->
 <ul>
@@ -34,10 +34,9 @@ Why Compile Time is Important Because no matter how smart you think you are, you
 <h1 id="increases-compile-times-lowers-programmer-productivity">Increases Compile Times -&gt; Lowers Programmer Productivity</h1>
 <p>(Preface: This section will be in the context of C++, though the points will generally apply to other programming languages as well.)</p>
 <h2 id="why-compile-time-is-important">Why Compile Time is Important</h2>
-<p>Because no matter how smart you think you are, you will write bugs. Iteration, experimentation, actually running your code is king in programming. So what happens when compile times start to take too long?</p>
 <ol>
-<li>Well, you will start to amortize changes before rerunning tests. This will make it harder to debug, because will not be caught early on, and so there can be times when the cause of a unit test failure at a particular call site actually happens earlier on in the call stack</li>
-<li>There will be less test coverage: If compiling my code and running the tests takes say, over 20 minutes each time, I am significantly less likely to througouhly test it, opting instead to cover just the &ldquo;happy path&rdquo; and a bit more. This is because in the real world, there are deadlines to meet.</li>
+<li>You will start to amortize changes before rerunning tests. This will make it harder to debug, because bugs will not be caught early on and instead cascade, leading to times when the cause of a unit test failure at a particular call site actually happens earlier on in the call stack</li>
+<li>There will be less test coverage: If compiling my code and running the tests takes say, over 20 minutes each time, I am significantly less likely to througouhly test it, opting instead to cover just the &ldquo;happy path&rdquo; and a bit more. This is because in the real world, there are deadlines to meet. Once again, bugs will be caught later on(at demo time rather than test time), and in this situation the consequences are even worse. Instead of localizing the error to current git changes and call paths of a few unit tests, you will need to wade through logs and create the localization yourself.</li>
 <li>The shorter the compile time, the more you will be in the flow state. The issue is that as humans, it is hard for us to completely suspend our train of thoughts while we wait for the compiler. And so typically what happens is that we try to find some other task to do during the &ldquo;downtime&rdquo;. The issue with this is that after the compile is done, we have to bring back into working memory the original line of thinking. When compile times are short, we never need to &ldquo;<a href="https://stackoverflow.com/a/59414141">flush our brain&rsquo;s cache</a>&rdquo;.</li>
 <li>Hotfixes will be more stressful, as you will spend more time under stress because of the long compiles.</li>
 </ol>

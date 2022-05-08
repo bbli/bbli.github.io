@@ -15,7 +15,7 @@
       
       <guid>https://bbli.github.io/posts/on_cost_of_code_reuse/</guid>
       <description>Increases Compile Times -&amp;gt; Lowers Programmer Productivity  Why Compile Time is Important How Code Reuse affects Compile Time   Harder to Change and doesn&amp;rsquo;t always create Higher Level Abstractions Harder to Understand/Debug Final Thoughts  Increases Compile Times -&amp;gt; Lowers Programmer Productivity (Preface: This section will be in the context of C++, though the points will generally apply to other programming languages as well.)
-Why Compile Time is Important Because no matter how smart you think you are, you will write bugs.</description>
+Why Compile Time is Important  You will start to amortize changes before rerunning tests.</description>
     </item>
     
     <item>
