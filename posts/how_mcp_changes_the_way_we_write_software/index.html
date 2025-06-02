@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="author" content="Benson Li">
+<meta name="description" content=" Agents: The Current Reality Where Generative AI Excels Today: The Case for Coding The Model Context Protocol Late Binding: Decoupling Clients from Service Details LLMs Calling Functions: Rethinking Interaction Programming in the Era of LLMs Making Unrepresentable States Unreachable Visible Error Handling: unwrap() as LLM Guidance The Power of Descriptive Compiler Messages Localized Testing Documentation as Verified Executable Specification Conclusion MCP Chat Debugger Agent Monitoring and Observability Systems Agent Operating System Agents: The Current Reality When we talk about &ldquo;agents&rdquo; in the context of AI today, it&rsquo;s important to clarify what we mean, especially from a reinforcement learning (RL) perspective. Strictly speaking, most current AI systems referred to as agents don&rsquo;t yet fit the classical RL definition.
+" />
+<meta name="keywords" content="homepage, blog, ai, mcp, software-design, rust" />
+<meta name="robots" content="noodp" />
+<meta name="theme-color" content="" />
+<link rel="canonical" href="https://bbli.github.io/posts/how_mcp_changes_the_way_we_write_software/" />
+
+
+    <title>
+        
+            How MCP Changes the Way We Write Software :: Benson Li&#39;s Blog 
+        
+    </title>
+
+
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css" rel="stylesheet"
+    type="text/css">
+
+
+
+<link rel="stylesheet" href="/main.a688db8f9001a2f18b75ead0f81e3ea78b55a8a51a0b1d93c546648f21308651.css">
+
+
+
+
+
+
+
+  <meta itemprop="name" content="How MCP Changes the Way We Write Software">
+  <meta itemprop="description" content="Agents: The Current Reality Where Generative AI Excels Today: The Case for Coding The Model Context Protocol Late Binding: Decoupling Clients from Service Details LLMs Calling Functions: Rethinking Interaction Programming in the Era of LLMs Making Unrepresentable States Unreachable Visible Error Handling: unwrap() as LLM Guidance The Power of Descriptive Compiler Messages Localized Testing Documentation as Verified Executable Specification Conclusion MCP Chat Debugger Agent Monitoring and Observability Systems Agent Operating System Agents: The Current Reality When we talk about “agents” in the context of AI today, it’s important to clarify what we mean, especially from a reinforcement learning (RL) perspective. Strictly speaking, most current AI systems referred to as agents don’t yet fit the classical RL definition.">
+  <meta itemprop="datePublished" content="2025-06-01T00:00:00-07:00">
+  <meta itemprop="dateModified" content="2025-06-01T00:00:00-07:00">
+  <meta itemprop="wordCount" content="3334">
+  <meta itemprop="image" content="https://bbli.github.io/">
+  <meta itemprop="keywords" content="Ai,Mcp,Software-Design,Rust">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://bbli.github.io/">
+  <meta name="twitter:title" content="How MCP Changes the Way We Write Software">
+  <meta name="twitter:description" content="Agents: The Current Reality Where Generative AI Excels Today: The Case for Coding The Model Context Protocol Late Binding: Decoupling Clients from Service Details LLMs Calling Functions: Rethinking Interaction Programming in the Era of LLMs Making Unrepresentable States Unreachable Visible Error Handling: unwrap() as LLM Guidance The Power of Descriptive Compiler Messages Localized Testing Documentation as Verified Executable Specification Conclusion MCP Chat Debugger Agent Monitoring and Observability Systems Agent Operating System Agents: The Current Reality When we talk about “agents” in the context of AI today, it’s important to clarify what we mean, especially from a reinforcement learning (RL) perspective. Strictly speaking, most current AI systems referred to as agents don’t yet fit the classical RL definition.">
+
+
+
+
+
+
+
+
+    <meta property="article:published_time" content="2025-06-01 00:00:00 -0700 PDT" />
+
+
+
+
+
+
+
+
+    </head>
+
+    
+        <body>
+    
+    
+        <div class="container">
+            <header class="header">
+    <span class="header__inner">
+        <a href="/" style="text-decoration: none;">
+    <div class="logo">
+        
+            <span class="logo__mark">&gt;</span>
+            <span class="logo__text">Home</span>
+            <span class="logo__cursor" style=
+                  "
+                   
+                   ">
+            </span>
+        
+    </div>
+</a>
+
+
+        <span class="header__right">
+            
+                <nav class="menu">
+    <ul class="menu__inner"><li><a href="/posts">Posts</a></li><li><a href="/tags">Tags</a></li><li><a href="/about">About</a></li>
+    </ul>
+</nav>
+
+                <span class="menu-trigger">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+                    </svg>
+                </span>
+            
+                <span class="theme-toggle not-selectable"><svg class="theme-toggler" width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+   <path d="M22 41C32.4934 41 41 32.4934 41 22C41 11.5066 32.4934 3 22
+   3C11.5066 3 3 11.5066 3 22C3 32.4934 11.5066 41 22 41ZM7 22C7
+   13.7157 13.7157 7 22 7V37C13.7157 37 7 30.2843 7 22Z"/>
+ </svg></span>
+        </span>
+    </span>
+</header>
+
+
+            <div class="content">
+                
+  <main class="post">
+
+    <div class="post-info">
+      <p style="font-size:1.05rem">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-clock">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+        16 minutes
+
+        
+      
+    <p style="font-size:1.05rem">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg>
+
+        <span class="tag"><a href="https://bbli.github.io/tags/ai/">ai</a></span>
+        <span class="tag"><a href="https://bbli.github.io/tags/mcp/">mcp</a></span>
+        <span class="tag"><a href="https://bbli.github.io/tags/software-design/">software-design</a></span>
+        <span class="tag"><a href="https://bbli.github.io/tags/rust/">rust</a></span>
+        
+    </p>
+
+
+      </p>
+    </div>
+
+    <article>
+      <h1 class="post-title">
+        <a href="https://bbli.github.io/posts/how_mcp_changes_the_way_we_write_software/">How MCP Changes the Way We Write Software</a>
+      </h1>
+
+      
+
+      
+
+      
+
+      <div class="post-content">
+        <!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+<ul>
+<li><a href="/posts/how_mcp_changes_the_way_we_write_software/#agents-the-current-reality">Agents: The Current Reality</a></li>
+<li><a href="/posts/how_mcp_changes_the_way_we_write_software/#where-generative-ai-excels-today-the-case-for-coding">Where Generative AI Excels Today: The Case for Coding</a></li>
+<li><a href="/posts/how_mcp_changes_the_way_we_write_software/#the-model-context-protocol">The Model Context Protocol</a>
+<ul>
+<li><a href="/posts/how_mcp_changes_the_way_we_write_software/#late-binding-decoupling-clients-from-service-details">Late Binding: Decoupling Clients from Service Details</a></li>
+<li><a href="/posts/how_mcp_changes_the_way_we_write_software/#llms-calling-functions-rethinking-interaction">LLMs Calling Functions: Rethinking Interaction</a></li>
+</ul>
+</li>
+<li><a href="/posts/how_mcp_changes_the_way_we_write_software/#programming-in-the-era-of-llms">Programming in the Era of LLMs</a>
+<ul>
+<li><a href="/posts/how_mcp_changes_the_way_we_write_software/#making-unrepresentable-states-unreachable">Making Unrepresentable States Unreachable</a></li>
+<li><a href="/posts/how_mcp_changes_the_way_we_write_software/#visible-error-handling-unwrap-as-llm-guidance">Visible Error Handling: unwrap() as LLM Guidance</a></li>
+<li><a href="/posts/how_mcp_changes_the_way_we_write_software/#the-power-of-descriptive-compiler-messages">The Power of Descriptive Compiler Messages</a></li>
+<li><a href="/posts/how_mcp_changes_the_way_we_write_software/#localized-testing">Localized Testing</a></li>
+<li><a href="/posts/how_mcp_changes_the_way_we_write_software/#documentation-as-verified-executable-specification">Documentation as Verified Executable Specification</a></li>
+</ul>
+</li>
+<li><a href="/posts/how_mcp_changes_the_way_we_write_software/#conclusion">Conclusion</a>
+<ul>
+<li><a href="/posts/how_mcp_changes_the_way_we_write_software/#mcp-chat-debugger">MCP Chat Debugger</a></li>
+<li><a href="/posts/how_mcp_changes_the_way_we_write_software/#agent-monitoring-and-observability-systems">Agent Monitoring and Observability Systems</a></li>
+<li><a href="/posts/how_mcp_changes_the_way_we_write_software/#agent-operating-system">Agent Operating System</a></li>
+</ul>
+</li>
+</ul>
+<!-- raw HTML omitted -->
+<h2 id="agents-the-current-reality">Agents: The Current Reality</h2>
+<p>When we talk about &ldquo;agents&rdquo; in the context of AI today, it&rsquo;s important to clarify what we mean, especially from a reinforcement learning (RL) perspective. Strictly speaking, most current AI systems referred to as agents don&rsquo;t yet fit the classical RL definition.</p>
+<p>In reinforcement learning, an agent learns a &ldquo;policy&rdquo; π(s) – a strategy for choosing actions – by interacting with an &ldquo;environment&rdquo; over time, receiving feedback (rewards or penalties). This policy is learned through trial and error, adapting based on experience to maximize cumulative reward.</p>
+<p>Many systems labeled as &ldquo;agents&rdquo; today, however, operate through static, human-authored prompts that serve as fixed behavioral specifications rather than learned policies. While these prompts can be dynamic and involve multiple steps or tool use, the core &ldquo;policy&rdquo; guiding behavior is nevertheless hardcoded. So what the industry refers to as &ldquo;agents&rdquo; can be more accurately described as interfaces that leverage natural language or pseudocode-like instructions to interact with underlying software functionalities.</p>
+<h2 id="where-generative-ai-excels-today-the-case-for-coding">Where Generative AI Excels Today: The Case for Coding</h2>
+<p>Despite the limitations in achieving true agency, large language models still demonstrate considerable utility in the context of software development. This effectiveness stems from two domain-specific characteristics that align well with current model capabilities:</p>
+<ol>
+<li><strong>Tolerance for Error and Iteration:</strong> Generated code doesn&rsquo;t need to be perfect on the first try. Unlike real-time systems(which the industry seems to be using &ldquo;agents&rdquo; for), coding allows for an iterative process. Developers can review, debug, and refine AI-generated suggestions.</li>
+<li><strong>Objective Verification:</strong> In software engineering, we have mechanisms to verify the correctness of code, primarily through automated tests. Instead of accepting AI output at face value (as one might with a factual query), we can run unit tests, integration tests, linters, etc to objectively determine if the generated code functions as intended.</li>
+</ol>
+<p>In other words, one can view programming as fundamentally analogous to a reinforcement learning problem, where the generated code serves as the agent&rsquo;s policy, and tests provide feedback on the various states the agent can be in.</p>
+<p>With all of that in mind, I would like to spend the rest of this blog post describing how MCP servers can augment the way developers write code with LLMs, and exploring which features of programming languages are best suited for this new AI-assisted development paradigm.</p>
+<h2 id="the-model-context-protocol">The Model Context Protocol</h2>
+<p>At its core, the Model Context Protocol(well at least the &ldquo;tool&rdquo; part of the protocol) is surprisingly simple. For a server to adhere to the MCP standard, it primarily needs to implement just two methods:</p>
+<ol>
+<li><code>list_tools</code>: This method allows a client to discover the available functions or capabilities the server offers.</li>
+<li><code>call_tool</code>: This method allows the client to execute one of the discovered tools, providing necessary parameters.</li>
+</ol>
+<h3 id="late-binding-decoupling-clients-from-service-details">Late Binding: Decoupling Clients from Service Details</h3>
+<p>Unlike traditional architectures, where clients are tightly coupled to specific, predefined API endpoints, an MCP client interacts with a single, generic MCP endpoint provided by a service or service wrapper. The precise function or &ldquo;tool&rdquo; to be invoked, along with its required parameters, isn&rsquo;t hardcoded into the client. Instead, this determination happens dynamically at runtime. The client&rsquo;s intent, often expressed in natural language, is processed by an intermediary (like an LLM) which consults the service&rsquo;s capabilities (discovered via a <code>list_tools</code> mechanism) to decide the correct tool and parameters to use.</p>
+<p>Furthermore, because clients discover and bind to tools dynamically at runtime, server implementations gain greater flexibility to evolve. As long as the updated server correctly describes its current capabilities via the <code>list_tools</code> mechanism, clients can adapt to changes in functionality, parameter lists, or even underlying implementation details without requiring synchronized code deployments or potentially breaking existing client code. This significantly reduces the coordination overhead and risk typically associated with rolling out API changes.</p>
+<h3 id="llms-calling-functions-rethinking-interaction">LLMs Calling Functions: Rethinking Interaction</h3>
+<p><img src="/images/posts/how-mcp-changes-software/conversation.png" alt="LLM Function Calling Example"></p>
+<p>In the picture above, we see that I simply just &ldquo;asked&rdquo; the LLM to restart a certain MCP server. Under the hood, it is making an HTTP request. For programmers, a significant part of their job often involves not writing new code, but figuring out which existing API to call to achieve a desired outcome. Instead of manually searching documentation, understanding complex request formats, hoping you don&rsquo;t make a typo in a JSON request, etc, the LLM handles this complexity. Because of that, it opens the door to having <strong>conversations</strong> with software. Instead of using complex command-line tools or web interfaces, a user could simply say, &ldquo;Restart the database server for the production environment,&rdquo; or &ldquo;Scale up the web server cluster by two instances,&rdquo; or &ldquo;Deploy the latest version of the user authentication service&rdquo;.</p>
+<p>And this benefit is not just limited to programmer-server interaction. If applications themselves expose their capabilities via an MCP server, ordinary users can &ldquo;talk&rdquo; to them directly through an intelligent agent interface. Users will no longer need to search through menus or remember complex command sequences. Furthermore This opens the door to &ldquo;dynamic&rdquo; user interfaces. Instead of UI elements being hardcoded into the application, an LLM could interpret the user&rsquo;s request (e.g., &ldquo;show me a graph of my spending last month&rdquo;) and use MCP to query the application&rsquo;s capabilities. It could then select the necessary UI components (a date picker tool, a charting tool, a data retrieval tool) and send them along with the relevant data or instructions to a &ldquo;window manager&rdquo; or rendering engine for display and interaction. In essence, the sci-fi interfaces you see in movies – complex, fluid, and language aware, are now possible with MCP!</p>
+<h2 id="programming-in-the-era-of-llms">Programming in the Era of LLMs</h2>
+<p>The advent of Large Language Models (LLMs) has fundamentally altered the programming landscape. As AI assistants become increasingly capable of generating code at unprecedented speed and scale, we must reconsider what makes a programming language ideal—not just for human developers, but for AI-human collaborative development. In particular, a LLM friendly programming language should:</p>
+<ul>
+<li>Minimizes bugs. AI should be able to implement the user&rsquo;s intent without racking up a bunch of bugs along the way.</li>
+<li>A language with a standarized testing framework and good compile messages. The more verification we can introduce in the LLM code generation cycle, the more we are willing to vibe code.</li>
+<li>One which encourages developers to have verbose, pendantic descriptions of their code, perhaps even providing examples of how the API can be used.</li>
+</ul>
+<p>And with all that said, it seems we do have such a programming language already. And that programming language is Rust. Let me explain</p>
+<h3 id="making-unrepresentable-states-unreachable">Making Unrepresentable States Unreachable</h3>
+<p>While Rust&rsquo;s type system includes features like Variants (Algebraic Data Types) for ensuring type safety, I want to focus on a less commonly discussed concept: Phantom Types. Phantom types allow you to embed business logic directly within the type definitions themselves, achieving a state where invalid business states simply cannot be represented or constructed by the compiler.</p>
+<pre><code class="language-rust">use std::marker::PhantomData;
+
+// State machine for user account verification
+#[derive(Debug)]
+pub struct Unverified;
+
+#[derive(Debug)]
+pub struct EmailVerified;
+
+#[derive(Debug)]
+pub struct FullyVerified;
+
+#[derive(Debug)]
+pub struct UserAccount&lt;State&gt; {
+    email: String,
+    username: String,
+    created_at: chrono::DateTime&lt;chrono::Utc&gt;,
+    _state: PhantomData&lt;State&gt;,
+}
+
+impl UserAccount&lt;Unverified&gt; {
+    pub fn new(email: String, username: String) -&gt; Self {
+        Self {
+            email,
+            username,
+            created_at: chrono::Utc::now(),
+            _state: PhantomData,
+        }
+    }
+    
+    // Can only verify email from unverified state
+    pub fn verify_email(self, verification_code: &amp;str) -&gt; Result&lt;UserAccount&lt;EmailVerified&gt;, VerificationError&gt; {
+        if self.is_valid_verification_code(verification_code) {
+            Ok(UserAccount {
+                email: self.email,
+                username: self.username,
+                created_at: self.created_at,
+                _state: PhantomData,
+            })
+        } else {
+            Err(VerificationError::InvalidCode)
+        }
+    }
+    
+    fn is_valid_verification_code(&amp;self, _code: &amp;str) -&gt; bool {
+        // Simulate verification logic
+        true
+    }
+}
+
+impl UserAccount&lt;EmailVerified&gt; {
+    // Can only complete verification after email is verified
+    pub fn complete_verification(self, phone_number: String) -&gt; Result&lt;UserAccount&lt;FullyVerified&gt;, VerificationError&gt; {
+        if self.is_valid_phone(phone_number.as_str()) {
+            Ok(UserAccount {
+                email: self.email,
+                username: self.username,
+                created_at: self.created_at,
+                _state: PhantomData,
+            })
+        } else {
+            Err(VerificationError::InvalidPhone)
+        }
+    }
+    
+    fn is_valid_phone(&amp;self, _phone: &amp;str) -&gt; bool {
+        // Simulate phone validation
+        true
+    }
+}
+
+impl UserAccount&lt;FullyVerified&gt; {
+    // Only fully verified users can make purchases
+    pub fn make_purchase(&amp;self, amount: u64) -&gt; Result&lt;PurchaseReceipt, PaymentError&gt; {
+        if amount &gt; 0 {
+            Ok(PurchaseReceipt {
+                user_email: self.email.clone(),
+                amount,
+                timestamp: chrono::Utc::now(),
+            })
+        } else {
+            Err(PaymentError::InvalidAmount)
+        }
+    }
+    
+    // Only fully verified users can access sensitive data
+    pub fn get_personal_data(&amp;self) -&gt; PersonalData {
+        PersonalData {
+            email: self.email.clone(),
+            username: self.username.clone(),
+            verified_at: self.created_at,
+        }
+    }
+}
+
+#[derive(Debug)]
+pub enum VerificationError {
+    InvalidCode,
+    InvalidPhone,
+}
+
+#[derive(Debug)]
+pub enum PaymentError {
+    InvalidAmount,
+    InsufficientFunds,
+}
+
+#[derive(Debug)]
+pub struct PurchaseReceipt {
+    user_email: String,
+    amount: u64,
+    timestamp: chrono::DateTime&lt;chrono::Utc&gt;,
+}
+
+#[derive(Debug)]
+pub struct PersonalData {
+    email: String,
+    username: String,
+    verified_at: chrono::DateTime&lt;chrono::Utc&gt;,
+}
+
+// Usage example - invalid transitions are compile-time errors
+fn demonstrate_type_safety() {
+    let unverified_user = UserAccount::new(
+        &quot;user@example.com&quot;.to_string(),
+        &quot;username&quot;.to_string()
+    );
+    
+    // This compiles - valid transition
+    let email_verified = unverified_user.verify_email(&quot;123456&quot;).unwrap();
+    
+    // This compiles - valid transition
+    let fully_verified = email_verified.complete_verification(&quot;+1234567890&quot;.to_string()).unwrap();
+    
+    // This compiles - only fully verified users can make purchases
+    let receipt = fully_verified.make_purchase(100).unwrap();
+    
+    // These would be COMPILE-TIME ERRORS:
+    // let unverified_user = UserAccount::new(&quot;email&quot;.to_string(), &quot;user&quot;.to_string());
+    // unverified_user.make_purchase(100); // ERROR: method doesn't exist for UserAccount&lt;Unverified&gt;
+    // unverified_user.get_personal_data(); // ERROR: method doesn't exist for UserAccount&lt;Unverified&gt;
+    
+    // let email_verified = unverified_user.verify_email(&quot;123456&quot;).unwrap();
+    // email_verified.verify_email(&quot;456789&quot;); // ERROR: method doesn't exist for UserAccount&lt;EmailVerified&gt;
+}
+</code></pre>
+<p>This approach, using phantom types to represent distinct business states like <code>Unverified</code> or <code>FullyVerified</code>, provides powerful guidance for LLMs. The type system explicitly encodes the valid state transitions by making specific methods (like <code>verify_email</code> or <code>make_purchase</code>) available only on the correct state types. This acts as a detailed map for the LLM, teaching it the precise sequence of operations and underlying business rules required. Crucially, the compiler then enforces these rules, making it impossible for the LLM to generate code that attempts invalid actions, such as allowing a user in the <code>Unverified</code> state to perform a purchase. This strong, compile-time guidance prevents a class of logical bugs related to incorrect state management, ensuring the generated code adheres strictly to the defined business flow.</p>
+<h3 id="visible-error-handling-unwrap-as-llm-guidance">Visible Error Handling: unwrap() as LLM Guidance</h3>
+<p>Rust&rsquo;s approach to error handling, particularly through visible indicators like <code>unwrap()</code>, provides LLMs with clear signals about potential failure points, guiding them toward generating more robust and correct code.</p>
+<pre><code class="language-rust">use std::fs::File;
+use std::io::Read;
+
+fn process_user_config(file_path: &amp;str) -&gt; String {
+    let mut file = File::open(file_path).unwrap(); // &lt;- LLM sees this needs error handling
+    let mut contents = String::new();
+    file.read_to_string(&amp;mut contents).unwrap();   // &lt;- Another unwrap - needs handling
+    
+    let parsed_config = serde_json::from_str(&amp;contents).unwrap(); // &lt;- JSON parsing can fail
+    let username = parsed_config[&quot;username&quot;].as_str().unwrap(); // &lt;- Field might not exist
+    
+    format!(&quot;Welcome, {}!&quot;, username)
+}
+
+</code></pre>
+<p>Each <code>.unwrap()</code> call explicitly marks a location where a <code>Result</code> type, indicating potential failure, was handled by simply panicking on error. For an LLM processing this code, these are clear instructions: &ldquo;At this exact point, an error could occur. Make sure to have a test case which covers this&rdquo;</p>
+<p>Compared with the Python version:</p>
+<pre><code class="language-python">import json
+import os
+
+def process_user_config(file_path: str) -&gt; str:
+    with open(file_path, 'r') as f:
+        contents = f.read()
+
+    parsed_config = json.loads(contents)
+
+    username = parsed_config['username']
+
+    return f&quot;Welcome, {username}!&quot;
+</code></pre>
+<p>In the Python code, the potential failure points are not marked by specific syntax at the call site itself. An LLM must rely more on its training data and context to infer where exceptions might be raised. This implicit nature makes it more challenging for the LLM to reliably identify and cover all necessary error handling cases compared to the explicit flagging provided by Rust&rsquo;s <code>unwrap()</code>. While human developers might favor Python for its conciseness, Rust&rsquo;s explicit syntax will be favored by LLMs to generate correct code.</p>
+<h3 id="the-power-of-descriptive-compiler-messages">The Power of Descriptive Compiler Messages</h3>
+<p>Rust&rsquo;s compiler messages exemplify this principle. When an LLM generates incorrect Rust code, the compiler doesn&rsquo;t just say &ldquo;error&rdquo;—it provides educational, contextual feedback:</p>
+<pre><code class="language-rust">struct User {
+    id: i32,
+    name: String,
+}
+
+fn main() {
+    let current_user = User {
+        id: 1,
+        name: String::from(&quot;Alice&quot;),
+    };
+
+    let status = current_user.get_login_status(); // Compile error here
+    println!(&quot;Login status: {:?}&quot;, status);
+}
+</code></pre>
+<p>Compiling this code yields the following error:</p>
+<pre><code class="language-text">error[E0599]: no method named `get_login_status` found for struct `User` in the current scope
+  --&gt; main.rs:12:31
+   |
+1  | struct User {
+   | ----------- method `get_login_status` not found for this struct
+...
+12 |     let status = current_user.get_login_status(); // Compile error here
+   |                               ^^^^^^^^^^^^^^^^ method not found in `User`
+
+error: aborting due to 1 previous error
+
+For more information about this error, try `rustc --explain E0599`.
+</code></pre>
+<p>The Rust error <code>E0599</code> clearly states &ldquo;no method named <code>get_login_status</code> found for struct <code>User</code>&rdquo;. It precisely identifies the struct (<code>User</code>) and the method name being sought (<code>get_login_status</code>), along with the exact location in the code. And while this specific simple example doesn&rsquo;t show suggestions, in more complex cases involving traits or common typos, Rust often suggests methods that <em>are</em> available or might be similar, providing more detailed insight into <em>why</em> the method wasn&rsquo;t found on that specific type and helping the developer find the correct method or understand what traits are missing. And if that is not enough, the LLM can call <code>rustc --explain E0599</code> for an example of how to solve the issue!</p>
+<p>Compare this with the equivalent error in Go:</p>
+<pre><code class="language-go">package main
+
+import &quot;fmt&quot;
+
+type User struct {
+	id   int
+	name string
+}
+
+func main() {
+	currentUser := User{
+		id:   1,
+		name: &quot;Alice&quot;,
+	}
+
+	status := currentUser.get_login_status() // Compile error here
+	fmt.Println(&quot;Login status:&quot;, status)
+}
+</code></pre>
+<p>Compiling this code yields an error similar to this:</p>
+<pre><code class="language-text"># command-line-arguments
+./main.go:16:24: currentUser.get_login_status undefined (type User has no field or method get_login_status)
+</code></pre>
+<p>The Go error message is concise: &ldquo;<code>currentUser.get_login_status undefined (type User has no field or method get_login_status)</code>&rdquo;. It correctly identifies the variable (<code>currentUser</code>), the method being called (<code>get_login_status</code>), and states that it&rsquo;s undefined on the <code>User</code> type, explicitly mentioning that the type has no such field <em>or</em> method. While accurate and to the point, it lacks the detailed breakdown, potential suggestions, or specific error code often found in Rust errors, making it slightly less descriptive in guiding the LLM towards resolving the issue.</p>
+<h3 id="localized-testing">Localized Testing</h3>
+<p>Rust&rsquo;s support for embedded unit tests creates exceptional locality between implementation and verification code, making it uniquely well-suited for LLM-generated programs. Unlike many languages that require separate test files, Rust allows developers to write tests directly alongside their implementation using the #[cfg(test)] attribute and #[test] macro.</p>
+<pre><code class="language-rust">pub fn capitalize_words(input: &amp;str) -&gt; String {
+    input
+        .split_whitespace()
+        .map(|word| {
+            let mut chars = word.chars();
+            match chars.next() {
+                None =&gt; String::new(),
+                Some(first) =&gt; first.to_uppercase().collect::&lt;String&gt;() + chars.as_str(),
+            }
+        })
+        .collect::&lt;Vec&lt;_&gt;&gt;()
+        .join(&quot; &quot;)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_capitalize_basic() {
+        assert_eq!(capitalize_words(&quot;hello world&quot;), &quot;Hello World&quot;);
+    }
+
+    #[test]
+    fn test_capitalize_empty() {
+        assert_eq!(capitalize_words(&quot;&quot;), &quot;&quot;);
+    }
+
+    #[test]
+    fn test_capitalize_single_char() {
+        assert_eq!(capitalize_words(&quot;a b c&quot;), &quot;A B C&quot;);
+    }
+}
+</code></pre>
+<p>This unified view provides immediate, high-quality context to the LLM. It can reason about the implementation and simultaneously see how it should behave according to the tests. In other programming languages, the LLM may need to retrieve corresponding tests from a separate location, potentially relying on external search mechanisms with a possibility of false positives(i.e RAG database). In Rust, however, this crucial verification context is inherently available alongside the implementation within the same file, ensuring the LLM always has immediate access to the tests that define expected behavior for unit-level code.</p>
+<h3 id="documentation-as-verified-executable-specification">Documentation as Verified Executable Specification</h3>
+<pre><code class="language-rust">/// Processes user authentication with multi-factor verification
+/// 
+/// # Arguments
+/// * `credentials` - User credentials containing username/email and password
+/// * `mfa_token` - Time-based one-time password from authenticator app
+/// * `device_info` - Information about the requesting device for security logging
+///
+/// # Returns
+/// * `Ok(AuthResult)` - Successful authentication with user session
+/// * `Err(AuthError)` - Authentication failure with detailed reason
+///
+/// # Examples
+/// ```
+/// use auth::{Credentials, DeviceInfo, authenticate_user};
+/// 
+/// let creds = Credentials {
+///     username: &quot;user@example.com&quot;.to_string(),
+///     password: &quot;secure_password&quot;.to_string(),
+/// };
+/// 
+/// let device = DeviceInfo {
+///     user_agent: &quot;Mozilla/5.0...&quot;.to_string(),
+///     ip_address: &quot;192.168.1.100&quot;.to_string(),
+///     device_id: Some(&quot;known_device_123&quot;.to_string()),
+/// };
+/// 
+/// match authenticate_user(creds, &quot;123456&quot;, device) {
+///     Ok(result) =&gt; println!(&quot;Authenticated: {}&quot;, result.user_id),
+///     Err(e) =&gt; eprintln!(&quot;Auth failed: {:?}&quot;, e),
+/// }
+/// ```
+///
+/// # Security Notes
+/// - Passwords are automatically hashed and never stored in plaintext
+/// - Failed attempts are rate-limited per IP and per user
+/// - MFA tokens are validated against time skew up to 30 seconds
+/// - Device fingerprinting helps detect suspicious login patterns
+///
+/// # Performance
+/// - Typical response time: 50-200ms
+/// - Database queries: 2-3 (user lookup, session creation, audit log)
+/// - Memory usage: ~1KB per authentication attempt
+fn authenticate_user(
+    credentials: Credentials,
+    mfa_token: &amp;str,
+    device_info: DeviceInfo,
+) -&gt; Result&lt;AuthResult, AuthError&gt; {
+    // Implementation here
+}
+</code></pre>
+<p>In Rust, documentation is a first-class citizen that goes far beyond simple comments.  Rust guarantees that the example code blocks embedded in documentation must compile without errors, or cargo build will fail. This means that Rust documentation must be correct! These documentation blocks are furthermore compiled into static HTML pages by <code>rustdoc</code>, which can subsequently become a valuable MCP (Model Context Protocol) resource for AI systems. The rich, structured documentation provides detailed behavioral specifications and usage patterns that help the LLM understand not just what the code does, but how it should be used in practice. This creates a virtuous cycle where well-documented generated code becomes the foundation for even better subsequent generations, as the LLM can learn from the comprehensive specifications it helped create.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>While true agentic AI is not yet fully realized, the introduction of the Multi-Capability Protocol (MCP) represents a significant step forward. Despite the current limitations, MCP provides a crucial framework, bringing us closer to achieving sophisticated agents. At its core, MCP gives Large Language Models (LLMs) a structured way to interact with external environments. Now what is left to do from the reinforcement learning perspective is a way to assign &ldquo;rewards&rdquo; to the &ldquo;actions&rdquo; the LLM takes.(perhaps <a href="https://github.com/openai/evals">evals</a> with Long Term Memory??). But until the day that AGI comes, a lot of <strong>software engineering</strong> needs to be done to build up AI infrastructure. Just off the top of my head, here are some ideas:</p>
+<h3 id="mcp-chat-debugger">MCP Chat Debugger</h3>
+<p>MCP Chat Debugger represents a critical need in agent development. Current debugging approaches are inadequate for systems that make autonomous decisions and interact with external environments. An MCP Chat Debugger would allow developers to step into the &ldquo;conversation&rdquo; between the LLM and MCP servers, observing the agent&rsquo;s reasoning process, the data it receives, and the decisions it makes. This tool would need to capture not just the final outputs, but the entire chain of reasoning, including failed attempts, backtracking, and learning updates.</p>
+<h3 id="agent-monitoring-and-observability-systems">Agent Monitoring and Observability Systems</h3>
+<p>These systems need to track metrics that don&rsquo;t exist in traditional software: decision quality, learning velocity, goal achievement rates, and resource utilization efficiency. Unlike traditional monitoring, agent observability must account for the probabilistic nature of AI decision-making and the long-term consequences of actions.
+These monitoring systems will need to detect when agents are behaving unexpectedly, learning counterproductive patterns, or operating outside their intended parameters. They&rsquo;ll need to provide alerts not just for system failures, but for subtle degradations in agent performance that might indicate training drift or environmental changes.</p>
+<h3 id="agent-operating-system">Agent Operating System</h3>
+<p>Agent Operating System represents perhaps the most ambitious requirement. Current operating systems are designed for deterministic programs following predictable execution patterns. Agents require an entirely different computational model—one that supports continuous learning and goal-oriented behavior. It would need to manage not just computational resources, but learning resources—tracking which experiences are worth retaining, managing memory consolidation as the context window grows too big(instead of stack overflow, we now have context overflow). This necessitates an operating system fundamentally built for dynamic, learning-driven computation rather than static, command-driven execution.</p>
+<p>The race to build these foundational tools and infrastructure will determine not just who leads the next wave of AI development, but who shapes the very architecture of how humans and machines will collaborate in an agentic future.</p>
+
+      </div>
+    </article>
+
+    <hr />
+
+    <div class="post-info">
+      
+    <p style="font-size:1.05rem">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg>
+
+        <span class="tag"><a href="https://bbli.github.io/tags/ai/">ai</a></span>
+        <span class="tag"><a href="https://bbli.github.io/tags/mcp/">mcp</a></span>
+        <span class="tag"><a href="https://bbli.github.io/tags/software-design/">software-design</a></span>
+        <span class="tag"><a href="https://bbli.github.io/tags/rust/">rust</a></span>
+        
+    </p>
+
+
+      
+
+      <p>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>
+        3334 Words
+      </p>
+
+      <p>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="16" y1="2" x2="16" y2="6"></line>
+          <line x1="8" y1="2" x2="8" y2="6"></line>
+          <line x1="3" y1="10" x2="21" y2="10"></line>
+        </svg>
+        
+          2025-06-01 00:00
+        
+
+         
+          
+        
+      </p>
+    </div>
+      <hr />
+      <div class="sharing-buttons">
+        
+<a class="resp-sharing-button__link" href="https://facebook.com/sharer/sharer.php?u=https%3a%2f%2fbbli.github.io%2fposts%2fhow_mcp_changes_the_way_we_write_software%2f" target="_blank" rel="noopener" aria-label="" title="Share on facebook">
+  <div class="resp-sharing-button resp-sharing-button--facebook resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+    </div>
+  </div>
+</a>
+
+
+<a class="resp-sharing-button__link" href="https://twitter.com/intent/tweet/?url=https%3a%2f%2fbbli.github.io%2fposts%2fhow_mcp_changes_the_way_we_write_software%2f" target="_blank" rel="noopener" aria-label="" title="Share on twitter">
+  <div class="resp-sharing-button resp-sharing-button--twitter resp-sharing-button--small">
+      <div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path></svg>
+    </div>
+  </div>
+</a>
+
+
+<a class="resp-sharing-button__link" href="https://www.tumblr.com/widgets/share/tool?posttype=link&amp;title=How%20MCP%20Changes%20the%20Way%20We%20Write%20Software&amp;caption=How%20MCP%20Changes%20the%20Way%20We%20Write%20Software&amp;canonicalUrl=https%3a%2f%2fbbli.github.io%2fposts%2fhow_mcp_changes_the_way_we_write_software%2f" target="_blank" rel="noopener" aria-label="" title="Share on tumblr">
+  <div class="resp-sharing-button resp-sharing-button--tumblr resp-sharing-button--small">
+    <div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.563 24c-5.093 0-7.031-3.756-7.031-6.411V9.747H5.116V6.648c3.63-1.313 4.512-4.596 4.71-6.469C9.84.051 9.941 0 9.999 0h3.517v6.114h4.801v3.633h-4.82v7.47c.016 1.001.375 2.371 2.207 2.371h.09c.631-.02 1.486-.205 1.936-.419l1.156 3.425c-.436.636-2.4 1.374-4.156 1.404h-.178l.011.002z"/></svg>
+    </div>
+  </div>
+</a>
+
+
+<a class="resp-sharing-button__link" href="mailto:?subject=How%20MCP%20Changes%20the%20Way%20We%20Write%20Software&amp;body=https%3a%2f%2fbbli.github.io%2fposts%2fhow_mcp_changes_the_way_we_write_software%2f" target="_self" rel="noopener" aria-label="" title="Share via email">
+  <div class="resp-sharing-button resp-sharing-button--email resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+    </div>
+  </div>
+</a>
+
+
+<a class="resp-sharing-button__link" href="https://pinterest.com/pin/create/button/?url=https%3a%2f%2fbbli.github.io%2fposts%2fhow_mcp_changes_the_way_we_write_software%2f&amp;media=https%3a%2f%2fbbli.github.io%2fposts%2fhow_mcp_changes_the_way_we_write_software%2f;description=How%20MCP%20Changes%20the%20Way%20We%20Write%20Software" target="_blank" rel="noopener" aria-label="" title="Share on pinterest">
+  <div class="resp-sharing-button resp-sharing-button--pinterest resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.401.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.354-.629-2.758-1.379l-.749 2.848c-.269 1.045-1.004 2.352-1.498 3.146 1.123.345 2.306.535 3.55.535 6.607 0 11.985-5.365 11.985-11.987C23.97 5.39 18.592.026 11.985.026L12.017 0z"/></svg>
+    </div>
+  </div>
+</a>
+
+
+<a class="resp-sharing-button__link" href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3a%2f%2fbbli.github.io%2fposts%2fhow_mcp_changes_the_way_we_write_software%2f&amp;title=How%20MCP%20Changes%20the%20Way%20We%20Write%20Software&amp;summary=How%20MCP%20Changes%20the%20Way%20We%20Write%20Software&amp;source=https%3a%2f%2fbbli.github.io%2fposts%2fhow_mcp_changes_the_way_we_write_software%2f" target="_blank" rel="noopener" aria-label="" title="Share on linkedin">
+  <div class="resp-sharing-button resp-sharing-button--linkedin resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+    </div>
+  </div>
+</a>
+
+
+<a class="resp-sharing-button__link" href="https://reddit.com/submit/?url=https%3a%2f%2fbbli.github.io%2fposts%2fhow_mcp_changes_the_way_we_write_software%2f&amp;resubmit=true&amp;title=How%20MCP%20Changes%20the%20Way%20We%20Write%20Software" target="_blank" rel="noopener" aria-label="" title="Share on reddit">
+  <div class="resp-sharing-button resp-sharing-button--reddit resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.617a1.214 1.214 0 0 1 1.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 0 0-.231.094.33.33 0 0 0 0 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 0 0 .029-.463.33.33 0 0 0-.464 0c-.547.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 0 0-.232-.095z"/></svg>
+    </div>
+  </div>
+</a>
+
+
+<a class="resp-sharing-button__link" href="https://www.xing.com/app/user?op=share;url=https%3a%2f%2fbbli.github.io%2fposts%2fhow_mcp_changes_the_way_we_write_software%2f;title=How%20MCP%20Changes%20the%20Way%20We%20Write%20Software" target="_blank" rel="noopener" aria-label="" title="Share on xing">
+  <div class="resp-sharing-button resp-sharing-button--xing resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M18.188 0c-.517 0-.741.325-.927.66 0 0-7.455 13.224-7.702 13.657.015.024 4.919 9.023 4.919 9.023.17.308.436.66.967.66h3.454c.211 0 .375-.078.463-.22.089-.151.089-.346-.009-.536l-4.879-8.916c-.004-.006-.004-.016 0-.022L22.139.756c.095-.191.097-.387.006-.535C22.056.078 21.894 0 21.686 0h-3.498zM3.648 4.74c-.211 0-.385.074-.473.216-.09.149-.078.339.02.531l2.34 4.05c.004.01.004.016 0 .021L1.86 16.051c-.099.188-.093.381 0 .529.085.142.239.234.45.234h3.461c.518 0 .766-.348.945-.667l3.734-6.609-2.378-4.155c-.172-.315-.434-.659-.962-.659H3.648v.016z"/></svg>
+    </div>
+  </div>
+</a>
+
+
+<a class="resp-sharing-button__link" href="whatsapp://send?text=How%20MCP%20Changes%20the%20Way%20We%20Write%20Software%20https%3a%2f%2fbbli.github.io%2fposts%2fhow_mcp_changes_the_way_we_write_software%2f" target="_blank" rel="noopener" aria-label="" title="Share on whatsapp">
+  <div class="resp-sharing-button resp-sharing-button--whatsapp resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+    </div>
+  </div>
+</a>
+
+
+<a class="resp-sharing-button__link" href="https://news.ycombinator.com/submitlink?u=https%3a%2f%2fbbli.github.io%2fposts%2fhow_mcp_changes_the_way_we_write_software%2f&amp;t=How%20MCP%20Changes%20the%20Way%20We%20Write%20Software" target="_blank" rel="noopener" aria-label="" title="Share on hacker news">
+  <div class="resp-sharing-button resp-sharing-button--hackernews resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
+			<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M0 24V0h24v24H0zM6.951 5.896l4.112 7.708v5.064h1.583v-4.972l4.148-7.799h-1.749l-2.457 4.875c-.372.745-.688 1.434-.688 1.434s-.297-.708-.651-1.434L8.831 5.896h-1.88z"/></svg>
+    </div>
+  </div>
+</a>
+
+
+<a class="resp-sharing-button__link" href="https://telegram.me/share/url?text=How%20MCP%20Changes%20the%20Way%20We%20Write%20Software&amp;url=https%3a%2f%2fbbli.github.io%2fposts%2fhow_mcp_changes_the_way_we_write_software%2f" target="_blank" rel="noopener" aria-label="" title="Share on telegram">
+  <div class="resp-sharing-button resp-sharing-button--telegram resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+    </div>
+  </div>
+</a>
+
+      </div>
+
+    
+    <div class="pagination">
+        <div class="pagination__title">
+            <span class="pagination__title-h"></span>
+            <hr />
+        </div>
+
+        <div class="pagination__buttons">
+            
+
+            
+            <span class="button next">
+                <a href="https://bbli.github.io/posts/on_cost_of_code_reuse/">
+                    <span class="button__text">On the Cost of Code Resuse</span>
+                    <span class="button__icon">→</span>
+                </a>
+            </span>
+            
+        </div>
+    </div>
+
+
+    
+
+    
+
+  </main>
+
+            </div>
+
+            
+                <footer class="footer">
+    
+    
+    <div class="footer__inner">
+        <div class="footer__content">
+            <span>Powered by <a href="http://gohugo.io">Hugo</a> + <a href="https://ox-hugo.scripter.co/">ox-hugo</a> + <a href="https://github.com/hlissner/doom-emacs" >Emacs</a></span><span>Adaptation of <a href="https://themes.gohugo.io/hugo-theme-hello-friend-ng">Hello Friend Ng</a> Theme</span>
+        </div>
+    </div>
+    
+</footer>
+
+            
+        </div>
+
+        
+
+
+
+<script type="text/javascript" src="/bundle.min.17f4a297973019cb34411034a36394fcb6eacdd75534644a62f64d85ac204bca0405d8a5b5f4babfd7625a6307b48c86d042051a47e0506e4147dda733ef13aa.js" integrity="sha512-F/Sil5cwGcs0QRA0o2OU/LbqzddVNGRKYvZNhawgS8oEBdiltfS6v9diWmMHtIyG0EIFGkfgUG5BR92nM&#43;8Tqg=="></script>
+
+
+
+    </body>
+</html>

@@ -4,10 +4,450 @@
         <link>https://bbli.github.io/posts/</link>
         <description>Recent content in Posts on Benson Li&#39;s Blog</description>
         <generator>Hugo -- gohugo.io</generator>
-        <language>en-us</language>
+        <language>en</language>
         <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
-        <lastBuildDate>Sun, 01 May 2022 00:00:00 -0700</lastBuildDate>
+        <lastBuildDate>Sun, 01 Jun 2025 00:00:00 -0700</lastBuildDate>
         <atom:link href="https://bbli.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+        
+        <item>
+            <title>How MCP Changes the Way We Write Software</title>
+            <link>https://bbli.github.io/posts/how_mcp_changes_the_way_we_write_software/</link>
+            <pubDate>Sun, 01 Jun 2025 00:00:00 -0700</pubDate>
+            
+            <guid>https://bbli.github.io/posts/how_mcp_changes_the_way_we_write_software/</guid>
+            <description>&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://bbli.github.io/posts/how_mcp_changes_the_way_we_write_software/#agents-the-current-reality&#34;&gt;Agents: The Current Reality&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://bbli.github.io/posts/how_mcp_changes_the_way_we_write_software/#where-generative-ai-excels-today-the-case-for-coding&#34;&gt;Where Generative AI Excels Today: The Case for Coding&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://bbli.github.io/posts/how_mcp_changes_the_way_we_write_software/#the-model-context-protocol&#34;&gt;The Model Context Protocol&lt;/a&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://bbli.github.io/posts/how_mcp_changes_the_way_we_write_software/#late-binding-decoupling-clients-from-service-details&#34;&gt;Late Binding: Decoupling Clients from Service Details&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://bbli.github.io/posts/how_mcp_changes_the_way_we_write_software/#llms-calling-functions-rethinking-interaction&#34;&gt;LLMs Calling Functions: Rethinking Interaction&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://bbli.github.io/posts/how_mcp_changes_the_way_we_write_software/#programming-in-the-era-of-llms&#34;&gt;Programming in the Era of LLMs&lt;/a&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://bbli.github.io/posts/how_mcp_changes_the_way_we_write_software/#making-unrepresentable-states-unreachable&#34;&gt;Making Unrepresentable States Unreachable&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://bbli.github.io/posts/how_mcp_changes_the_way_we_write_software/#visible-error-handling-unwrap-as-llm-guidance&#34;&gt;Visible Error Handling: unwrap() as LLM Guidance&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://bbli.github.io/posts/how_mcp_changes_the_way_we_write_software/#the-power-of-descriptive-compiler-messages&#34;&gt;The Power of Descriptive Compiler Messages&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://bbli.github.io/posts/how_mcp_changes_the_way_we_write_software/#localized-testing&#34;&gt;Localized Testing&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://bbli.github.io/posts/how_mcp_changes_the_way_we_write_software/#documentation-as-verified-executable-specification&#34;&gt;Documentation as Verified Executable Specification&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://bbli.github.io/posts/how_mcp_changes_the_way_we_write_software/#conclusion&#34;&gt;Conclusion&lt;/a&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://bbli.github.io/posts/how_mcp_changes_the_way_we_write_software/#mcp-chat-debugger&#34;&gt;MCP Chat Debugger&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://bbli.github.io/posts/how_mcp_changes_the_way_we_write_software/#agent-monitoring-and-observability-systems&#34;&gt;Agent Monitoring and Observability Systems&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://bbli.github.io/posts/how_mcp_changes_the_way_we_write_software/#agent-operating-system&#34;&gt;Agent Operating System&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;h2 id=&#34;agents-the-current-reality&#34;&gt;Agents: The Current Reality&lt;/h2&gt;
+&lt;p&gt;When we talk about &amp;ldquo;agents&amp;rdquo; in the context of AI today, it&amp;rsquo;s important to clarify what we mean, especially from a reinforcement learning (RL) perspective. Strictly speaking, most current AI systems referred to as agents don&amp;rsquo;t yet fit the classical RL definition.&lt;/p&gt;</description>
+            <content type="html"><![CDATA[<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+<ul>
+<li><a href="/posts/how_mcp_changes_the_way_we_write_software/#agents-the-current-reality">Agents: The Current Reality</a></li>
+<li><a href="/posts/how_mcp_changes_the_way_we_write_software/#where-generative-ai-excels-today-the-case-for-coding">Where Generative AI Excels Today: The Case for Coding</a></li>
+<li><a href="/posts/how_mcp_changes_the_way_we_write_software/#the-model-context-protocol">The Model Context Protocol</a>
+<ul>
+<li><a href="/posts/how_mcp_changes_the_way_we_write_software/#late-binding-decoupling-clients-from-service-details">Late Binding: Decoupling Clients from Service Details</a></li>
+<li><a href="/posts/how_mcp_changes_the_way_we_write_software/#llms-calling-functions-rethinking-interaction">LLMs Calling Functions: Rethinking Interaction</a></li>
+</ul>
+</li>
+<li><a href="/posts/how_mcp_changes_the_way_we_write_software/#programming-in-the-era-of-llms">Programming in the Era of LLMs</a>
+<ul>
+<li><a href="/posts/how_mcp_changes_the_way_we_write_software/#making-unrepresentable-states-unreachable">Making Unrepresentable States Unreachable</a></li>
+<li><a href="/posts/how_mcp_changes_the_way_we_write_software/#visible-error-handling-unwrap-as-llm-guidance">Visible Error Handling: unwrap() as LLM Guidance</a></li>
+<li><a href="/posts/how_mcp_changes_the_way_we_write_software/#the-power-of-descriptive-compiler-messages">The Power of Descriptive Compiler Messages</a></li>
+<li><a href="/posts/how_mcp_changes_the_way_we_write_software/#localized-testing">Localized Testing</a></li>
+<li><a href="/posts/how_mcp_changes_the_way_we_write_software/#documentation-as-verified-executable-specification">Documentation as Verified Executable Specification</a></li>
+</ul>
+</li>
+<li><a href="/posts/how_mcp_changes_the_way_we_write_software/#conclusion">Conclusion</a>
+<ul>
+<li><a href="/posts/how_mcp_changes_the_way_we_write_software/#mcp-chat-debugger">MCP Chat Debugger</a></li>
+<li><a href="/posts/how_mcp_changes_the_way_we_write_software/#agent-monitoring-and-observability-systems">Agent Monitoring and Observability Systems</a></li>
+<li><a href="/posts/how_mcp_changes_the_way_we_write_software/#agent-operating-system">Agent Operating System</a></li>
+</ul>
+</li>
+</ul>
+<!-- raw HTML omitted -->
+<h2 id="agents-the-current-reality">Agents: The Current Reality</h2>
+<p>When we talk about &ldquo;agents&rdquo; in the context of AI today, it&rsquo;s important to clarify what we mean, especially from a reinforcement learning (RL) perspective. Strictly speaking, most current AI systems referred to as agents don&rsquo;t yet fit the classical RL definition.</p>
+<p>In reinforcement learning, an agent learns a &ldquo;policy&rdquo; π(s) – a strategy for choosing actions – by interacting with an &ldquo;environment&rdquo; over time, receiving feedback (rewards or penalties). This policy is learned through trial and error, adapting based on experience to maximize cumulative reward.</p>
+<p>Many systems labeled as &ldquo;agents&rdquo; today, however, operate through static, human-authored prompts that serve as fixed behavioral specifications rather than learned policies. While these prompts can be dynamic and involve multiple steps or tool use, the core &ldquo;policy&rdquo; guiding behavior is nevertheless hardcoded. So what the industry refers to as &ldquo;agents&rdquo; can be more accurately described as interfaces that leverage natural language or pseudocode-like instructions to interact with underlying software functionalities.</p>
+<h2 id="where-generative-ai-excels-today-the-case-for-coding">Where Generative AI Excels Today: The Case for Coding</h2>
+<p>Despite the limitations in achieving true agency, large language models still demonstrate considerable utility in the context of software development. This effectiveness stems from two domain-specific characteristics that align well with current model capabilities:</p>
+<ol>
+<li><strong>Tolerance for Error and Iteration:</strong> Generated code doesn&rsquo;t need to be perfect on the first try. Unlike real-time systems(which the industry seems to be using &ldquo;agents&rdquo; for), coding allows for an iterative process. Developers can review, debug, and refine AI-generated suggestions.</li>
+<li><strong>Objective Verification:</strong> In software engineering, we have mechanisms to verify the correctness of code, primarily through automated tests. Instead of accepting AI output at face value (as one might with a factual query), we can run unit tests, integration tests, linters, etc to objectively determine if the generated code functions as intended.</li>
+</ol>
+<p>In other words, one can view programming as fundamentally analogous to a reinforcement learning problem, where the generated code serves as the agent&rsquo;s policy, and tests provide feedback on the various states the agent can be in.</p>
+<p>With all of that in mind, I would like to spend the rest of this blog post describing how MCP servers can augment the way developers write code with LLMs, and exploring which features of programming languages are best suited for this new AI-assisted development paradigm.</p>
+<h2 id="the-model-context-protocol">The Model Context Protocol</h2>
+<p>At its core, the Model Context Protocol(well at least the &ldquo;tool&rdquo; part of the protocol) is surprisingly simple. For a server to adhere to the MCP standard, it primarily needs to implement just two methods:</p>
+<ol>
+<li><code>list_tools</code>: This method allows a client to discover the available functions or capabilities the server offers.</li>
+<li><code>call_tool</code>: This method allows the client to execute one of the discovered tools, providing necessary parameters.</li>
+</ol>
+<h3 id="late-binding-decoupling-clients-from-service-details">Late Binding: Decoupling Clients from Service Details</h3>
+<p>Unlike traditional architectures, where clients are tightly coupled to specific, predefined API endpoints, an MCP client interacts with a single, generic MCP endpoint provided by a service or service wrapper. The precise function or &ldquo;tool&rdquo; to be invoked, along with its required parameters, isn&rsquo;t hardcoded into the client. Instead, this determination happens dynamically at runtime. The client&rsquo;s intent, often expressed in natural language, is processed by an intermediary (like an LLM) which consults the service&rsquo;s capabilities (discovered via a <code>list_tools</code> mechanism) to decide the correct tool and parameters to use.</p>
+<p>Furthermore, because clients discover and bind to tools dynamically at runtime, server implementations gain greater flexibility to evolve. As long as the updated server correctly describes its current capabilities via the <code>list_tools</code> mechanism, clients can adapt to changes in functionality, parameter lists, or even underlying implementation details without requiring synchronized code deployments or potentially breaking existing client code. This significantly reduces the coordination overhead and risk typically associated with rolling out API changes.</p>
+<h3 id="llms-calling-functions-rethinking-interaction">LLMs Calling Functions: Rethinking Interaction</h3>
+<p><img src="/images/posts/how-mcp-changes-software/conversation.png" alt="LLM Function Calling Example"></p>
+<p>In the picture above, we see that I simply just &ldquo;asked&rdquo; the LLM to restart a certain MCP server. Under the hood, it is making an HTTP request. For programmers, a significant part of their job often involves not writing new code, but figuring out which existing API to call to achieve a desired outcome. Instead of manually searching documentation, understanding complex request formats, hoping you don&rsquo;t make a typo in a JSON request, etc, the LLM handles this complexity. Because of that, it opens the door to having <strong>conversations</strong> with software. Instead of using complex command-line tools or web interfaces, a user could simply say, &ldquo;Restart the database server for the production environment,&rdquo; or &ldquo;Scale up the web server cluster by two instances,&rdquo; or &ldquo;Deploy the latest version of the user authentication service&rdquo;.</p>
+<p>And this benefit is not just limited to programmer-server interaction. If applications themselves expose their capabilities via an MCP server, ordinary users can &ldquo;talk&rdquo; to them directly through an intelligent agent interface. Users will no longer need to search through menus or remember complex command sequences. Furthermore This opens the door to &ldquo;dynamic&rdquo; user interfaces. Instead of UI elements being hardcoded into the application, an LLM could interpret the user&rsquo;s request (e.g., &ldquo;show me a graph of my spending last month&rdquo;) and use MCP to query the application&rsquo;s capabilities. It could then select the necessary UI components (a date picker tool, a charting tool, a data retrieval tool) and send them along with the relevant data or instructions to a &ldquo;window manager&rdquo; or rendering engine for display and interaction. In essence, the sci-fi interfaces you see in movies – complex, fluid, and language aware, are now possible with MCP!</p>
+<h2 id="programming-in-the-era-of-llms">Programming in the Era of LLMs</h2>
+<p>The advent of Large Language Models (LLMs) has fundamentally altered the programming landscape. As AI assistants become increasingly capable of generating code at unprecedented speed and scale, we must reconsider what makes a programming language ideal—not just for human developers, but for AI-human collaborative development. In particular, a LLM friendly programming language should:</p>
+<ul>
+<li>Minimizes bugs. AI should be able to implement the user&rsquo;s intent without racking up a bunch of bugs along the way.</li>
+<li>A language with a standarized testing framework and good compile messages. The more verification we can introduce in the LLM code generation cycle, the more we are willing to vibe code.</li>
+<li>One which encourages developers to have verbose, pendantic descriptions of their code, perhaps even providing examples of how the API can be used.</li>
+</ul>
+<p>And with all that said, it seems we do have such a programming language already. And that programming language is Rust. Let me explain</p>
+<h3 id="making-unrepresentable-states-unreachable">Making Unrepresentable States Unreachable</h3>
+<p>While Rust&rsquo;s type system includes features like Variants (Algebraic Data Types) for ensuring type safety, I want to focus on a less commonly discussed concept: Phantom Types. Phantom types allow you to embed business logic directly within the type definitions themselves, achieving a state where invalid business states simply cannot be represented or constructed by the compiler.</p>
+<pre><code class="language-rust">use std::marker::PhantomData;
+
+// State machine for user account verification
+#[derive(Debug)]
+pub struct Unverified;
+
+#[derive(Debug)]
+pub struct EmailVerified;
+
+#[derive(Debug)]
+pub struct FullyVerified;
+
+#[derive(Debug)]
+pub struct UserAccount&lt;State&gt; {
+    email: String,
+    username: String,
+    created_at: chrono::DateTime&lt;chrono::Utc&gt;,
+    _state: PhantomData&lt;State&gt;,
+}
+
+impl UserAccount&lt;Unverified&gt; {
+    pub fn new(email: String, username: String) -&gt; Self {
+        Self {
+            email,
+            username,
+            created_at: chrono::Utc::now(),
+            _state: PhantomData,
+        }
+    }
+    
+    // Can only verify email from unverified state
+    pub fn verify_email(self, verification_code: &amp;str) -&gt; Result&lt;UserAccount&lt;EmailVerified&gt;, VerificationError&gt; {
+        if self.is_valid_verification_code(verification_code) {
+            Ok(UserAccount {
+                email: self.email,
+                username: self.username,
+                created_at: self.created_at,
+                _state: PhantomData,
+            })
+        } else {
+            Err(VerificationError::InvalidCode)
+        }
+    }
+    
+    fn is_valid_verification_code(&amp;self, _code: &amp;str) -&gt; bool {
+        // Simulate verification logic
+        true
+    }
+}
+
+impl UserAccount&lt;EmailVerified&gt; {
+    // Can only complete verification after email is verified
+    pub fn complete_verification(self, phone_number: String) -&gt; Result&lt;UserAccount&lt;FullyVerified&gt;, VerificationError&gt; {
+        if self.is_valid_phone(phone_number.as_str()) {
+            Ok(UserAccount {
+                email: self.email,
+                username: self.username,
+                created_at: self.created_at,
+                _state: PhantomData,
+            })
+        } else {
+            Err(VerificationError::InvalidPhone)
+        }
+    }
+    
+    fn is_valid_phone(&amp;self, _phone: &amp;str) -&gt; bool {
+        // Simulate phone validation
+        true
+    }
+}
+
+impl UserAccount&lt;FullyVerified&gt; {
+    // Only fully verified users can make purchases
+    pub fn make_purchase(&amp;self, amount: u64) -&gt; Result&lt;PurchaseReceipt, PaymentError&gt; {
+        if amount &gt; 0 {
+            Ok(PurchaseReceipt {
+                user_email: self.email.clone(),
+                amount,
+                timestamp: chrono::Utc::now(),
+            })
+        } else {
+            Err(PaymentError::InvalidAmount)
+        }
+    }
+    
+    // Only fully verified users can access sensitive data
+    pub fn get_personal_data(&amp;self) -&gt; PersonalData {
+        PersonalData {
+            email: self.email.clone(),
+            username: self.username.clone(),
+            verified_at: self.created_at,
+        }
+    }
+}
+
+#[derive(Debug)]
+pub enum VerificationError {
+    InvalidCode,
+    InvalidPhone,
+}
+
+#[derive(Debug)]
+pub enum PaymentError {
+    InvalidAmount,
+    InsufficientFunds,
+}
+
+#[derive(Debug)]
+pub struct PurchaseReceipt {
+    user_email: String,
+    amount: u64,
+    timestamp: chrono::DateTime&lt;chrono::Utc&gt;,
+}
+
+#[derive(Debug)]
+pub struct PersonalData {
+    email: String,
+    username: String,
+    verified_at: chrono::DateTime&lt;chrono::Utc&gt;,
+}
+
+// Usage example - invalid transitions are compile-time errors
+fn demonstrate_type_safety() {
+    let unverified_user = UserAccount::new(
+        &quot;user@example.com&quot;.to_string(),
+        &quot;username&quot;.to_string()
+    );
+    
+    // This compiles - valid transition
+    let email_verified = unverified_user.verify_email(&quot;123456&quot;).unwrap();
+    
+    // This compiles - valid transition
+    let fully_verified = email_verified.complete_verification(&quot;+1234567890&quot;.to_string()).unwrap();
+    
+    // This compiles - only fully verified users can make purchases
+    let receipt = fully_verified.make_purchase(100).unwrap();
+    
+    // These would be COMPILE-TIME ERRORS:
+    // let unverified_user = UserAccount::new(&quot;email&quot;.to_string(), &quot;user&quot;.to_string());
+    // unverified_user.make_purchase(100); // ERROR: method doesn't exist for UserAccount&lt;Unverified&gt;
+    // unverified_user.get_personal_data(); // ERROR: method doesn't exist for UserAccount&lt;Unverified&gt;
+    
+    // let email_verified = unverified_user.verify_email(&quot;123456&quot;).unwrap();
+    // email_verified.verify_email(&quot;456789&quot;); // ERROR: method doesn't exist for UserAccount&lt;EmailVerified&gt;
+}
+</code></pre>
+<p>This approach, using phantom types to represent distinct business states like <code>Unverified</code> or <code>FullyVerified</code>, provides powerful guidance for LLMs. The type system explicitly encodes the valid state transitions by making specific methods (like <code>verify_email</code> or <code>make_purchase</code>) available only on the correct state types. This acts as a detailed map for the LLM, teaching it the precise sequence of operations and underlying business rules required. Crucially, the compiler then enforces these rules, making it impossible for the LLM to generate code that attempts invalid actions, such as allowing a user in the <code>Unverified</code> state to perform a purchase. This strong, compile-time guidance prevents a class of logical bugs related to incorrect state management, ensuring the generated code adheres strictly to the defined business flow.</p>
+<h3 id="visible-error-handling-unwrap-as-llm-guidance">Visible Error Handling: unwrap() as LLM Guidance</h3>
+<p>Rust&rsquo;s approach to error handling, particularly through visible indicators like <code>unwrap()</code>, provides LLMs with clear signals about potential failure points, guiding them toward generating more robust and correct code.</p>
+<pre><code class="language-rust">use std::fs::File;
+use std::io::Read;
+
+fn process_user_config(file_path: &amp;str) -&gt; String {
+    let mut file = File::open(file_path).unwrap(); // &lt;- LLM sees this needs error handling
+    let mut contents = String::new();
+    file.read_to_string(&amp;mut contents).unwrap();   // &lt;- Another unwrap - needs handling
+    
+    let parsed_config = serde_json::from_str(&amp;contents).unwrap(); // &lt;- JSON parsing can fail
+    let username = parsed_config[&quot;username&quot;].as_str().unwrap(); // &lt;- Field might not exist
+    
+    format!(&quot;Welcome, {}!&quot;, username)
+}
+
+</code></pre>
+<p>Each <code>.unwrap()</code> call explicitly marks a location where a <code>Result</code> type, indicating potential failure, was handled by simply panicking on error. For an LLM processing this code, these are clear instructions: &ldquo;At this exact point, an error could occur. Make sure to have a test case which covers this&rdquo;</p>
+<p>Compared with the Python version:</p>
+<pre><code class="language-python">import json
+import os
+
+def process_user_config(file_path: str) -&gt; str:
+    with open(file_path, 'r') as f:
+        contents = f.read()
+
+    parsed_config = json.loads(contents)
+
+    username = parsed_config['username']
+
+    return f&quot;Welcome, {username}!&quot;
+</code></pre>
+<p>In the Python code, the potential failure points are not marked by specific syntax at the call site itself. An LLM must rely more on its training data and context to infer where exceptions might be raised. This implicit nature makes it more challenging for the LLM to reliably identify and cover all necessary error handling cases compared to the explicit flagging provided by Rust&rsquo;s <code>unwrap()</code>. While human developers might favor Python for its conciseness, Rust&rsquo;s explicit syntax will be favored by LLMs to generate correct code.</p>
+<h3 id="the-power-of-descriptive-compiler-messages">The Power of Descriptive Compiler Messages</h3>
+<p>Rust&rsquo;s compiler messages exemplify this principle. When an LLM generates incorrect Rust code, the compiler doesn&rsquo;t just say &ldquo;error&rdquo;—it provides educational, contextual feedback:</p>
+<pre><code class="language-rust">struct User {
+    id: i32,
+    name: String,
+}
+
+fn main() {
+    let current_user = User {
+        id: 1,
+        name: String::from(&quot;Alice&quot;),
+    };
+
+    let status = current_user.get_login_status(); // Compile error here
+    println!(&quot;Login status: {:?}&quot;, status);
+}
+</code></pre>
+<p>Compiling this code yields the following error:</p>
+<pre><code class="language-text">error[E0599]: no method named `get_login_status` found for struct `User` in the current scope
+  --&gt; main.rs:12:31
+   |
+1  | struct User {
+   | ----------- method `get_login_status` not found for this struct
+...
+12 |     let status = current_user.get_login_status(); // Compile error here
+   |                               ^^^^^^^^^^^^^^^^ method not found in `User`
+
+error: aborting due to 1 previous error
+
+For more information about this error, try `rustc --explain E0599`.
+</code></pre>
+<p>The Rust error <code>E0599</code> clearly states &ldquo;no method named <code>get_login_status</code> found for struct <code>User</code>&rdquo;. It precisely identifies the struct (<code>User</code>) and the method name being sought (<code>get_login_status</code>), along with the exact location in the code. And while this specific simple example doesn&rsquo;t show suggestions, in more complex cases involving traits or common typos, Rust often suggests methods that <em>are</em> available or might be similar, providing more detailed insight into <em>why</em> the method wasn&rsquo;t found on that specific type and helping the developer find the correct method or understand what traits are missing. And if that is not enough, the LLM can call <code>rustc --explain E0599</code> for an example of how to solve the issue!</p>
+<p>Compare this with the equivalent error in Go:</p>
+<pre><code class="language-go">package main
+
+import &quot;fmt&quot;
+
+type User struct {
+	id   int
+	name string
+}
+
+func main() {
+	currentUser := User{
+		id:   1,
+		name: &quot;Alice&quot;,
+	}
+
+	status := currentUser.get_login_status() // Compile error here
+	fmt.Println(&quot;Login status:&quot;, status)
+}
+</code></pre>
+<p>Compiling this code yields an error similar to this:</p>
+<pre><code class="language-text"># command-line-arguments
+./main.go:16:24: currentUser.get_login_status undefined (type User has no field or method get_login_status)
+</code></pre>
+<p>The Go error message is concise: &ldquo;<code>currentUser.get_login_status undefined (type User has no field or method get_login_status)</code>&rdquo;. It correctly identifies the variable (<code>currentUser</code>), the method being called (<code>get_login_status</code>), and states that it&rsquo;s undefined on the <code>User</code> type, explicitly mentioning that the type has no such field <em>or</em> method. While accurate and to the point, it lacks the detailed breakdown, potential suggestions, or specific error code often found in Rust errors, making it slightly less descriptive in guiding the LLM towards resolving the issue.</p>
+<h3 id="localized-testing">Localized Testing</h3>
+<p>Rust&rsquo;s support for embedded unit tests creates exceptional locality between implementation and verification code, making it uniquely well-suited for LLM-generated programs. Unlike many languages that require separate test files, Rust allows developers to write tests directly alongside their implementation using the #[cfg(test)] attribute and #[test] macro.</p>
+<pre><code class="language-rust">pub fn capitalize_words(input: &amp;str) -&gt; String {
+    input
+        .split_whitespace()
+        .map(|word| {
+            let mut chars = word.chars();
+            match chars.next() {
+                None =&gt; String::new(),
+                Some(first) =&gt; first.to_uppercase().collect::&lt;String&gt;() + chars.as_str(),
+            }
+        })
+        .collect::&lt;Vec&lt;_&gt;&gt;()
+        .join(&quot; &quot;)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_capitalize_basic() {
+        assert_eq!(capitalize_words(&quot;hello world&quot;), &quot;Hello World&quot;);
+    }
+
+    #[test]
+    fn test_capitalize_empty() {
+        assert_eq!(capitalize_words(&quot;&quot;), &quot;&quot;);
+    }
+
+    #[test]
+    fn test_capitalize_single_char() {
+        assert_eq!(capitalize_words(&quot;a b c&quot;), &quot;A B C&quot;);
+    }
+}
+</code></pre>
+<p>This unified view provides immediate, high-quality context to the LLM. It can reason about the implementation and simultaneously see how it should behave according to the tests. In other programming languages, the LLM may need to retrieve corresponding tests from a separate location, potentially relying on external search mechanisms with a possibility of false positives(i.e RAG database). In Rust, however, this crucial verification context is inherently available alongside the implementation within the same file, ensuring the LLM always has immediate access to the tests that define expected behavior for unit-level code.</p>
+<h3 id="documentation-as-verified-executable-specification">Documentation as Verified Executable Specification</h3>
+<pre><code class="language-rust">/// Processes user authentication with multi-factor verification
+/// 
+/// # Arguments
+/// * `credentials` - User credentials containing username/email and password
+/// * `mfa_token` - Time-based one-time password from authenticator app
+/// * `device_info` - Information about the requesting device for security logging
+///
+/// # Returns
+/// * `Ok(AuthResult)` - Successful authentication with user session
+/// * `Err(AuthError)` - Authentication failure with detailed reason
+///
+/// # Examples
+/// ```
+/// use auth::{Credentials, DeviceInfo, authenticate_user};
+/// 
+/// let creds = Credentials {
+///     username: &quot;user@example.com&quot;.to_string(),
+///     password: &quot;secure_password&quot;.to_string(),
+/// };
+/// 
+/// let device = DeviceInfo {
+///     user_agent: &quot;Mozilla/5.0...&quot;.to_string(),
+///     ip_address: &quot;192.168.1.100&quot;.to_string(),
+///     device_id: Some(&quot;known_device_123&quot;.to_string()),
+/// };
+/// 
+/// match authenticate_user(creds, &quot;123456&quot;, device) {
+///     Ok(result) =&gt; println!(&quot;Authenticated: {}&quot;, result.user_id),
+///     Err(e) =&gt; eprintln!(&quot;Auth failed: {:?}&quot;, e),
+/// }
+/// ```
+///
+/// # Security Notes
+/// - Passwords are automatically hashed and never stored in plaintext
+/// - Failed attempts are rate-limited per IP and per user
+/// - MFA tokens are validated against time skew up to 30 seconds
+/// - Device fingerprinting helps detect suspicious login patterns
+///
+/// # Performance
+/// - Typical response time: 50-200ms
+/// - Database queries: 2-3 (user lookup, session creation, audit log)
+/// - Memory usage: ~1KB per authentication attempt
+fn authenticate_user(
+    credentials: Credentials,
+    mfa_token: &amp;str,
+    device_info: DeviceInfo,
+) -&gt; Result&lt;AuthResult, AuthError&gt; {
+    // Implementation here
+}
+</code></pre>
+<p>In Rust, documentation is a first-class citizen that goes far beyond simple comments.  Rust guarantees that the example code blocks embedded in documentation must compile without errors, or cargo build will fail. This means that Rust documentation must be correct! These documentation blocks are furthermore compiled into static HTML pages by <code>rustdoc</code>, which can subsequently become a valuable MCP (Model Context Protocol) resource for AI systems. The rich, structured documentation provides detailed behavioral specifications and usage patterns that help the LLM understand not just what the code does, but how it should be used in practice. This creates a virtuous cycle where well-documented generated code becomes the foundation for even better subsequent generations, as the LLM can learn from the comprehensive specifications it helped create.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>While true agentic AI is not yet fully realized, the introduction of the Multi-Capability Protocol (MCP) represents a significant step forward. Despite the current limitations, MCP provides a crucial framework, bringing us closer to achieving sophisticated agents. At its core, MCP gives Large Language Models (LLMs) a structured way to interact with external environments. Now what is left to do from the reinforcement learning perspective is a way to assign &ldquo;rewards&rdquo; to the &ldquo;actions&rdquo; the LLM takes.(perhaps <a href="https://github.com/openai/evals">evals</a> with Long Term Memory??). But until the day that AGI comes, a lot of <strong>software engineering</strong> needs to be done to build up AI infrastructure. Just off the top of my head, here are some ideas:</p>
+<h3 id="mcp-chat-debugger">MCP Chat Debugger</h3>
+<p>MCP Chat Debugger represents a critical need in agent development. Current debugging approaches are inadequate for systems that make autonomous decisions and interact with external environments. An MCP Chat Debugger would allow developers to step into the &ldquo;conversation&rdquo; between the LLM and MCP servers, observing the agent&rsquo;s reasoning process, the data it receives, and the decisions it makes. This tool would need to capture not just the final outputs, but the entire chain of reasoning, including failed attempts, backtracking, and learning updates.</p>
+<h3 id="agent-monitoring-and-observability-systems">Agent Monitoring and Observability Systems</h3>
+<p>These systems need to track metrics that don&rsquo;t exist in traditional software: decision quality, learning velocity, goal achievement rates, and resource utilization efficiency. Unlike traditional monitoring, agent observability must account for the probabilistic nature of AI decision-making and the long-term consequences of actions.
+These monitoring systems will need to detect when agents are behaving unexpectedly, learning counterproductive patterns, or operating outside their intended parameters. They&rsquo;ll need to provide alerts not just for system failures, but for subtle degradations in agent performance that might indicate training drift or environmental changes.</p>
+<h3 id="agent-operating-system">Agent Operating System</h3>
+<p>Agent Operating System represents perhaps the most ambitious requirement. Current operating systems are designed for deterministic programs following predictable execution patterns. Agents require an entirely different computational model—one that supports continuous learning and goal-oriented behavior. It would need to manage not just computational resources, but learning resources—tracking which experiences are worth retaining, managing memory consolidation as the context window grows too big(instead of stack overflow, we now have context overflow). This necessitates an operating system fundamentally built for dynamic, learning-driven computation rather than static, command-driven execution.</p>
+<p>The race to build these foundational tools and infrastructure will determine not just who leads the next wave of AI development, but who shapes the very architecture of how humans and machines will collaborate in an agentic future.</p>
+]]></content>
+        </item>
         
         <item>
             <title>On the Cost of Code Resuse</title>
@@ -15,20 +455,34 @@
             <pubDate>Sun, 01 May 2022 00:00:00 -0700</pubDate>
             
             <guid>https://bbli.github.io/posts/on_cost_of_code_reuse/</guid>
-            <description>Increases Compile Times -&amp;gt; Lowers Programmer Productivity  Why Compile Time is Important How Code Reuse affects Compile Time   Harder to Change and doesn&amp;rsquo;t always create Higher Level Abstractions Harder to Understand/Debug Final Thoughts  Increases Compile Times -&amp;gt; Lowers Programmer Productivity (Preface: This section will be in the context of C++, though the points will generally apply to other programming languages as well.)
-Why Compile Time is Important  You will start to amortize changes before rerunning tests.</description>
+            <description>&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://bbli.github.io/posts/on_cost_of_code_reuse/#increases-compile-times-lowers-programmer-productivity&#34;&gt;Increases Compile Times -&amp;gt; Lowers Programmer Productivity&lt;/a&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://bbli.github.io/posts/on_cost_of_code_reuse/#why-compile-time-is-important&#34;&gt;Why Compile Time is Important&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://bbli.github.io/posts/on_cost_of_code_reuse/#how-code-reuse-affects-compile-time&#34;&gt;How Code Reuse affects Compile Time&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://bbli.github.io/posts/on_cost_of_code_reuse/#harder-to-change-and-doesn-t-always-create-higher-level-abstractions&#34;&gt;Harder to Change and doesn&amp;rsquo;t always create Higher Level Abstractions&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://bbli.github.io/posts/on_cost_of_code_reuse/#harder-to-understand-debug&#34;&gt;Harder to Understand/Debug&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://bbli.github.io/posts/on_cost_of_code_reuse/#final-thoughts&#34;&gt;Final Thoughts&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;h1 id=&#34;increases-compile-times-lowers-programmer-productivity&#34;&gt;Increases Compile Times -&amp;gt; Lowers Programmer Productivity&lt;/h1&gt;
+&lt;p&gt;(Preface: This section will be in the context of C++, though the points will generally apply to other programming languages as well.)&lt;/p&gt;</description>
             <content type="html"><![CDATA[<!-- raw HTML omitted -->
 <!-- raw HTML omitted -->
 <ul>
-<li><a href="#increases-compile-times-lowers-programmer-productivity">Increases Compile Times -&gt; Lowers Programmer Productivity</a>
+<li><a href="/posts/on_cost_of_code_reuse/#increases-compile-times-lowers-programmer-productivity">Increases Compile Times -&gt; Lowers Programmer Productivity</a>
 <ul>
-<li><a href="#why-compile-time-is-important">Why Compile Time is Important</a></li>
-<li><a href="#how-code-reuse-affects-compile-time">How Code Reuse affects Compile Time</a></li>
+<li><a href="/posts/on_cost_of_code_reuse/#why-compile-time-is-important">Why Compile Time is Important</a></li>
+<li><a href="/posts/on_cost_of_code_reuse/#how-code-reuse-affects-compile-time">How Code Reuse affects Compile Time</a></li>
 </ul>
 </li>
-<li><a href="#harder-to-change-and-doesn-t-always-create-higher-level-abstractions">Harder to Change and doesn&rsquo;t always create Higher Level Abstractions</a></li>
-<li><a href="#harder-to-understand-debug">Harder to Understand/Debug</a></li>
-<li><a href="#final-thoughts">Final Thoughts</a></li>
+<li><a href="/posts/on_cost_of_code_reuse/#harder-to-change-and-doesn-t-always-create-higher-level-abstractions">Harder to Change and doesn&rsquo;t always create Higher Level Abstractions</a></li>
+<li><a href="/posts/on_cost_of_code_reuse/#harder-to-understand-debug">Harder to Understand/Debug</a></li>
+<li><a href="/posts/on_cost_of_code_reuse/#final-thoughts">Final Thoughts</a></li>
 </ul>
 <!-- raw HTML omitted -->
 <h1 id="increases-compile-times-lowers-programmer-productivity">Increases Compile Times -&gt; Lowers Programmer Productivity</h1>
@@ -85,14 +539,14 @@ void func(){
 <p>Another concern is the mapping of variable names through the call path. In the code above I purposely created a naming mismatch between the function signature and the object passed in by <code>func</code>. Although it usually is not that extreme, helper function tend to have different variable names, and it requires a non-trivial effort to keep this mapping in mind, especially for multiple variables across multiple depths. When trying to understand a codebase, you can forget your original purpose after making 3-5 &ldquo;jump to definition&rdquo; calls to your IDE/language server because of this, and also because while you were trying to understand something &ldquo;specific&rdquo;, the callpath brings you out to something more &ldquo;general&rdquo;, just for the sake of this &ldquo;code reuse&rdquo;.</p>
 <h1 id="final-thoughts">Final Thoughts</h1>
 <p>Now, there are certainly benefits of code reuse. It can save time from needing to reimplement. Reusing code can also mean using code that someone has already tested. It can also allow programmers who are not experts on a certain subject to nevertheless write code for that domain. But as I hope this article shows, code reuse is not a &ldquo;zero-cost&rdquo; thing. So the next time you see code duplication in your codebase and want to refactor, be wary that you are not simply &ldquo;seeing faces in the clouds&rdquo;. As Sandi Metz has said: <a href="https://sandimetz.com/blog/2016/1/20/the-wrong-abstraction">&ldquo;Code duplication is far cheaper than the wrong abstraction&rdquo;</a>. <sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup>.</p>
-<section class="footnotes" role="doc-endnotes">
+<div class="footnotes" role="doc-endnotes">
 <hr>
 <ol>
-<li id="fn:1" role="doc-endnote">
+<li id="fn:1">
 <p>See <a href="https://news.ycombinator.com/item?id=12061453">https://news.ycombinator.com/item?id=12061453</a> for more discussion about this&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
 </li>
 </ol>
-</section>
+</div>
 ]]></content>
         </item>
         
@@ -102,404 +556,416 @@ void func(){
             <pubDate>Thu, 20 May 2021 19:36:00 -0700</pubDate>
             
             <guid>https://bbli.github.io/posts/crtp_with_object_model/</guid>
-            <description>1How CRTP works 2CRTP is not &amp;ldquo;template programming magic&amp;rdquo; 3We already have static polymorphism 4We already have static implementation inheritance&amp;hellip;Except 5Appendix-Dynamic Dispatch  On my first encounter, the Curiously Recurring Template Pattern seemed like magic to me. Apparently, by writing static_cast&amp;lt;T*&amp;gt;(this)-&amp;gt;func(), we now have &amp;ldquo;static polymorphism/inheritance&amp;rdquo;. It wasn&amp;rsquo;t until a few months and some c++ learning resources later, that I was finally able to understand CRTP. In this blogpost, I will talk about CRTP from more of a code generation point of view, and hopefully by then end convince you that &amp;ldquo;static polymorphism/inheritance&amp;rdquo; is a misleading description of this pattern.</description>
+            <description>&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;!-- raw HTML omitted --&gt;1&lt;!-- raw HTML omitted --&gt; &lt;a href=&#34;https://bbli.github.io/posts/crtp_with_object_model/#how-crtp-works&#34;&gt;How CRTP works&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;!-- raw HTML omitted --&gt;2&lt;!-- raw HTML omitted --&gt; &lt;a href=&#34;https://bbli.github.io/posts/crtp_with_object_model/#crtp-is-not-template-programming-magic&#34;&gt;CRTP is not &amp;ldquo;template programming magic&amp;rdquo;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;!-- raw HTML omitted --&gt;3&lt;!-- raw HTML omitted --&gt; &lt;a href=&#34;https://bbli.github.io/posts/crtp_with_object_model/#we-already-have-static-polymorphism&#34;&gt;We already have static polymorphism&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;!-- raw HTML omitted --&gt;4&lt;!-- raw HTML omitted --&gt; &lt;a href=&#34;https://bbli.github.io/posts/crtp_with_object_model/#we-already-have-static-implementation-inheritance-dot-dot-dot-except&#34;&gt;We already have static implementation inheritance&amp;hellip;Except&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;!-- raw HTML omitted --&gt;5&lt;!-- raw HTML omitted --&gt; &lt;a href=&#34;https://bbli.github.io/posts/crtp_with_object_model/#appendix-dynamic-dispatch&#34;&gt;Appendix-Dynamic Dispatch&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;p&gt;On my first encounter, the Curiously Recurring Template Pattern seemed like magic to me. Apparently, by writing &lt;code&gt;static_cast&amp;lt;T*&amp;gt;(this)-&amp;gt;func()&lt;/code&gt;,  we now have &amp;ldquo;static polymorphism/inheritance&amp;rdquo;. It wasn&amp;rsquo;t until a few months and some c++ &lt;a href=&#34;https://www.youtube.com/watch?v=SShSV%5FiV1Ko&#34;&gt;learning resources&lt;/a&gt; later, that I was finally able to understand CRTP. In this blogpost, I will talk about CRTP from more of a code generation point of view, and hopefully by then end convince you that &amp;ldquo;static polymorphism/inheritance&amp;rdquo; is a misleading description of this pattern.&lt;/p&gt;</description>
             <content type="html"><![CDATA[<!-- raw HTML omitted -->
 <!-- raw HTML omitted -->
 <!-- raw HTML omitted -->
 <!-- raw HTML omitted -->
 <ul>
-<li><!-- raw HTML omitted -->1<!-- raw HTML omitted --> <a href="#how-crtp-works">How CRTP works</a></li>
-<li><!-- raw HTML omitted -->2<!-- raw HTML omitted --> <a href="#crtp-is-not-template-programming-magic">CRTP is not &ldquo;template programming magic&rdquo;</a></li>
-<li><!-- raw HTML omitted -->3<!-- raw HTML omitted --> <a href="#we-already-have-static-polymorphism">We already have static polymorphism</a></li>
-<li><!-- raw HTML omitted -->4<!-- raw HTML omitted --> <a href="#we-already-have-static-implementation-inheritance-dot-dot-dot-except">We already have static implementation inheritance&hellip;Except</a></li>
-<li><!-- raw HTML omitted -->5<!-- raw HTML omitted --> <a href="#appendix-dynamic-dispatch">Appendix-Dynamic Dispatch</a></li>
+<li><!-- raw HTML omitted -->1<!-- raw HTML omitted --> <a href="/posts/crtp_with_object_model/#how-crtp-works">How CRTP works</a></li>
+<li><!-- raw HTML omitted -->2<!-- raw HTML omitted --> <a href="/posts/crtp_with_object_model/#crtp-is-not-template-programming-magic">CRTP is not &ldquo;template programming magic&rdquo;</a></li>
+<li><!-- raw HTML omitted -->3<!-- raw HTML omitted --> <a href="/posts/crtp_with_object_model/#we-already-have-static-polymorphism">We already have static polymorphism</a></li>
+<li><!-- raw HTML omitted -->4<!-- raw HTML omitted --> <a href="/posts/crtp_with_object_model/#we-already-have-static-implementation-inheritance-dot-dot-dot-except">We already have static implementation inheritance&hellip;Except</a></li>
+<li><!-- raw HTML omitted -->5<!-- raw HTML omitted --> <a href="/posts/crtp_with_object_model/#appendix-dynamic-dispatch">Appendix-Dynamic Dispatch</a></li>
 </ul>
 <!-- raw HTML omitted -->
 <p>On my first encounter, the Curiously Recurring Template Pattern seemed like magic to me. Apparently, by writing <code>static_cast&lt;T*&gt;(this)-&gt;func()</code>,  we now have &ldquo;static polymorphism/inheritance&rdquo;. It wasn&rsquo;t until a few months and some c++ <a href="https://www.youtube.com/watch?v=SShSV%5FiV1Ko">learning resources</a> later, that I was finally able to understand CRTP. In this blogpost, I will talk about CRTP from more of a code generation point of view, and hopefully by then end convince you that &ldquo;static polymorphism/inheritance&rdquo; is a misleading description of this pattern.</p>
 <h1 id="how-crtp-works"><!-- raw HTML omitted -->1<!-- raw HTML omitted --> How CRTP works</h1>
-<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
 </span></code></pre></td>
 <td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">template</span> <span style="color:#f92672">&lt;</span><span style="color:#66d9ef">typename</span> T<span style="color:#f92672">&gt;</span>
-<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">BaseT</span>{
-<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
-    <span style="color:#66d9ef">void</span> func(){
-        <span style="color:#75715e">// Note: the use of pointers instead of references is for pedagogy reasons
-</span><span style="color:#75715e"></span>        T<span style="color:#f92672">*</span> derived <span style="color:#f92672">=</span> <span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span>T<span style="color:#f92672">*&gt;</span>(<span style="color:#66d9ef">this</span>);
-        <span style="color:#75715e">// pre function call code
-</span><span style="color:#75715e"></span>        derived<span style="color:#f92672">-&gt;</span>do_func1();
-        derived<span style="color:#f92672">-&gt;</span>do_func2();
-        <span style="color:#75715e">// post function call code
-</span><span style="color:#75715e"></span>    }
-<span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
-    <span style="color:#66d9ef">void</span> do_func1();
-    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">do_func2</span>();
-};
-
-<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Derived</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> BaseT<span style="color:#f92672">&lt;</span>Derived<span style="color:#f92672">&gt;</span>{
-<span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
-    <span style="color:#66d9ef">void</span> do_func1(){};
-    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">do_func2</span>(){};
-};</code></pre></td></tr></table>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">template</span> <span style="color:#f92672">&lt;</span><span style="color:#66d9ef">typename</span> T<span style="color:#f92672">&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">BaseT</span>{
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">void</span> func(){
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Note: the use of pointers instead of references is for pedagogy reasons
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        T<span style="color:#f92672">*</span> derived <span style="color:#f92672">=</span> <span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span>T<span style="color:#f92672">*&gt;</span>(<span style="color:#66d9ef">this</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// pre function call code
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        derived<span style="color:#f92672">-&gt;</span>do_func1();
+</span></span><span style="display:flex;"><span>        derived<span style="color:#f92672">-&gt;</span>do_func2();
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// post function call code
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    }
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">void</span> do_func1();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">do_func2</span>();
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Derived</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> BaseT<span style="color:#f92672">&lt;</span>Derived<span style="color:#f92672">&gt;</span>{
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">void</span> do_func1(){};
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">do_func2</span>(){};
+</span></span><span style="display:flex;"><span>};</span></span></code></pre></td></tr></table>
 </div>
 </div>
 <p>Here is the general form of the pattern, with some modifications that will come to light by the end of this article. Let us now walk through what <code>foo</code> translates to for this <code>Derived</code> class. When the compiler processes<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup> this function, whose <code>func1</code>  does it insert, <code>BaseT&lt;Derived&gt;</code> or <code>Derived</code>?</p>
-<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">9
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">9
 </span></code></pre></td>
 <td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// rough translation
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">func</span>(BaseT<span style="color:#f92672">&lt;</span>Derived<span style="color:#f92672">&gt;*</span> <span style="color:#66d9ef">this</span>){
-    <span style="color:#75715e">// From now on, generate code as if we have a pointer to Derived(whichc we do)
-</span><span style="color:#75715e"></span>    Derived<span style="color:#f92672">*</span> derived <span style="color:#f92672">=</span> <span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span>Derived<span style="color:#f92672">*&gt;</span>(<span style="color:#66d9ef">this</span>);
-    <span style="color:#75715e">// pre function call code
-</span><span style="color:#75715e"></span>    Derived<span style="color:#f92672">::</span>do_func1(derived);
-    Derived<span style="color:#f92672">::</span>do_func2(derived);
-    <span style="color:#75715e">// post function call code
-</span><span style="color:#75715e"></span>}</code></pre></td></tr></table>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e">// rough translation
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">func</span>(BaseT<span style="color:#f92672">&lt;</span>Derived<span style="color:#f92672">&gt;*</span> <span style="color:#66d9ef">this</span>){
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// From now on, generate code as if we have a pointer to Derived(whichc we do)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    Derived<span style="color:#f92672">*</span> derived <span style="color:#f92672">=</span> <span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span>Derived<span style="color:#f92672">*&gt;</span>(<span style="color:#66d9ef">this</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// pre function call code
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    Derived<span style="color:#f92672">::</span>do_func1(derived);
+</span></span><span style="display:flex;"><span>    Derived<span style="color:#f92672">::</span>do_func2(derived);
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// post function call code
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}</span></span></code></pre></td></tr></table>
 </div>
 </div>
 <p>The way the C++ object model works is that when there are no virtual functions, the compiler inserts the function corresponding with the <strong>whatever the compile time type CURRENTLY is of the object who calls that method</strong> <sup id="fnref:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">2</a></sup></p>
 <p>Now, that was a bit of a mouthful. Let us walk through another example of using <code>static_cast</code> to help the compiler with name resolution.</p>
-<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
 </span></code></pre></td>
 <td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Parent1</span>{
-    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">f</span>(){cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;1&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;}
-};
-<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Parent2</span>{
-    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">f</span>(){cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;2&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;}
-};
-<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Child</span><span style="color:#f92672">:</span><span style="color:#66d9ef">public</span> Parent1,<span style="color:#66d9ef">public</span> Parent2{
-    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">g</span>(){
-        Parent2<span style="color:#f92672">*</span> casted <span style="color:#f92672">=</span> <span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span>Parent2<span style="color:#f92672">*&gt;</span>(<span style="color:#66d9ef">this</span>);
-        casted<span style="color:#f92672">-&gt;</span>f();
-        <span style="color:#75715e">// Parent2::f(); // can also be done with explicit scoping
-</span><span style="color:#75715e"></span>    }
-};</code></pre></td></tr></table>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Parent1</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">f</span>(){cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;1&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;}
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Parent2</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">f</span>(){cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;2&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;}
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Child</span><span style="color:#f92672">:</span><span style="color:#66d9ef">public</span> Parent1,<span style="color:#66d9ef">public</span> Parent2{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">g</span>(){
+</span></span><span style="display:flex;"><span>        Parent2<span style="color:#f92672">*</span> casted <span style="color:#f92672">=</span> <span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span>Parent2<span style="color:#f92672">*&gt;</span>(<span style="color:#66d9ef">this</span>);
+</span></span><span style="display:flex;"><span>        casted<span style="color:#f92672">-&gt;</span>f();
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Parent2::f(); // can also be done with explicit scoping
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    }
+</span></span><span style="display:flex;"><span>};</span></span></code></pre></td></tr></table>
 </div>
 </div>
 <p>Without the static_cast, the compiler will throw an error, saying <code>f</code> is found in multiple base classes. But by using it, the compiler will no longer look in <code>Child</code> or <code>Parent1</code> during name resolution. One can also use explicit scoping to achieve this, but the difference is that static_cast will walk the class hierarchy until it finds a <code>f</code> . Furthermore explicit scoping requires retyping <code>Parent1</code> on every subsequent member function call.</p>
 <p>I find this explanation in terms of &ldquo;manipulating the name resolution path&rdquo; to be much clearer than saying &ldquo;the base class can now access the derived class&rdquo; or &ldquo;we inject the derived class into the base&rdquo; as I have found in other blogs. For all intensive purposes, the compiler thinks it has a Derived object now. And in fact, it is the other way around, that the derived class has access to the base. Which isn&rsquo;t that suprising, as that&rsquo;s basically the definition of how classes work.</p>
 <p>So to repeat, after the <code>static_cast</code>, there is no Base anymore. With the fundamental understanding of CRTP down, let us now dispel some myths/confusion around its usage.</p>
 <h1 id="crtp-is-not-template-programming-magic"><!-- raw HTML omitted -->2<!-- raw HTML omitted --> CRTP is not &ldquo;template programming magic&rdquo;</h1>
-<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
 </span></code></pre></td>
 <td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Widget</span>{
-    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">update</span>(){cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;hi&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;};
-};
-<span style="color:#66d9ef">template</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">typename</span> T<span style="color:#f92672">&gt;</span>
-<span style="color:#66d9ef">void</span> generic_function(<span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> x){
-    <span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span>T<span style="color:#f92672">*&gt;</span>(<span style="color:#66d9ef">this</span>)<span style="color:#f92672">-&gt;</span>update();
-}
-<span style="color:#75715e">// vs
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">template</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">typename</span> T<span style="color:#f92672">&gt;</span>
-<span style="color:#66d9ef">void</span> generic_function2(T<span style="color:#f92672">*</span> x){
-    x<span style="color:#f92672">-&gt;</span>update();
-}
-<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">void</span>){
-    Widget<span style="color:#f92672">*</span> x <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Widget;
-    generic_function<span style="color:#f92672">&lt;</span>Widget<span style="color:#f92672">&gt;</span>((<span style="color:#66d9ef">void</span><span style="color:#f92672">*</span>)x);
-    generic_function2(x);
-}</code></pre></td></tr></table>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Widget</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">update</span>(){cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;hi&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;};
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">template</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">typename</span> T<span style="color:#f92672">&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">void</span> generic_function(<span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> x){
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span>T<span style="color:#f92672">*&gt;</span>(<span style="color:#66d9ef">this</span>)<span style="color:#f92672">-&gt;</span>update();
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// vs
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">template</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">typename</span> T<span style="color:#f92672">&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">void</span> generic_function2(T<span style="color:#f92672">*</span> x){
+</span></span><span style="display:flex;"><span>    x<span style="color:#f92672">-&gt;</span>update();
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">void</span>){
+</span></span><span style="display:flex;"><span>    Widget<span style="color:#f92672">*</span> x <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Widget;
+</span></span><span style="display:flex;"><span>    generic_function<span style="color:#f92672">&lt;</span>Widget<span style="color:#f92672">&gt;</span>((<span style="color:#66d9ef">void</span><span style="color:#f92672">*</span>)x);
+</span></span><span style="display:flex;"><span>    generic_function2(x);
+</span></span><span style="display:flex;"><span>}</span></span></code></pre></td></tr></table>
 </div>
 </div>
 <p>Consider the above example. They both will print &ldquo;hi&rdquo;. The difference is just that we gave the first one a bad input argument, and so we had to &ldquo;compensate&rdquo; via the static_cast. So if you understand static_cast and basic generic programming<sup id="fnref:3"><a href="#fn:3" class="footnote-ref" role="doc-noteref">3</a></sup>
 there is no reason you shouldn&rsquo;t understand CRTP.</p>
 <h1 id="we-already-have-static-polymorphism"><!-- raw HTML omitted -->3<!-- raw HTML omitted --> We already have static polymorphism</h1>
-<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
 </span></code></pre></td>
 <td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Object1</span>{
-<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
-    <span style="color:#66d9ef">void</span> interface(){
-        <span style="color:#75715e">// pre function call code
-</span><span style="color:#75715e"></span>        impl();
-        <span style="color:#75715e">// post function call code
-</span><span style="color:#75715e"></span>    }
-<span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
-   <span style="color:#66d9ef">void</span> impl(){cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;a&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;}
-};
-
-<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Object2</span>{
-<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
-    <span style="color:#66d9ef">void</span> interface(){
-        <span style="color:#75715e">// Notice we call whatever functions we want here, unlike CRTP
-</span><span style="color:#75715e"></span>        impl_a();
-        impl_b();
-    }
-<span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
-    <span style="color:#66d9ef">void</span> impl_a(){cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;b1&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;}
-    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">impl_b</span>(){cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;b2&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;}
-};
-<span style="color:#66d9ef">template</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">typename</span> T<span style="color:#f92672">&gt;</span>
-<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">BaseT</span>{
-    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">interface</span>(){
-        <span style="color:#75715e">// pre function call code
-</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span>T<span style="color:#f92672">*&gt;</span>(<span style="color:#66d9ef">this</span>)<span style="color:#f92672">-&gt;</span>impl();
-        <span style="color:#75715e">// post function call code
-</span><span style="color:#75715e"></span>    }
-};
-<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Derived</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> BaseT<span style="color:#f92672">&lt;</span>Derived<span style="color:#f92672">&gt;</span>{
-    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">impl</span>(){cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;c&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;}
-};
-
-<span style="color:#66d9ef">template</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">typename</span> T<span style="color:#f92672">&gt;</span>
-<span style="color:#66d9ef">void</span> call_a_function(T<span style="color:#f92672">&amp;</span> x){
-    x.interface();
-}
-<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">void</span>){
-    Object1 a;
-    Object2 b;
-    Derived c;
-    call_a_function(a);<span style="color:#75715e">// They all work!
-</span><span style="color:#75715e"></span>    call_a_function(b);
-    call_a_function(c);
-}</code></pre></td></tr></table>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Object1</span>{
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">void</span> interface(){
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// pre function call code
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        impl();
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// post function call code
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    }
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>   <span style="color:#66d9ef">void</span> impl(){cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;a&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;}
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Object2</span>{
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">void</span> interface(){
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Notice we call whatever functions we want here, unlike CRTP
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        impl_a();
+</span></span><span style="display:flex;"><span>        impl_b();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">void</span> impl_a(){cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;b1&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;}
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">impl_b</span>(){cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;b2&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;}
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">template</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">typename</span> T<span style="color:#f92672">&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">BaseT</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">interface</span>(){
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// pre function call code
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span>T<span style="color:#f92672">*&gt;</span>(<span style="color:#66d9ef">this</span>)<span style="color:#f92672">-&gt;</span>impl();
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// post function call code
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Derived</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> BaseT<span style="color:#f92672">&lt;</span>Derived<span style="color:#f92672">&gt;</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">impl</span>(){cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;c&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;}
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">template</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">typename</span> T<span style="color:#f92672">&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">void</span> call_a_function(T<span style="color:#f92672">&amp;</span> x){
+</span></span><span style="display:flex;"><span>    x.interface();
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">void</span>){
+</span></span><span style="display:flex;"><span>    Object1 a;
+</span></span><span style="display:flex;"><span>    Object2 b;
+</span></span><span style="display:flex;"><span>    Derived c;
+</span></span><span style="display:flex;"><span>    call_a_function(a);<span style="color:#75715e">// They all work!
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    call_a_function(b);
+</span></span><span style="display:flex;"><span>    call_a_function(c);
+</span></span><span style="display:flex;"><span>}</span></span></code></pre></td></tr></table>
 </div>
 </div>
 <p>As we can see, CRTP is not necessary here(and actually is not even a &ldquo;true&rdquo; interface in some sense, as it has already predetermined the implementation). What is really giving us polymorphism is generic programming. Furthermore, inheriting from a CRTP doesn&rsquo;t actually guarantee the Derived class will satisfy the interface. Consider this example</p>
-<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
 </span></code></pre></td>
 <td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">template</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">typename</span> T<span style="color:#f92672">&gt;</span>
-<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">BaseT</span>{
-    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">f</span>(){
-        <span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span>T<span style="color:#f92672">*&gt;</span>(<span style="color:#66d9ef">this</span>)<span style="color:#f92672">-&gt;</span>not_implemented();
-    }
-};
-
-<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Derived</span><span style="color:#f92672">:</span><span style="color:#66d9ef">public</span> BaseT<span style="color:#f92672">&lt;</span>Derived<span style="color:#f92672">&gt;</span>{
-};
-
-<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">B</span>{
-    <span style="color:#66d9ef">virtual</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">f</span>() <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
-};
-<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">D</span><span style="color:#f92672">:</span><span style="color:#66d9ef">public</span> B{
-};
-<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">void</span>){
-    Derived a;
-    D b;
-}</code></pre></td></tr></table>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">template</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">typename</span> T<span style="color:#f92672">&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">BaseT</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">f</span>(){
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span>T<span style="color:#f92672">*&gt;</span>(<span style="color:#66d9ef">this</span>)<span style="color:#f92672">-&gt;</span>not_implemented();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Derived</span><span style="color:#f92672">:</span><span style="color:#66d9ef">public</span> BaseT<span style="color:#f92672">&lt;</span>Derived<span style="color:#f92672">&gt;</span>{
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">B</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">virtual</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">f</span>() <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">D</span><span style="color:#f92672">:</span><span style="color:#66d9ef">public</span> B{
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">void</span>){
+</span></span><span style="display:flex;"><span>    Derived a;
+</span></span><span style="display:flex;"><span>    D b;
+</span></span><span style="display:flex;"><span>}</span></span></code></pre></td></tr></table>
 </div>
 </div>
 <p>Comment out the <code>D b;</code> initialization in main, and the code compiles. With it, we get an error. Why? Because abstract base classes force their inheritors to implement the interface, even if the function never gets called. There are no such guarantees, however, with CRTP.(If we do call Derived&rsquo;s <code>f</code> function, we will get an error&hellip;but we basically get the same error had <code>f</code> been a templated free function)<sup id="fnref:4"><a href="#fn:4" class="footnote-ref" role="doc-noteref">4</a></sup></p>
 <h1 id="we-already-have-static-implementation-inheritance-dot-dot-dot-except"><!-- raw HTML omitted -->4<!-- raw HTML omitted --> We already have static implementation inheritance&hellip;Except</h1>
-<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
 </span></code></pre></td>
 <td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">EngineMixin</span>{
-    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">do_work</span>();
-};
-<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">SpecificEngine</span><span style="color:#f92672">:</span><span style="color:#66d9ef">public</span> EngineMixin{
-};
-
-<span style="color:#66d9ef">template</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">typename</span> T<span style="color:#f92672">&gt;</span>
-<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">BaseT</span>{
-    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">do_work</span>();
-};
-<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Derived</span><span style="color:#f92672">:</span><span style="color:#66d9ef">public</span> BaseT<span style="color:#f92672">&lt;</span>Derived<span style="color:#f92672">&gt;</span>{
-};
-<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">void</span>){
-    SpecificEngine e;
-    Derived d;
-    e.work(); <span style="color:#75715e">//They both static dispatch to the same thing!
-</span><span style="color:#75715e"></span>    d.work();
-}</code></pre></td></tr></table>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">EngineMixin</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">do_work</span>();
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">SpecificEngine</span><span style="color:#f92672">:</span><span style="color:#66d9ef">public</span> EngineMixin{
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">template</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">typename</span> T<span style="color:#f92672">&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">BaseT</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">do_work</span>();
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Derived</span><span style="color:#f92672">:</span><span style="color:#66d9ef">public</span> BaseT<span style="color:#f92672">&lt;</span>Derived<span style="color:#f92672">&gt;</span>{
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">void</span>){
+</span></span><span style="display:flex;"><span>    SpecificEngine e;
+</span></span><span style="display:flex;"><span>    Derived d;
+</span></span><span style="display:flex;"><span>    e.work(); <span style="color:#75715e">//They both static dispatch to the same thing!
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    d.work();
+</span></span><span style="display:flex;"><span>}</span></span></code></pre></td></tr></table>
 </div>
 </div>
-<p>Let us now consider the other aspect of inheritance, inheritance of functionality. In the above example, <code>SpecificEngine</code> and <code>Derived</code> will both resolve the function call at compile time, as there are no <a href="#appendix-dynamic-dispatch">virtual functions + pointers here</a>. I would like to emphasis this, as I feel some people may think that just because there is a &ldquo;static_cast&rdquo; in CRTP, it is somehow related to the function call being static too. As I have explained above, <code>static_cast</code> <strong>controls what name we dispatch to, and not the type of the dispatch</strong></p>
+<p>Let us now consider the other aspect of inheritance, inheritance of functionality. In the above example, <code>SpecificEngine</code> and <code>Derived</code> will both resolve the function call at compile time, as there are no <a href="/posts/crtp_with_object_model/#appendix-dynamic-dispatch">virtual functions + pointers here</a>. I would like to emphasis this, as I feel some people may think that just because there is a &ldquo;static_cast&rdquo; in CRTP, it is somehow related to the function call being static too. As I have explained above, <code>static_cast</code> <strong>controls what name we dispatch to, and not the type of the dispatch</strong></p>
 <p>So given all of this, when exactly should we use CRTP? Let us reconsider the initial example</p>
-<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
 </span></code></pre></td>
 <td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">BaseT</span>{
-<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
-    <span style="color:#66d9ef">void</span> func(){
-        <span style="color:#75715e">// pre function call code
-</span><span style="color:#75715e"></span>        derived<span style="color:#f92672">-&gt;</span>do_func1();
-        derived<span style="color:#f92672">-&gt;</span>do_func2();
-        <span style="color:#75715e">// post function call code
-</span><span style="color:#75715e"></span>    }
-<span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
-    <span style="color:#66d9ef">virtual</span> <span style="color:#66d9ef">void</span> do_func1();
-    <span style="color:#66d9ef">virtual</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">do_func2</span>();
-};
-
-<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Derived</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> BaseT<span style="color:#f92672">&lt;</span>Derived<span style="color:#f92672">&gt;</span>{
-<span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
-    <span style="color:#66d9ef">void</span> do_func1(){};
-    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">do_func2</span>(){};
-};</code></pre></td></tr></table>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">BaseT</span>{
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">void</span> func(){
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// pre function call code
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        derived<span style="color:#f92672">-&gt;</span>do_func1();
+</span></span><span style="display:flex;"><span>        derived<span style="color:#f92672">-&gt;</span>do_func2();
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// post function call code
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    }
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">virtual</span> <span style="color:#66d9ef">void</span> do_func1();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">virtual</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">do_func2</span>();
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Derived</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> BaseT<span style="color:#f92672">&lt;</span>Derived<span style="color:#f92672">&gt;</span>{
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">void</span> do_func1(){};
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">do_func2</span>(){};
+</span></span><span style="display:flex;"><span>};</span></span></code></pre></td></tr></table>
 </div>
 </div>
 <p>Now, if you look closely, I haven&rsquo;t actually reproduced the initial example! Instead, by removing the static_cast and adding <code>virtual</code> to <code>do_func1/do_func2</code>, I have actually introduced another pattern, known as the &ldquo;NVI idiom&rdquo; or Facade Design Pattern. The purpose of this pattern is the Base class provides most of the code scaffolding/wiring/or public interface, and the Derived class simply needs to &ldquo;fill in the blanks&rdquo;. So if you have been wondering why I have been writing &ldquo;pre function call&rdquo; comments throughout this post, it is because <strong>I want to encourage you to think of CRTP as a &ldquo;static NVI idiom&rdquo;</strong>, and not &ldquo;static inheritance&rdquo;. If all the Base class does is forward to the implementation, one has to wonder &ldquo;What was the point?&rdquo;</p>
@@ -507,105 +973,105 @@ there is no reason you shouldn&rsquo;t understand CRTP.</p>
 <hr>
 <h1 id="appendix-dynamic-dispatch"><!-- raw HTML omitted -->5<!-- raw HTML omitted --> Appendix-Dynamic Dispatch</h1>
 <p>(Note: This section may or may not be helpful in understanding how CRTP works. )</p>
-<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
 </span></code></pre></td>
 <td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Animal</span>{
-    <span style="color:#66d9ef">virtual</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">walk</span>();
-    <span style="color:#66d9ef">virtual</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">eat</span>()  ;
-    <span style="color:#66d9ef">int</span> data;
-};
-<span style="color:#75715e">// is roughly
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Animal</span>{
-    <span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> _vtable;
-    <span style="color:#66d9ef">int</span> data;
-};
-<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">update</span>(Animal<span style="color:#f92672">*</span>){};</code></pre></td></tr></table>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Animal</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">virtual</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">walk</span>();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">virtual</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">eat</span>()  ;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> data;
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// is roughly
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Animal</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> _vtable;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> data;
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">update</span>(Animal<span style="color:#f92672">*</span>){};</span></span></code></pre></td></tr></table>
 </div>
 </div>
 <p>When you declare a virtual function inside the `Animal` class in C++, the compile will add a pointer inside every created object that points to the same location: the start of `Animal` vtable. In this region of memory, every 8 byte interval(the size of a pointer) will correspond with the address of a virtual function for this object. When virtual functions get called, the following translation happens</p>
-<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
 </span></code></pre></td>
 <td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// Note: the use of raw pointers is for pedagogy reasons
-</span><span style="color:#75715e"></span>Animal<span style="color:#f92672">*</span> animal <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Animal;
-animal<span style="color:#f92672">-&gt;</span>eat();
-<span style="color:#75715e">// is roughly
-</span><span style="color:#75715e"></span>(<span style="color:#f92672">*</span>(<span style="color:#f92672">*</span>animal._vtable<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>byte))(animal); <span style="color:#75715e">// 1byte offset to get to 2nd virtual function
-</span></code></pre></td></tr></table>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e">// Note: the use of raw pointers is for pedagogy reasons
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>Animal<span style="color:#f92672">*</span> animal <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Animal;
+</span></span><span style="display:flex;"><span>animal<span style="color:#f92672">-&gt;</span>eat();
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// is roughly
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>(<span style="color:#f92672">*</span>(<span style="color:#f92672">*</span>animal._vtable<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>byte))(animal); <span style="color:#75715e">// 1byte offset to get to 2nd virtual function
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div>
 <p>Note the <code>w</code> is a pointer. Had we declare it as variable, static dispatch would have to happen, even if the <strong>function was declared virtual</strong>. I won&rsquo;t go completely into detail as to why here, but let&rsquo;s just say that given <code>animal</code> is declared on the stack, there is no way to &ldquo;lie&rdquo; and say it is anything but an <code>Animal</code></p>
 <p>Finally, the way that this indirection allows for polymorphism is that the dynamic dispatch translation is the same <strong>regardless of what the Animal pointer actually points to</strong></p>
-<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
 </span></code></pre></td>
 <td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Dog</span><span style="color:#f92672">:</span><span style="color:#66d9ef">public</span> Animal{
-    <span style="color:#66d9ef">virtual</span> <span style="color:#a6e22e">eat</span>(){
-        <span style="color:#75715e">//something different
-</span><span style="color:#75715e"></span>    }
-}
-
-Animal<span style="color:#f92672">*</span> dog <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Dog;
-dog<span style="color:#f92672">-&gt;</span>eat();
-<span style="color:#75715e">// is roughly
-</span><span style="color:#75715e"></span>(<span style="color:#f92672">*</span>(<span style="color:#f92672">*</span>dog._vtable<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>byte))(dog);
-
-<span style="color:#75715e">// so basically the same as
-</span><span style="color:#75715e">// (*(*animal._vtable+1byte))(animal);
-</span></code></pre></td></tr></table>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Dog</span><span style="color:#f92672">:</span><span style="color:#66d9ef">public</span> Animal{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">virtual</span> <span style="color:#a6e22e">eat</span>(){
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">//something different
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Animal<span style="color:#f92672">*</span> dog <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Dog;
+</span></span><span style="display:flex;"><span>dog<span style="color:#f92672">-&gt;</span>eat();
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// is roughly
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>(<span style="color:#f92672">*</span>(<span style="color:#f92672">*</span>dog._vtable<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>byte))(dog);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// so basically the same as
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// (*(*animal._vtable+1byte))(animal);
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div>
 <p>The difference is that the vtable now holds different information. Namely <code>*dog._vtable+1byte</code> now stores the location of <code>Dog::eat()</code> rather than <code>Animal::eat()</code></p>
-<section class="footnotes" role="doc-endnotes">
+<div class="footnotes" role="doc-endnotes">
 <hr>
 <ol>
-<li id="fn:1" role="doc-endnote">
+<li id="fn:1">
 <p>Or more precisely decides it is necessary to construct this function&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
 </li>
-<li id="fn:2" role="doc-endnote">
+<li id="fn:2">
 <p>Let&rsquo;s ignore walking the class hierarchy for now&#160;<a href="#fnref:2" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
 </li>
-<li id="fn:3" role="doc-endnote">
+<li id="fn:3">
 <p>There are no variadic templates, enable_if, or other hocus pocus happening here&#160;<a href="#fnref:3" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
 </li>
-<li id="fn:4" role="doc-endnote">
+<li id="fn:4">
 <p>I will admit that CRTP provides better lookup access to the functionality that a class has, compared to free functions. But unless there is &ldquo;scaffolding&rdquo; code, this can also be done by creating public member functions or just supplying the free functions in the same header as the class&#160;<a href="#fnref:4" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
 </li>
 </ol>
-</section>
+</div>
 ]]></content>
         </item>
         

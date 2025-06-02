@@ -5,8 +5,8 @@
 <meta http-equiv="X-UA-Compatible" content="ie=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="author" content="Benson Li">
-<meta name="description" content="Increases Compile Times -&amp;gt; Lowers Programmer Productivity  Why Compile Time is Important How Code Reuse affects Compile Time   Harder to Change and doesn&amp;rsquo;t always create Higher Level Abstractions Harder to Understand/Debug Final Thoughts  Increases Compile Times -&amp;gt; Lowers Programmer Productivity (Preface: This section will be in the context of C&#43;&#43;, though the points will generally apply to other programming languages as well.)
-Why Compile Time is Important  You will start to amortize changes before rerunning tests." />
+<meta name="description" content=" Increases Compile Times -&gt; Lowers Programmer Productivity Why Compile Time is Important How Code Reuse affects Compile Time Harder to Change and doesn&rsquo;t always create Higher Level Abstractions Harder to Understand/Debug Final Thoughts Increases Compile Times -&gt; Lowers Programmer Productivity (Preface: This section will be in the context of C&#43;&#43;, though the points will generally apply to other programming languages as well.)
+" />
 <meta name="keywords" content="homepage, blog, software-design" />
 <meta name="robots" content="noodp" />
 <meta name="theme-color" content="" />
@@ -33,18 +33,19 @@ Why Compile Time is Important  You will start to amortize changes before rerunni
 
 
 
-<meta itemprop="name" content="On the Cost of Code Resuse">
-<meta itemprop="description" content="Increases Compile Times -&gt; Lowers Programmer Productivity  Why Compile Time is Important How Code Reuse affects Compile Time   Harder to Change and doesn&rsquo;t always create Higher Level Abstractions Harder to Understand/Debug Final Thoughts  Increases Compile Times -&gt; Lowers Programmer Productivity (Preface: This section will be in the context of C&#43;&#43;, though the points will generally apply to other programming languages as well.)
-Why Compile Time is Important  You will start to amortize changes before rerunning tests."><meta itemprop="datePublished" content="2022-05-01T00:00:00-07:00" />
-<meta itemprop="dateModified" content="2022-05-01T00:00:00-07:00" />
-<meta itemprop="wordCount" content="1417"><meta itemprop="image" content="https://bbli.github.io"/>
-<meta itemprop="keywords" content="software-design," />
-<meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="https://bbli.github.io"/>
 
-<meta name="twitter:title" content="On the Cost of Code Resuse"/>
-<meta name="twitter:description" content="Increases Compile Times -&gt; Lowers Programmer Productivity  Why Compile Time is Important How Code Reuse affects Compile Time   Harder to Change and doesn&rsquo;t always create Higher Level Abstractions Harder to Understand/Debug Final Thoughts  Increases Compile Times -&gt; Lowers Programmer Productivity (Preface: This section will be in the context of C&#43;&#43;, though the points will generally apply to other programming languages as well.)
-Why Compile Time is Important  You will start to amortize changes before rerunning tests."/>
+  <meta itemprop="name" content="On the Cost of Code Resuse">
+  <meta itemprop="description" content="Increases Compile Times -&gt; Lowers Programmer Productivity Why Compile Time is Important How Code Reuse affects Compile Time Harder to Change and doesn’t always create Higher Level Abstractions Harder to Understand/Debug Final Thoughts Increases Compile Times -&gt; Lowers Programmer Productivity (Preface: This section will be in the context of C&#43;&#43;, though the points will generally apply to other programming languages as well.)">
+  <meta itemprop="datePublished" content="2022-05-01T00:00:00-07:00">
+  <meta itemprop="dateModified" content="2022-05-01T00:00:00-07:00">
+  <meta itemprop="wordCount" content="1417">
+  <meta itemprop="image" content="https://bbli.github.io/">
+  <meta itemprop="keywords" content="Software-Design">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://bbli.github.io/">
+  <meta name="twitter:title" content="On the Cost of Code Resuse">
+  <meta name="twitter:description" content="Increases Compile Times -&gt; Lowers Programmer Productivity Why Compile Time is Important How Code Reuse affects Compile Time Harder to Change and doesn’t always create Higher Level Abstractions Harder to Understand/Debug Final Thoughts Increases Compile Times -&gt; Lowers Programmer Productivity (Preface: This section will be in the context of C&#43;&#43;, though the points will generally apply to other programming languages as well.)">
 
 
 
@@ -150,15 +151,15 @@ Why Compile Time is Important  You will start to amortize changes before rerunni
         <!-- raw HTML omitted -->
 <!-- raw HTML omitted -->
 <ul>
-<li><a href="#increases-compile-times-lowers-programmer-productivity">Increases Compile Times -&gt; Lowers Programmer Productivity</a>
+<li><a href="/posts/on_cost_of_code_reuse/#increases-compile-times-lowers-programmer-productivity">Increases Compile Times -&gt; Lowers Programmer Productivity</a>
 <ul>
-<li><a href="#why-compile-time-is-important">Why Compile Time is Important</a></li>
-<li><a href="#how-code-reuse-affects-compile-time">How Code Reuse affects Compile Time</a></li>
+<li><a href="/posts/on_cost_of_code_reuse/#why-compile-time-is-important">Why Compile Time is Important</a></li>
+<li><a href="/posts/on_cost_of_code_reuse/#how-code-reuse-affects-compile-time">How Code Reuse affects Compile Time</a></li>
 </ul>
 </li>
-<li><a href="#harder-to-change-and-doesn-t-always-create-higher-level-abstractions">Harder to Change and doesn&rsquo;t always create Higher Level Abstractions</a></li>
-<li><a href="#harder-to-understand-debug">Harder to Understand/Debug</a></li>
-<li><a href="#final-thoughts">Final Thoughts</a></li>
+<li><a href="/posts/on_cost_of_code_reuse/#harder-to-change-and-doesn-t-always-create-higher-level-abstractions">Harder to Change and doesn&rsquo;t always create Higher Level Abstractions</a></li>
+<li><a href="/posts/on_cost_of_code_reuse/#harder-to-understand-debug">Harder to Understand/Debug</a></li>
+<li><a href="/posts/on_cost_of_code_reuse/#final-thoughts">Final Thoughts</a></li>
 </ul>
 <!-- raw HTML omitted -->
 <h1 id="increases-compile-times-lowers-programmer-productivity">Increases Compile Times -&gt; Lowers Programmer Productivity</h1>
@@ -215,14 +216,14 @@ void func(){
 <p>Another concern is the mapping of variable names through the call path. In the code above I purposely created a naming mismatch between the function signature and the object passed in by <code>func</code>. Although it usually is not that extreme, helper function tend to have different variable names, and it requires a non-trivial effort to keep this mapping in mind, especially for multiple variables across multiple depths. When trying to understand a codebase, you can forget your original purpose after making 3-5 &ldquo;jump to definition&rdquo; calls to your IDE/language server because of this, and also because while you were trying to understand something &ldquo;specific&rdquo;, the callpath brings you out to something more &ldquo;general&rdquo;, just for the sake of this &ldquo;code reuse&rdquo;.</p>
 <h1 id="final-thoughts">Final Thoughts</h1>
 <p>Now, there are certainly benefits of code reuse. It can save time from needing to reimplement. Reusing code can also mean using code that someone has already tested. It can also allow programmers who are not experts on a certain subject to nevertheless write code for that domain. But as I hope this article shows, code reuse is not a &ldquo;zero-cost&rdquo; thing. So the next time you see code duplication in your codebase and want to refactor, be wary that you are not simply &ldquo;seeing faces in the clouds&rdquo;. As Sandi Metz has said: <a href="https://sandimetz.com/blog/2016/1/20/the-wrong-abstraction">&ldquo;Code duplication is far cheaper than the wrong abstraction&rdquo;</a>. <sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup>.</p>
-<section class="footnotes" role="doc-endnotes">
+<div class="footnotes" role="doc-endnotes">
 <hr>
 <ol>
-<li id="fn:1" role="doc-endnote">
+<li id="fn:1">
 <p>See <a href="https://news.ycombinator.com/item?id=12061453">https://news.ycombinator.com/item?id=12061453</a> for more discussion about this&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
 </li>
 </ol>
-</section>
+</div>
 
       </div>
     </article>
@@ -371,6 +372,13 @@ void func(){
 
         <div class="pagination__buttons">
             
+            <span class="button previous">
+                <a href="https://bbli.github.io/posts/how_mcp_changes_the_way_we_write_software/">
+                    <span class="button__icon">←</span>
+                    <span class="button__text">How MCP Changes the Way We Write Software</span>
+                </a>
+            </span>
+            
 
             
             <span class="button next">
@@ -411,7 +419,7 @@ void func(){
 
 
 
-<script type="text/javascript" src="/bundle.min.599099f1f14b78b657d524b28e10e0c5098e7cd46e9c7aed73d577068a276c3ff1bb234cbf29cb313333e83cf411727b43157c91ce5b809e2ffc81664614608e.js" integrity="sha512-WZCZ8fFLeLZX1SSyjhDgxQmOfNRunHrtc9V3BoonbD/xuyNMvynLMTMz6Dz0EXJ7QxV8kc5bgJ4v/IFmRhRgjg=="></script>
+<script type="text/javascript" src="/bundle.min.17f4a297973019cb34411034a36394fcb6eacdd75534644a62f64d85ac204bca0405d8a5b5f4babfd7625a6307b48c86d042051a47e0506e4147dda733ef13aa.js" integrity="sha512-F/Sil5cwGcs0QRA0o2OU/LbqzddVNGRKYvZNhawgS8oEBdiltfS6v9diWmMHtIyG0EIFGkfgUG5BR92nM&#43;8Tqg=="></script>
 
 
 
